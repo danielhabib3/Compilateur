@@ -1,0 +1,3 @@
+line 2:10 token recognition error at: '-'
+
+exit status: 0
