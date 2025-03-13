@@ -27,11 +27,7 @@ public:
 
     virtual std::any visitInstruction(ifccParser::InstructionContext *context) = 0;
 
-    virtual std::any visitAutre_instruction(ifccParser::Autre_instructionContext *context) = 0;
-
     virtual std::any visitDeclaration(ifccParser::DeclarationContext *context) = 0;
-
-    virtual std::any visitAutre_declaration(ifccParser::Autre_declarationContext *context) = 0;
 
     virtual std::any visitAffectation(ifccParser::AffectationContext *context) = 0;
 

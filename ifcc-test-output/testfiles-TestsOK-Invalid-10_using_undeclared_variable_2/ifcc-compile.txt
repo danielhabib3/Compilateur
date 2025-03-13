@@ -1,0 +1,4 @@
+warning: variable declared and initialized but not used: a at 2:4
+error: syntax error during variable analysis
+
+exit status: 1

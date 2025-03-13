@@ -23,12 +23,41 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+{
+    infosVariable infosVGauche = _variables[ctx->ID()->getText()];
+    if(ctx->value()->ID() != nullptr)
+    {
+        infosVariable infosVDroite = _variables[ctx->value()->ID()->getText()];
+        std::cout << "    movl -"<<infosVDroite.location<<"(%rbp), -"<<infosVGauche.location<<"(%rbp)\n" ;
+    }
+    else
+    {
+        int valDroite = stoi(ctx->value()->CONST()->getText());
+        std::cout << "    movl $"<<valDroite<<", -"<<infosVGauche.location<<"(%rbp)\n" ;
+    }
 
-// antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+    return 0;
+}
+
+// anltrcpp::Any CodeGenVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 // {
-//     int retval = stoi(ctx->CONST()->getText());
 
-//     std::cout << "    movl $"<<retval<<", %eax\n" ;
-
-//     return 0;
 // }
+
+
+antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+{
+    if(ctx->value()->ID() != nullptr)
+    {
+        infosVariable infosV = _variables[ctx->value()->ID()->getText()];
+        std::cout << "    movl -"<<infosV.location<<"(%rbp), %eax\n" ;
+    }
+    else
+    {
+        int retval = stoi(ctx->value()->CONST()->getText());
+        std::cout << "    movl $"<<retval<<", %eax\n" ;
+    }
+    
+    return 0;
+}

@@ -31,15 +31,7 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual std::any visitAutre_instruction(ifccParser::Autre_instructionContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual std::any visitDeclaration(ifccParser::DeclarationContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
-  virtual std::any visitAutre_declaration(ifccParser::Autre_declarationContext *ctx) override {
     return visitChildren(ctx);
   }
 

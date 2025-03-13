@@ -7,6 +7,7 @@
 #include "generated/ifccLexer.h"
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
+#include "VariableVisitor.h"
 
 #include "CodeGenVisitor.h"
 
@@ -44,13 +45,36 @@ int main(int argn, const char **argv)
 
   if(parser.getNumberOfSyntaxErrors() != 0)
   {
-      cerr << "error: syntax error during parsing" << endl;
-      exit(1);
+    cerr << "error: syntax error during parsing" << endl;
+    exit(1);
   }
 
+  VariableVisitor vv;
+  vv.visit(tree);
+
+  // warnings pour les variables déclarées et pas utilisées
+  for(auto it = _variables.begin(); it != _variables.end(); it++)
+  {
+    if(it->second.nbUse == 0)
+    {
+      cerr << "warning: variable declared ";
+      if(it->second.set == 0)
+        cerr << "and not initialized ";
+      else
+        cerr << "and initialized ";
+      cerr << "but not used: " << it->first << " at " << it->second.line << ":" << it->second.column << endl;
+    }
+  }
   
-  CodeGenVisitor v;
-  v.visit(tree);
+
+  if(_variableErrors.size() > 0)
+  {
+    cerr << "error: syntax error during variable analysis" << endl;
+    exit(1);
+  }
+  
+  CodeGenVisitor cgv;
+  cgv.visit(tree);
 
   return 0;
 }
