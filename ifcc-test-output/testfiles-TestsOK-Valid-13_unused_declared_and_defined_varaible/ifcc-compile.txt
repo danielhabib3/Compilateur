@@ -1,3 +1,0 @@
-warning: variable declared and initialized but not used: a at 2:4
-
-exit status: 0

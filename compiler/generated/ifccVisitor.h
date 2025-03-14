@@ -29,6 +29,8 @@ public:
 
     virtual std::any visitDeclaration(ifccParser::DeclarationContext *context) = 0;
 
+    virtual std::any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *context) = 0;
+
     virtual std::any visitAffectation(ifccParser::AffectationContext *context) = 0;
 
     virtual std::any visitReturn_stmt(ifccParser::Return_stmtContext *context) = 0;

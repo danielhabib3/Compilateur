@@ -35,6 +35,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitAffectation(ifccParser::AffectationContext *ctx) override {
     return visitChildren(ctx);
   }

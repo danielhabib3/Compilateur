@@ -1,3 +1,0 @@
-error: syntax error during variable analysis
-
-exit status: 1

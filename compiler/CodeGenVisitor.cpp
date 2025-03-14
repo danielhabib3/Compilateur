@@ -13,8 +13,7 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     std::cout<< "    pushq %rbp\n" ;
     std::cout<< "    movq %rsp, %rbp\n" ;
 
-    this->visit( ctx->block() );
-    this->visit( ctx->return_stmt() );
+    this->visitChildren(ctx);
 
     std::cout<< "    popq %rbp\n" ;
     
@@ -29,7 +28,8 @@ antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *c
     if(ctx->value()->ID() != nullptr)
     {
         infosVariable infosVDroite = _variables[ctx->value()->ID()->getText()];
-        std::cout << "    movl -"<<infosVDroite.location<<"(%rbp), -"<<infosVGauche.location<<"(%rbp)\n" ;
+        std::cout << "    movl -"<<infosVDroite.location<<"(%rbp), %eax\n" ;
+        std::cout << "    movl %eax, -"<<infosVGauche.location<<"(%rbp)\n" ;
     }
     else
     {
@@ -40,10 +40,6 @@ antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *c
     return 0;
 }
 
-// anltrcpp::Any CodeGenVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
-// {
-
-// }
 
 
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)

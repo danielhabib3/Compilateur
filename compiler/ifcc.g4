@@ -8,8 +8,9 @@ block : (instruction)* ;
 
 instruction : declaration | affectation ;
 
-declaration : type ID (',' ID)* ';' ;
+declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
+affectationDeclaration : ID ('=' value)? ;
 
 affectation : ID '=' value ';' ;
 

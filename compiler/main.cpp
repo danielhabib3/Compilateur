@@ -52,28 +52,42 @@ int main(int argn, const char **argv)
   VariableVisitor vv;
   vv.visit(tree);
 
+  map<string, infosVariable> _variables = vv.getVariables();
+  map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
+
   // warnings pour les variables déclarées et pas utilisées
   for(auto it = _variables.begin(); it != _variables.end(); it++)
   {
     if(it->second.nbUse == 0)
     {
-      cerr << "warning: variable declared ";
+      string warning = "warning: variable declared ";
       if(it->second.set == 0)
-        cerr << "and not initialized ";
+        warning += "and not initialized ";
       else
-        cerr << "and initialized ";
-      cerr << "but not used: " << it->first << " at " << it->second.line << ":" << it->second.column << endl;
+        warning += "and initialized ";
+      warning += "but not used: " + it->first + " at " + to_string(it->second.line) + ":" + to_string(it->second.column) + "\n";
+      _variableErrorsWarnings[warning] = WARNING;
     }
   }
-  
 
-  if(_variableErrors.size() > 0)
+  vv.setVariableErrorsWarnings(_variableErrorsWarnings);
+  
+  // afficher les erreurs et/ou les warnings
+  for(auto it = _variableErrorsWarnings.begin(); it != _variableErrorsWarnings.end(); it++)
+  {
+    cerr << it->first << endl;
+  }
+
+  if(vv.countErrors() > 0)
   {
     cerr << "error: syntax error during variable analysis" << endl;
     exit(1);
   }
+
+  // afficher les 
   
   CodeGenVisitor cgv;
+  cgv.setVariables(vv.getVariables());
   cgv.visit(tree);
 
   return 0;

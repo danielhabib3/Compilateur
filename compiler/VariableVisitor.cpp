@@ -1,20 +1,21 @@
 #include "VariableVisitor.h"
 
-map<string, infosVariable> _variables = {};
-list<string> _variableErrors = {};
 
 antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) 
 {
-    for(int i = 0; i < ctx->ID().size(); i++)
+    for(int i = 0; i < ctx->affectationDeclaration().size(); i++)
     {
-        string variableName = ctx->ID(i)->getText();
+        pair<antlr4::tree::TerminalNode *, ValueContext *> affectationDeclaration = this->visit(ctx->affectationDeclaration(i));
+        antlr4::tree::TerminalNode * ID = affectationDeclaration.first;
+        ValueContext * value = affectationDeclaration.second;
+        string variableName = ID->getText();
         string type = ctx->type()->getText();
         int line = ctx->getStart()->getLine();
         int column = ctx->getStart()->getCharPositionInLine();
         if(_variables.find(variableName) != _variables.end())
         {
             infosVariable infosDeclaredVariable = _variables[variableName];
-            _variableErrors.push_back("Error : Multiple Declarations : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable " + variableName + " already declared in " + std::to_string(infosDeclaredVariable.line) + ":" + std::to_string(infosDeclaredVariable.column));
+            _variableErrorsWarnings["Error : Multiple Declarations : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable \"" + variableName + "\" already declared in " + std::to_string(infosDeclaredVariable.line) + ":" + std::to_string(infosDeclaredVariable.column)] = ERROR;
         }
         else
         {
@@ -26,7 +27,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             }
             else
             {
-                _variableErrors.push_back("Error : Unknown type : " + std::to_string(line) + ":" + std::to_string(column) + " : " + type);
+                _variableErrorsWarnings["Error : Unknown type : " + std::to_string(line) + ":" + std::to_string(column) + " : " + type] = ERROR;
             }
             infos.set = 0;
             infos.line = ctx->getStart()->getLine();
@@ -34,6 +35,8 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             infos.nbUse = 0;
             _variables[variableName] = infos;
         }
+
+        this->visit(value);
     }
     return 0;
 }
@@ -45,7 +48,7 @@ antlrcpp::Any VariableVisitor::visitAffectation(ifccParser::AffectationContext *
     {
         int line = ctx->getStart()->getLine();
         int column = ctx->getStart()->getCharPositionInLine();
-        _variableErrors.push_back("Error : Unknown variable : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable " + variableGaucheName + " not declared");
+        _variableErrorsWarnings["Error : Unknown variable : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
     }
     else
     {
@@ -54,22 +57,8 @@ antlrcpp::Any VariableVisitor::visitAffectation(ifccParser::AffectationContext *
         _variables[variableGaucheName] = infos;
     }
 
-    if(ctx->value()->ID() != nullptr)
-    {
-        string variableDroiteName = ctx->value()->ID()->getText();
-        if(_variables.find(variableDroiteName) == _variables.end())
-        {
-            int line = ctx->getStart()->getLine();
-            int column = ctx->getStart()->getCharPositionInLine();
-            _variableErrors.push_back("Error : Unknown variable : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable " + variableDroiteName + " not declared");
-        }
-        else
-        {
-            infosVariable infos = _variables[variableDroiteName];
-            infos.nbUse++;
-            _variables[variableDroiteName] = infos;
-        }
-    }
+    this->visit(ctx->value());
+
     return 0;
 }
 
@@ -78,18 +67,26 @@ antlrcpp::Any VariableVisitor::visitValue(ifccParser::ValueContext *ctx)
     if(ctx->ID() != nullptr)
     {
         string variableName = ctx->ID()->getText();
+        int line = ctx->getStart()->getLine();
+        int column = ctx->getStart()->getCharPositionInLine();
         if(_variables.find(variableName) == _variables.end())
         {
-            int line = ctx->getStart()->getLine();
-            int column = ctx->getStart()->getCharPositionInLine();
-            _variableErrors.push_back("Error : Unknown variable : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable " + variableName + " not declared");
+            _variableErrorsWarnings["Error : Unknown variable : " + std::to_string(line) + ":" + std::to_string(column) + " : Variable \"" + variableName + "\" not declared"] = ERROR;
         }
         else
         {
             infosVariable infos = _variables[variableName];
             infos.nbUse++;
             _variables[variableName] = infos;
+            if(infos.set == 0) {
+                _variableErrorsWarnings["Warning : Using variable not initialized : " + std::to_string(line) + ":" + std::to_string(column) + " : Using variable \"" + variableName + "\" not initialized, declared at " + std::to_string(infos.line) + ":" + std::to_string(infos.column)] = WARNING;
+            }
         }
     }
     return 0;
+}
+
+antlrcpp::Any VariableVisitor::visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx)
+{
+    return (pair<antlr4::tree::TerminalNode *, ValueContext *>(ctx->ID(), ctx->value()));
 }
