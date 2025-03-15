@@ -65,25 +65,27 @@ void ifccParserInitialize() {
     }
   );
   static const int32_t serializedATNSegment[] = {
-  	4,1,15,72,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
+  	4,1,15,79,2,0,7,0,2,1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,
   	7,7,2,8,7,8,2,9,7,9,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
   	2,5,2,34,8,2,10,2,12,2,37,9,2,1,3,1,3,3,3,41,8,3,1,4,1,4,1,4,1,4,5,4,
-  	47,8,4,10,4,12,4,50,9,4,1,4,1,4,1,5,1,5,1,5,3,5,57,8,5,1,6,1,6,1,6,1,
-  	6,1,6,1,7,1,7,1,7,1,7,1,8,1,8,1,9,1,9,1,9,0,0,10,0,2,4,6,8,10,12,14,16,
-  	18,0,1,1,0,11,12,65,0,20,1,0,0,0,2,23,1,0,0,0,4,35,1,0,0,0,6,40,1,0,0,
-  	0,8,42,1,0,0,0,10,53,1,0,0,0,12,58,1,0,0,0,14,63,1,0,0,0,16,67,1,0,0,
-  	0,18,69,1,0,0,0,20,21,3,2,1,0,21,22,5,0,0,1,22,1,1,0,0,0,23,24,3,18,9,
-  	0,24,25,5,1,0,0,25,26,5,2,0,0,26,27,5,3,0,0,27,28,5,4,0,0,28,29,3,4,2,
-  	0,29,30,3,14,7,0,30,31,5,5,0,0,31,3,1,0,0,0,32,34,3,6,3,0,33,32,1,0,0,
-  	0,34,37,1,0,0,0,35,33,1,0,0,0,35,36,1,0,0,0,36,5,1,0,0,0,37,35,1,0,0,
-  	0,38,41,3,8,4,0,39,41,3,12,6,0,40,38,1,0,0,0,40,39,1,0,0,0,41,7,1,0,0,
-  	0,42,43,3,18,9,0,43,48,3,10,5,0,44,45,5,6,0,0,45,47,3,10,5,0,46,44,1,
-  	0,0,0,47,50,1,0,0,0,48,46,1,0,0,0,48,49,1,0,0,0,49,51,1,0,0,0,50,48,1,
-  	0,0,0,51,52,5,7,0,0,52,9,1,0,0,0,53,56,5,11,0,0,54,55,5,8,0,0,55,57,3,
-  	16,8,0,56,54,1,0,0,0,56,57,1,0,0,0,57,11,1,0,0,0,58,59,5,11,0,0,59,60,
-  	5,8,0,0,60,61,3,16,8,0,61,62,5,7,0,0,62,13,1,0,0,0,63,64,5,10,0,0,64,
-  	65,3,16,8,0,65,66,5,7,0,0,66,15,1,0,0,0,67,68,7,0,0,0,68,17,1,0,0,0,69,
-  	70,5,9,0,0,70,19,1,0,0,0,4,35,40,48,56
+  	47,8,4,10,4,12,4,50,9,4,1,4,1,4,1,5,1,5,1,5,5,5,57,8,5,10,5,12,5,60,9,
+  	5,1,6,1,6,1,6,4,6,65,8,6,11,6,12,6,66,1,6,1,6,1,7,1,7,1,7,1,7,1,8,1,8,
+  	1,9,1,9,1,9,0,0,10,0,2,4,6,8,10,12,14,16,18,0,1,1,0,11,12,73,0,20,1,0,
+  	0,0,2,23,1,0,0,0,4,35,1,0,0,0,6,40,1,0,0,0,8,42,1,0,0,0,10,53,1,0,0,0,
+  	12,61,1,0,0,0,14,70,1,0,0,0,16,74,1,0,0,0,18,76,1,0,0,0,20,21,3,2,1,0,
+  	21,22,5,0,0,1,22,1,1,0,0,0,23,24,3,18,9,0,24,25,5,1,0,0,25,26,5,2,0,0,
+  	26,27,5,3,0,0,27,28,5,4,0,0,28,29,3,4,2,0,29,30,3,14,7,0,30,31,5,5,0,
+  	0,31,3,1,0,0,0,32,34,3,6,3,0,33,32,1,0,0,0,34,37,1,0,0,0,35,33,1,0,0,
+  	0,35,36,1,0,0,0,36,5,1,0,0,0,37,35,1,0,0,0,38,41,3,8,4,0,39,41,3,12,6,
+  	0,40,38,1,0,0,0,40,39,1,0,0,0,41,7,1,0,0,0,42,43,3,18,9,0,43,48,3,10,
+  	5,0,44,45,5,6,0,0,45,47,3,10,5,0,46,44,1,0,0,0,47,50,1,0,0,0,48,46,1,
+  	0,0,0,48,49,1,0,0,0,49,51,1,0,0,0,50,48,1,0,0,0,51,52,5,7,0,0,52,9,1,
+  	0,0,0,53,58,5,11,0,0,54,55,5,8,0,0,55,57,3,16,8,0,56,54,1,0,0,0,57,60,
+  	1,0,0,0,58,56,1,0,0,0,58,59,1,0,0,0,59,11,1,0,0,0,60,58,1,0,0,0,61,64,
+  	5,11,0,0,62,63,5,8,0,0,63,65,3,16,8,0,64,62,1,0,0,0,65,66,1,0,0,0,66,
+  	64,1,0,0,0,66,67,1,0,0,0,67,68,1,0,0,0,68,69,5,7,0,0,69,13,1,0,0,0,70,
+  	71,5,10,0,0,71,72,3,16,8,0,72,73,5,7,0,0,73,15,1,0,0,0,74,75,7,0,0,0,
+  	75,17,1,0,0,0,76,77,5,9,0,0,77,19,1,0,0,0,5,35,40,48,58,66
   };
   staticData->serializedATN = antlr4::atn::SerializedATNView(serializedATNSegment, sizeof(serializedATNSegment) / sizeof(serializedATNSegment[0]));
 
@@ -476,8 +478,12 @@ tree::TerminalNode* ifccParser::AffectationDeclarationContext::ID() {
   return getToken(ifccParser::ID, 0);
 }
 
-ifccParser::ValueContext* ifccParser::AffectationDeclarationContext::value() {
-  return getRuleContext<ifccParser::ValueContext>(0);
+std::vector<ifccParser::ValueContext *> ifccParser::AffectationDeclarationContext::value() {
+  return getRuleContexts<ifccParser::ValueContext>();
+}
+
+ifccParser::ValueContext* ifccParser::AffectationDeclarationContext::value(size_t i) {
+  return getRuleContext<ifccParser::ValueContext>(i);
 }
 
 
@@ -509,15 +515,17 @@ ifccParser::AffectationDeclarationContext* ifccParser::affectationDeclaration() 
     enterOuterAlt(_localctx, 1);
     setState(53);
     match(ifccParser::ID);
-    setState(56);
+    setState(58);
     _errHandler->sync(this);
-
     _la = _input->LA(1);
-    if (_la == ifccParser::T__7) {
+    while (_la == ifccParser::T__7) {
       setState(54);
       match(ifccParser::T__7);
       setState(55);
       value();
+      setState(60);
+      _errHandler->sync(this);
+      _la = _input->LA(1);
     }
    
   }
@@ -540,8 +548,12 @@ tree::TerminalNode* ifccParser::AffectationContext::ID() {
   return getToken(ifccParser::ID, 0);
 }
 
-ifccParser::ValueContext* ifccParser::AffectationContext::value() {
-  return getRuleContext<ifccParser::ValueContext>(0);
+std::vector<ifccParser::ValueContext *> ifccParser::AffectationContext::value() {
+  return getRuleContexts<ifccParser::ValueContext>();
+}
+
+ifccParser::ValueContext* ifccParser::AffectationContext::value(size_t i) {
+  return getRuleContext<ifccParser::ValueContext>(i);
 }
 
 
@@ -560,6 +572,7 @@ std::any ifccParser::AffectationContext::accept(tree::ParseTreeVisitor *visitor)
 ifccParser::AffectationContext* ifccParser::affectation() {
   AffectationContext *_localctx = _tracker.createInstance<AffectationContext>(_ctx, getState());
   enterRule(_localctx, 12, ifccParser::RuleAffectation);
+  size_t _la = 0;
 
 #if __cplusplus > 201703L
   auto onExit = finally([=, this] {
@@ -570,13 +583,21 @@ ifccParser::AffectationContext* ifccParser::affectation() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(58);
-    match(ifccParser::ID);
-    setState(59);
-    match(ifccParser::T__7);
-    setState(60);
-    value();
     setState(61);
+    match(ifccParser::ID);
+    setState(64); 
+    _errHandler->sync(this);
+    _la = _input->LA(1);
+    do {
+      setState(62);
+      match(ifccParser::T__7);
+      setState(63);
+      value();
+      setState(66); 
+      _errHandler->sync(this);
+      _la = _input->LA(1);
+    } while (_la == ifccParser::T__7);
+    setState(68);
     match(ifccParser::T__6);
    
   }
@@ -629,11 +650,11 @@ ifccParser::Return_stmtContext* ifccParser::return_stmt() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(63);
+    setState(70);
     match(ifccParser::RETURN);
-    setState(64);
+    setState(71);
     value();
-    setState(65);
+    setState(72);
     match(ifccParser::T__6);
    
   }
@@ -687,7 +708,7 @@ ifccParser::ValueContext* ifccParser::value() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(67);
+    setState(74);
     _la = _input->LA(1);
     if (!(_la == ifccParser::ID
 
@@ -741,7 +762,7 @@ ifccParser::TypeContext* ifccParser::type() {
   });
   try {
     enterOuterAlt(_localctx, 1);
-    setState(69);
+    setState(76);
     match(ifccParser::T__8);
    
   }

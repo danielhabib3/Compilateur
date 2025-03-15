@@ -10,9 +10,9 @@ instruction : declaration | affectation ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
-affectationDeclaration : ID ('=' value)? ;
+affectationDeclaration : ID ('=' value)* ;
 
-affectation : ID '=' value ';' ;
+affectation : ID ('=' value)+ ';' ;
 
 return_stmt: RETURN value ';' ;
 value : CONST | ID ;

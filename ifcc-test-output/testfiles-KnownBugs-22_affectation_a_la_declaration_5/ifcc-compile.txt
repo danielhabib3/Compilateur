@@ -1,7 +1,0 @@
-Warning : Using variable not initialized : 3:11 : Using variable "a" not initialized, declared at 2:4
-warning: variable declared and not initialized but not used: b at 2:4
-
-warning: variable declared and not initialized but not used: c at 2:4
-
-
-exit status: 0

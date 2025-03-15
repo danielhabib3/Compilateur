@@ -1,3 +1,10 @@
+.vscode/
+ifcc-test-output/
+compiler/ifcc
+compiler/generated/
+compiler/build/
+
+
 # Prerequisites
 *.d
 
