@@ -1,0 +1,5 @@
+Error : Unknown variable : 3:4 : Variable b not declared
+Warning : Using variable not initialized : 3:8 : Using variable "a" not initialized, declared at 2:4
+error: syntax error during variable analysis
+
+exit status: 1

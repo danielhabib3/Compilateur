@@ -1,0 +1,6 @@
+input.c:1:1: error: unknown type name ‘in’; did you mean ‘int’?
+    1 | in main() {
+      | ^~
+      | int
+
+exit status: 1

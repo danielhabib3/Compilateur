@@ -40,7 +40,24 @@ antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *c
     return 0;
 }
 
-
+antlrcpp::Any CodeGenVisitor::visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx)
+{
+    if(ctx->value() != nullptr) {
+        infosVariable infosVGauche = _variables[ctx->ID()->getText()];
+        if(ctx->value()->ID() != nullptr)
+        {
+            infosVariable infosVDroite = _variables[ctx->value()->ID()->getText()];
+            std::cout << "    movl -"<<infosVDroite.location<<"(%rbp), %eax\n" ;
+            std::cout << "    movl %eax, -"<<infosVGauche.location<<"(%rbp)\n" ;
+        }
+        else
+        {
+            int valDroite = stoi(ctx->value()->CONST()->getText());
+            std::cout << "    movl $"<<valDroite<<", -"<<infosVGauche.location<<"(%rbp)\n" ;
+        }
+    }
+    return 0;
+}
 
 antlrcpp::Any CodeGenVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
 {

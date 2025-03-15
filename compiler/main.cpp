@@ -52,6 +52,8 @@ int main(int argn, const char **argv)
   VariableVisitor vv;
   vv.visit(tree);
 
+  // cout << "Variable analysis done checking errors .." << endl;
+
   map<string, infosVariable> _variables = vv.getVariables();
   map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
 
@@ -82,6 +84,10 @@ int main(int argn, const char **argv)
   {
     cerr << "error: syntax error during variable analysis" << endl;
     exit(1);
+  }
+  else
+  {
+    // cout << "Variable analysis done without errors" << endl;
   }
 
   // afficher les 

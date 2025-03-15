@@ -12,7 +12,7 @@ declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
 affectationDeclaration : ID ('=' value)? ;
 
-affectation : ID '=' value ';' ;
+affectation : ID '=' value ('=' value)* ';' ;
 
 return_stmt: RETURN value ';' ;
 value : CONST | ID ;
