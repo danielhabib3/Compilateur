@@ -3,7 +3,6 @@ ifcc-test-output/
 compiler/ifcc
 compiler/generated/
 compiler/build/
-ifcc-test-output/
 
 
 # Prerequisites
