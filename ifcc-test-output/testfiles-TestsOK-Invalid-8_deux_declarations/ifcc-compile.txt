@@ -1,4 +1,0 @@
-Error : Multiple Declarations : 4:4 : Variable "a" already declared in 2:4
-error: syntax error during variable analysis
-
-exit status: 1

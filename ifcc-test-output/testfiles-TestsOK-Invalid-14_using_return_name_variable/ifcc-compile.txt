@@ -1,6 +1,0 @@
-line 2:8 mismatched input 'return' expecting ID
-line 3:11 extraneous input '=' expecting {ID, CONST}
-line 4:4 mismatched input 'return' expecting '}'
-error: syntax error during parsing
-
-exit status: 1
