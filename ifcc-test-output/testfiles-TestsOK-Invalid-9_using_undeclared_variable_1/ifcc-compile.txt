@@ -1,4 +1,0 @@
-Error : Unknown variable : 2:11 : Variable "x" not declared
-error: syntax error during variable analysis
-
-exit status: 1

@@ -1,6 +1,0 @@
-line 4:3 mismatched input '(' expecting '='
-line 4:7 extraneous input ')' expecting {';', '='}
-line 7:1 mismatched input 'else' expecting <EOF>
-error: syntax error during parsing
-
-exit status: 1
