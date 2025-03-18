@@ -90,7 +90,6 @@ int main(int argn, const char **argv)
     // cout << "Variable analysis done without errors" << endl;
   }
 
-  // afficher les 
   
   CodeGenVisitor cgv;
   cgv.setVariables(vv.getVariables());

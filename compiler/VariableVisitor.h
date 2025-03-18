@@ -64,7 +64,7 @@ class VariableVisitor : public ifccBaseVisitor {
 
         virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
         virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *ctx) override;
-        virtual antlrcpp::Any visitValue(ifccParser::ValueContext *ctx) override;
+        virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override;
         virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override;
     
         private:

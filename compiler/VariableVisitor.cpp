@@ -7,9 +7,9 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
     for(int i = 0; i < ctx->affectationDeclaration().size(); i++)
     {
         // cout << "Declaration : Visiting affectationDeclaration : " << i << endl;
-        pair<antlr4::tree::TerminalNode *, vector<ifccParser::ValueContext *>> affectationDeclaration = any_cast<pair<antlr4::tree::TerminalNode*, vector<ifccParser::ValueContext*>>>(this->visit(ctx->affectationDeclaration(i)));
+        pair<antlr4::tree::TerminalNode *, ifccParser::ExprContext *> affectationDeclaration = any_cast<pair<antlr4::tree::TerminalNode*, ifccParser::ExprContext*>>(this->visit(ctx->affectationDeclaration(i)));
         antlr4::tree::TerminalNode * ID = affectationDeclaration.first;
-        vector<ifccParser::ValueContext *> values = affectationDeclaration.second;
+        ifccParser::ExprContext * expression = affectationDeclaration.second;
         string variableName = ID->getText();
         string type = ctx->type()->getText();
         int line = ctx->getStart()->getLine();
@@ -39,35 +39,10 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             _variables[variableName] = infos;
         }
 
-        for(int j = 0; j < values.size(); j++)
-        {
-            string variableGaucheName;
-            if(j == 0) {
-                variableGaucheName = ID->getText();
-            } else {
-                if(values[j-1]->ID() != nullptr)
-                    variableGaucheName = values[j-1]->ID()->getText();
-                else
-                    _variableErrorsWarnings["Error : Left operand isn't a variable : " + to_string(line) + ":" + to_string(column) + " : Left opreand is " + values[j-1]->CONST()->getText() + " not a variable"] = ERROR;
-            }
-
-            if(_variables.find(variableGaucheName) == _variables.end())
-            {
-                _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
-            }
-            else
-            {
-                infosVariable infos = _variables[variableGaucheName];
-                infos.set = 1;
-                _variables[variableGaucheName] = infos;
-            }
-        }
-        
-
-        // cout << "Declaration : Visit Declaration end before visiting value" << endl;
-        if(ctx->affectationDeclaration(i)->value().size() != 0)
-            this->visit(ctx->affectationDeclaration(i)->value(ctx->affectationDeclaration(i)->value().size()-1));
-        // cout << "Declaration : Visit Declaration end after visiting value" << endl;
+        // cout << "Declaration : Visit Declaration end before visiting expr" << endl;
+        if(expression != nullptr)
+            this->visit(expression);
+        // cout << "Declaration : Visit Declaration end after visiting expr" << endl;
 
     }
     return 0;
@@ -78,56 +53,44 @@ antlrcpp::Any VariableVisitor::visitAffectation(ifccParser::AffectationContext *
     // cout << "Visiting affectation" << endl;
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
-    for(int i = 0; i < ctx->value().size(); i++)
-    {
-        string variableGaucheName;
-        if(i == 0) {
-            variableGaucheName = ctx->ID()->getText();
-        } else {
-            if(ctx->value(i-1)->ID() != nullptr)
-                variableGaucheName = ctx->value(i-1)->ID()->getText();
-            else
-                _variableErrorsWarnings["Error : Left operand isn't a variable : " + to_string(line) + ":" + to_string(column) + " : Left opreand is " + ctx->value(i-1)->CONST()->getText() + " not a variable"] = ERROR;
-        }
 
-        if(_variables.find(variableGaucheName) == _variables.end())
-        {
-            _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
-        }
-        else
-        {
-            infosVariable infos = _variables[variableGaucheName];
-            infos.set = 1;
-            _variables[variableGaucheName] = infos;
-        }
+    string variableGaucheName = ctx->ID()->getText();
+
+    if(_variables.find(variableGaucheName) == _variables.end())
+    {
+        _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
     }
+    else
+    {
+        infosVariable infos = _variables[variableGaucheName];
+        infos.set = 1;
+        _variables[variableGaucheName] = infos;
+    }
+    
 
     // visiter la dernière valeur qui ne sera pas affectée
-    this->visit(ctx->value(ctx->value().size()-1));
+    this->visit(ctx->expr());
 
     return 0;
 }
 
-antlrcpp::Any VariableVisitor::visitValue(ifccParser::ValueContext *ctx) 
+antlrcpp::Any VariableVisitor::visitExprID(ifccParser::ExprIDContext *ctx) 
 {
-    // cout << "Visiting value" << endl;
-    if(ctx->ID() != nullptr)
+    // cout << "Visiting expr" << endl;
+    string variableName = ctx->ID()->getText();
+    int line = ctx->getStart()->getLine();
+    int column = ctx->getStart()->getCharPositionInLine();
+    if(_variables.find(variableName) == _variables.end())
     {
-        string variableName = ctx->ID()->getText();
-        int line = ctx->getStart()->getLine();
-        int column = ctx->getStart()->getCharPositionInLine();
-        if(_variables.find(variableName) == _variables.end())
-        {
-            _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" not declared"] = ERROR;
-        }
-        else
-        {
-            infosVariable infos = _variables[variableName];
-            infos.nbUse++;
-            _variables[variableName] = infos;
-            if(infos.set == 0) {
-                _variableErrorsWarnings["Warning : Using variable not initialized : " + to_string(line) + ":" + to_string(column) + " : Using variable \"" + variableName + "\" not initialized, declared at " + to_string(infos.line) + ":" + to_string(infos.column)] = WARNING;
-            }
+        _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" not declared"] = ERROR;
+    }
+    else
+    {
+        infosVariable infos = _variables[variableName];
+        infos.nbUse++;
+        _variables[variableName] = infos;
+        if(infos.set == 0) {
+            _variableErrorsWarnings["Warning : Using variable not initialized : " + to_string(line) + ":" + to_string(column) + " : Using variable \"" + variableName + "\" not initialized, declared at " + to_string(infos.line) + ":" + to_string(infos.column)] = WARNING;
         }
     }
     return 0;
@@ -136,5 +99,6 @@ antlrcpp::Any VariableVisitor::visitValue(ifccParser::ValueContext *ctx)
 antlrcpp::Any VariableVisitor::visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx)
 {
     // cout << "Visiting affectationDeclaration" << endl;
-    return (pair<antlr4::tree::TerminalNode *, vector<ifccParser::ValueContext *>>) make_pair(ctx->ID(), ctx->value());
+    return (pair<antlr4::tree::TerminalNode *, ifccParser::ExprContext *>) make_pair(ctx->ID(), ctx->expr());
 }
+

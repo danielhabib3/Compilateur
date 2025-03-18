@@ -10,12 +10,20 @@ instruction : declaration | affectation ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
-affectationDeclaration : ID ('=' value)* ;
+affectationDeclaration : ID ('=' expr)? ;
 
-affectation : ID ('=' value)+ ';' ;
+affectation : ID '=' expr ';' ;
 
-return_stmt: RETURN value ';' ;
-value : CONST | ID ;
+return_stmt: RETURN expr ';' ;
+
+expr : CONST                        # exprConst
+     | ID                           # exprID
+     | '(' expr ')'                 # exprParenthesis
+     | expr OP=('*' | '/' ) expr    # exprMulDiv
+     | expr OP=('+' | '-') expr     # exprAddSub               
+     | OP=('+' | '-') expr          # exprUnary
+    ;
+      
 
 type : 'int' ;
 

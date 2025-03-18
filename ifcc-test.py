@@ -14,6 +14,7 @@ import os
 import shutil
 import sys
 import subprocess
+import re
 
 def run_command(string, logfile=None, toscreen=False):
     """ execute `string` as a shell command. Maybe write stdout+stderr to `logfile` and/or to the toscreen.
@@ -204,16 +205,53 @@ if len(inputfilenames) == 0:
     print("error: found no test-case in: "+" ".join(args.input))
     sys.exit(1)
 
+def extract_test_numbers(file_paths):
+    pattern = re.compile(r'/(?<!_)\b(\d+)_[^/]+\.c$')
+    test_numbers = sorted(set(map(int, pattern.findall("\n".join(file_paths)))))
+    return test_numbers
+
+max = 0
+for inputfilename in inputfilenames:
+    if(len(extract_test_numbers([inputfilename])) == 1):
+        num_fichier = extract_test_numbers([inputfilename])[0]
+        if(num_fichier >= max):
+            max = num_fichier
+
+new_inputfilenames = []
 ## Check that we actually can read these files. Our goal is to
 ## fail as early as possible when the CLI arguments are wrong.
 for inputfilename in inputfilenames:
     try:
         f=open(inputfilename,"r")
+
+        old_path = inputfilename
+        if(len(extract_test_numbers([old_path])) == 0):
+
+            # Extraire le dossier et le nom du fichier
+            dir_name = os.path.dirname(old_path)
+            filename = os.path.basename(old_path)
+
+            # Nouveau nom avec un numéro (par exemple 3)
+            new_filename = str(max + 1) + filename
+
+            # Nouveau chemin complet
+            new_path = os.path.join(dir_name, new_filename)
+
+            # Renommer le fichier
+            os.rename(old_path, new_path)
+
+            max = max + 1
+
+        if(len(extract_test_numbers([old_path])) == 0):
+            new_inputfilenames.append(new_path)
+        else:
+            new_inputfilenames.append(old_path)
         f.close()
     except Exception as e:
         print("error: "+e.args[1]+": "+inputfilename)
         exit(1)
 
+inputfilenames = new_inputfilenames
 ## We're going to copy every test-case in its own subdir of ifcc-test-output
 os.mkdir(pld_base_dir+'/ifcc-test-output')
 
