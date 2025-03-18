@@ -85,7 +85,7 @@ antlrcpp::Any CodeGenVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitExprMulDiv(ifccParser::ExprMulDivContext *ctx)
+antlrcpp::Any CodeGenVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ctx)
 {
     this->visit(ctx->expr(0));
 
@@ -106,12 +106,20 @@ antlrcpp::Any CodeGenVisitor::visitExprMulDiv(ifccParser::ExprMulDivContext *ctx
     {
         std::cout << "    imull -"<<infosGauche.location<<"(%rbp), %eax\n" ;
     }
-    else
+    else if(ctx->OP->getText() == "/")
     {
         std::cout << "    movl %eax, -"<<infosDroite.location<<"(%rbp)\n" ;
         std::cout << "    movl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
         std::cout << "    cltd\n" ;
         std::cout << "    idivl -"<<infosDroite.location<<"(%rbp)\n" ;
+    }
+    else if(ctx->OP->getText() == "%")
+    {
+        std::cout << "    movl %eax, -"<<infosDroite.location<<"(%rbp)\n" ;
+        std::cout << "    movl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
+        std::cout << "    cltd\n" ;
+        std::cout << "    idivl -"<<infosDroite.location<<"(%rbp)\n" ;
+        std::cout << "    movl %edx, %eax\n" ;  
     }
 
     return 0;
