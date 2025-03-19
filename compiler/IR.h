@@ -7,12 +7,12 @@
 #include <initializer_list>
 
 // Declarations from the parser -- replace with your own
+#include "tree/ParseTree.h"
 #include "type.h"
 #include "symbole.h"
 
 class BasicBlock;
 class CFG;
-class DefFonction;
 
 
 //! The class for one 3-address instruction
@@ -114,9 +114,14 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(DefFonction* ast);
+	CFG(tree::ParseTree* ast) {
+		this->ast = ast;
+		nextBBnumber = 0;
+		nextFreeSymbolIndex = 0;
+		current_bb = nullptr;
+	};
 
-	DefFonction* ast; /**< The AST this CFG comes from */
+	tree::ParseTree* ast; /**< The AST this CFG comes from */
 	
 	void add_bb(BasicBlock* bb); 
 
