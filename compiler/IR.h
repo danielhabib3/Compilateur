@@ -113,12 +113,7 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(tree::ParseTree* ast) {
-		this->ast = ast;
-		nextBBnumber = 0;
-		nextFreeSymbolIndex = 0;
-		current_bb = nullptr;
-	};
+	CFG(tree::ParseTree* ast);
 
 	tree::ParseTree* ast; /**< The AST this CFG comes from */
 	
