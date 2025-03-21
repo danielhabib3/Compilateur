@@ -130,5 +130,116 @@ antlrcpp::Any CodeGenVisitor::visitExprUnary(ifccParser::ExprUnaryContext *ctx)
     this->visit(ctx->expr());
     if(ctx->OP->getText() == "-")
         std::cout << "    negl %eax\n" ;
+    else if(ctx->OP->getText() == "!")
+    {
+        std::cout << "    cmpl $0, %eax\n" ;
+        std::cout << "    sete %al\n" ;
+        std::cout << "    movzbl %al, %eax\n" ;
+    }
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *ctx)
+{
+
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = (_variables.size() + 1)*4;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+    std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+
+    this->visit(ctx->expr(1));
+
+    if(ctx->OP->getText() == ">")
+    {
+        std::cout << "    cmpl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+        std::cout << "  setg %al\n";
+        std::cout << "  movzbl %al, %eax\n";
+    }
+    else if(ctx->OP->getText() == "<")
+    {
+    
+        std::cout << "    cmpl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+        std::cout << "  setl %al\n";  // Utilisation de setl (set less) pour <
+        std::cout << "  movzbl %al, %eax\n";        
+    }
+
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ctx)
+{
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = (_variables.size() + 1)*4;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+    std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+
+    this->visit(ctx->expr(1));
+
+    std::cout << "    cmpl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+    if(ctx->OP->getText() == "==")
+        std::cout << "    sete %al\n" ;
+    else
+        std::cout << "    setne %al\n" ;
+    std::cout << "    movzbl %al, %eax\n" ;
+
+    return antlrcpp::Any();
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprAndBit(ifccParser::ExprAndBitContext *ctx)
+{
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = (_variables.size() + 1)*4;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+    std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+
+    this->visit(ctx->expr(1));
+
+    std::cout << "    andl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
+
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprOrBit(ifccParser::ExprOrBitContext *ctx)
+{
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = (_variables.size() + 1)*4;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+    std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+
+    this->visit(ctx->expr(1));
+
+    std::cout << "    orl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
+    
+    
+    return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprXorBit(ifccParser::ExprXorBitContext *ctx)
+{
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = (_variables.size() + 1)*4;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+    std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
+
+    this->visit(ctx->expr(1));
+
+    std::cout << "    xorl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
+
+
     return 0;
 }
