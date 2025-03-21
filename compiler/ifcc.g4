@@ -16,12 +16,17 @@ affectation : ID '=' expr ';' ;
 
 return_stmt: RETURN expr ';' ;
 
-expr : CONST                            # exprConst
-     | ID                               # exprID
-     | '(' expr ')'                     # exprParenthesis
-     | expr OP=('*' | '/' | '%') expr   # exprMulDivMod
-     | expr OP=('+' | '-') expr         # exprAddSub               
-     | OP=('+' | '-') expr              # exprUnary
+expr : CONST                                                # exprConst
+     | ID                                                   # exprID
+     | '(' expr ')'                                         # exprParenthesis
+     | OP=('+' | '-' | '!') expr                            # exprUnary
+     | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod
+     | expr OP=('+' | '-') expr                             # exprAddSub
+     | expr OP=('<' | '>') expr                             # exprCompSupInf
+     | expr OP=('!=' | '==') expr                           # exprCompEqual
+     | expr '&' expr                                        # exprAndBit
+     | expr '^' expr                                        # exprXorBit
+     | expr '|' expr                                        # exprOrBit            
     ;
       
 

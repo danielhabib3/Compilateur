@@ -231,6 +231,9 @@ for inputfilename in inputfilenames:
             dir_name = os.path.dirname(old_path)
             filename = os.path.basename(old_path)
 
+            # # Enlever tout jusqu'à avoir un underscore, mais garder le underscore
+            # filename = '_' + filename.split('_', 1)[-1]
+
             # Nouveau nom avec un numéro (par exemple 3)
             new_filename = str(max + 1) + filename
 
