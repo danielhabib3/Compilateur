@@ -5,16 +5,12 @@
 
 class IRVisitor : public ifccBaseVisitor {
     public:
-        IRVisitor() {
-            _cfg = nullptr;
+        IRVisitor(tree::ParseTree* ast) {
+            _cfg = CFG(ast);
         };
 
         CFG* getCFG() {
             return _cfg;
-        }
-
-        void setCFG(CFG* cfg) {
-            _cfg = cfg;
         }
 
         virtual antlrcpp::Any visitAxiom(ifccParser::AxiomContext *ctx) override;

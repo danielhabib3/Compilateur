@@ -87,6 +87,7 @@ class BasicBlock {
 	void add_IRInstr(IRInstr::Operation op, vector<string> params);
 
 	// No encapsulation whatsoever here. Feel free to do better.
+	BasicBlock* source; /**< pointer to the unique predecessor of this basic block */
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
 	string label; /**< label of the BB, also will be the label in the generated code */
@@ -113,7 +114,11 @@ class BasicBlock {
  */
 class CFG {
  public:
-	CFG(tree::ParseTree* ast);
+	CFG(tree::ParseTree* ast) {
+		this->ast = ast;
+		nextBBnumber = 0;
+		current_bb = nullptr;
+	};
 
 	tree::ParseTree* ast; /**< The AST this CFG comes from */
 	
