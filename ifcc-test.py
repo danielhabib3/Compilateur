@@ -211,11 +211,11 @@ def extract_test_numbers(file_paths):
     return test_numbers
 
 max = 0
-for inputfilename in inputfilenames:
-    if(len(extract_test_numbers([inputfilename])) == 1):
-        num_fichier = extract_test_numbers([inputfilename])[0]
-        if(num_fichier >= max):
-            max = num_fichier
+# for inputfilename in inputfilenames:
+#     if(len(extract_test_numbers([inputfilename])) == 1):
+#         num_fichier = extract_test_numbers([inputfilename])[0]
+#         if(num_fichier >= max):
+#             max = num_fichier
 
 new_inputfilenames = []
 ## Check that we actually can read these files. Our goal is to
@@ -225,30 +225,30 @@ for inputfilename in inputfilenames:
         f=open(inputfilename,"r")
 
         old_path = inputfilename
-        if(len(extract_test_numbers([old_path])) == 0):
+        # if(len(extract_test_numbers([old_path])) == 0):
 
-            # Extraire le dossier et le nom du fichier
-            dir_name = os.path.dirname(old_path)
-            filename = os.path.basename(old_path)
+        # Extraire le dossier et le nom du fichier
+        dir_name = os.path.dirname(old_path)
+        filename = os.path.basename(old_path)
 
-            # # Enlever tout jusqu'à avoir un underscore, mais garder le underscore
-            # filename = '_' + filename.split('_', 1)[-1]
+        # Enlever tout jusqu'à avoir un underscore, mais garder le underscore
+        filename = '_' + filename.split('_', 1)[-1]
 
-            # Nouveau nom avec un numéro (par exemple 3)
-            new_filename = str(max + 1) + filename
+        # Nouveau nom avec un numéro (par exemple 3)
+        new_filename = str(max + 1) + filename
 
-            # Nouveau chemin complet
-            new_path = os.path.join(dir_name, new_filename)
+        # Nouveau chemin complet
+        new_path = os.path.join(dir_name, new_filename)
 
-            # Renommer le fichier
-            os.rename(old_path, new_path)
+        # Renommer le fichier
+        os.rename(old_path, new_path)
 
-            max = max + 1
+        max = max + 1
 
-        if(len(extract_test_numbers([old_path])) == 0):
-            new_inputfilenames.append(new_path)
-        else:
-            new_inputfilenames.append(old_path)
+        # if(len(extract_test_numbers([old_path])) == 0):
+        new_inputfilenames.append(new_path)
+        # else:
+        #     new_inputfilenames.append(old_path)
         f.close()
     except Exception as e:
         print("error: "+e.args[1]+": "+inputfilename)
