@@ -304,11 +304,57 @@ if args.debug:
 ##            otherwise, this is a fail.
 
 all_ok=True
+last_folder = last_subfolder = ""
+current_folder = current_subfolder = ""
+
+special_folders = ["NotImplementedYet", "TestsOK", "WillNeverBeImplemented"]
+special_sub_folders = ["TestsOK-Valid","TestsOK-Invalid"]
+
+displayed_categories = set() # Pour savoir si on a déjà affiché un message comme quoi on commence un certain type de test
+
+test_results = {
+    "NotImplementedYet": {"success": 0, "failure": 0},
+    "TestsOK": {"success": 0, "failure": 0},
+    "WillNeverBeImplemented": {"success": 0, "failure": 0}
+}
+
+print(f"\nSTART RUNNING TESTS ")
 
 for jobname in jobs:
     os.chdir(f'{pld_base_dir}/ifcc-test-output')
+    
+    for folder in special_folders:
+        if folder in jobname and folder not in displayed_categories:
+            last_folder = current_folder
+            current_folder = folder
+            # Affichage recap last_folder
+            if last_folder != "" :
+                print(f"\n==== Summary of Tests for {last_folder}  ===")
+                print(f"{test_results[last_folder]["success"]} success, {test_results[last_folder]["failure"]} failures")
 
-    print('TEST-CASE: '+jobname)
+            print("\n----------------------------------------------")
+            print(f"\nStarting {current_folder}\n")
+            displayed_categories.add(folder)
+            break
+
+    for subfolder in special_sub_folders:
+        if subfolder in jobname and subfolder not in displayed_categories:
+            last_subfolder = current_subfolder
+            current_subfolder = subfolder
+
+            if last_subfolder != "" : print()
+
+            print(f"Starting {current_subfolder}\n")
+            displayed_categories.add(subfolder)
+            break
+
+    # Enlever dans le chemin du test qui est affiché la partie correspondant au Folder (car redondant)
+    parts = jobname.split("-")  
+    # Fixe une largeur pour les noms des tests
+    test_case_name = f"TEST-CASE: {parts[-1]}"
+    print(f"{test_case_name:<70}", end=" ")  # Ici, <50 indique que le texte sera aligné à gauche avec une largeur de 50 caractères
+
+    
     os.chdir(jobname)
     
     ## Reference compiler = GCC
@@ -324,18 +370,23 @@ for jobname in jobs:
     ## IFCC compiler
     ifccstatus=run_command(f'{pld_base_dir}/compiler/ifcc input.c > asm-ifcc.s', 'ifcc-compile.txt')
     
+    folder = jobname.split('-')[3]
+
     if gccstatus != 0 and ifccstatus != 0:
+        test_results[folder]["success"] += 1
         ## ifcc correctly rejects invalid program -> test-case ok
-        print("TEST OK")
+        print(f"{'TEST OK':<12}")
         continue
     elif gccstatus != 0 and ifccstatus == 0:
+        test_results[folder]["failure"] += 1
         ## ifcc wrongly accepts invalid program -> error
-        print("TEST FAIL (your compiler accepts an invalid program)")
+        print(f"{'TEST FAIL':<12} (your compiler accepts an invalid program)")
         all_ok=False
         continue
     elif gccstatus == 0 and ifccstatus != 0:
+        test_results[folder]["failure"] += 1
         ## ifcc wrongly rejects valid program -> error
-        print("TEST FAIL (your compiler rejects a valid program)")
+        print(f"{'TEST FAIL':<12} (your compiler rejects a valid program)")
         all_ok=False
         if args.verbose:
             dumpfile("asm-ifcc.s")       # stdout of ifcc
@@ -345,7 +396,8 @@ for jobname in jobs:
         ## ifcc accepts to compile valid program -> let's link it
         ldstatus=run_command("gcc -o exe-ifcc asm-ifcc.s", "ifcc-link.txt")
         if ldstatus:
-            print("TEST FAIL (your compiler produces incorrect assembly)")
+            test_results[folder]["failure"] += 1
+            print(f"{'TEST FAIL':<12} (your compiler produces incorrect assembly)")
             all_ok=False
             if args.verbose:
                 dumpfile("asm-ifcc.s")
@@ -357,7 +409,8 @@ for jobname in jobs:
         
     run_command("./exe-ifcc", "ifcc-execute.txt")
     if open("gcc-execute.txt").read() != open("ifcc-execute.txt").read() :
-        print("TEST FAIL (different results at execution)")
+        test_results[folder]["failure"] += 1
+        print(f"{'TEST FAIL':<12} (different results at execution)")
         all_ok=False
 
         if args.verbose:
@@ -368,7 +421,14 @@ for jobname in jobs:
         continue
 
     ## last but not least
-    print("TEST OK")
+    test_results[folder]["success"] += 1
+    print(f"{'TEST OK':<12}")
+
+print("\n----------------------------------------------\n")
+
+print("\n==== Summary of Tests ===\n")
+for folder, results in test_results.items():
+    print(f"{folder}: {results['success']} success, {results['failure']} failures")
 
 if not (all_ok or args.verbose):
-    print("Some test-cases failed. Run ifcc-test.py with option '--verbose' for more detailed feedback.")
+    print("\nSome test-cases failed. Run ifcc-test.py with option '--verbose' for more detailed feedback.")
