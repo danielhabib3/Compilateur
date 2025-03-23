@@ -19,7 +19,7 @@ return_stmt: RETURN expr ';' ;
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
      | '(' expr ')'                                         # exprParenthesis
-     | OP=('+' | '-' | '!') expr                            # exprUnary
+     | OP=('-' | '!') expr                                  # exprUnary
      | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod
      | expr OP=('+' | '-') expr                             # exprAddSub
      | expr OP=('<' | '>') expr                             # exprCompSupInf
