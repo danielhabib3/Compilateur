@@ -370,7 +370,7 @@ for jobname in jobs:
     ## IFCC compiler
     ifccstatus=run_command(f'{pld_base_dir}/compiler/ifcc input.c > asm-ifcc.s', 'ifcc-compile.txt')
     
-    folder = jobname.split('-')[3]
+    folder = current_folder
 
     if gccstatus != 0 and ifccstatus != 0:
         test_results[folder]["success"] += 1
