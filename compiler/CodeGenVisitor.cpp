@@ -22,7 +22,15 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+/*antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+{
+    this->visit(ctx->expr());
+    infosVariable infosV = _variables[ctx->ID()->getText()];
+    std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
+    return 0;
+}*/
+
+antlrcpp::Any CodeGenVisitor::visitExprAssign(ifccParser::ExprAssignContext *ctx)
 {
     this->visit(ctx->expr());
     infosVariable infosV = _variables[ctx->ID()->getText()];
