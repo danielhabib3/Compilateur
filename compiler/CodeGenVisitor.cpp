@@ -54,6 +54,14 @@ antlrcpp::Any CodeGenVisitor::visitExprConst(ifccParser::ExprConstContext *ctx)
     return 0;
 }
 
+antlrcpp::Any CodeGenVisitor::visitExprChar(ifccParser::ExprCharContext *ctx)
+{
+    char c = ctx->CHAR()->getText()[1]; // extract the character between the quotes
+    int ascii = (int)c;
+    std::cout << "    movl $" << ascii << ", %eax\n";
+    return nullptr;
+}
+
 antlrcpp::Any CodeGenVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
 {
     this->visit(ctx->expr(0));
