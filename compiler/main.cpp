@@ -91,9 +91,10 @@ int main(int argn, const char **argv)
   }
 
   
-  CodeGenVisitor cgv;
-  cgv.setVariables(vv.getVariables());
-  cgv.visit(tree);
+  // CodeGenVisitor cgv;
+  // cgv.setVariables(vv.getVariables());
+  // cgv.visit(tree);
+  IRVisitor irv(tree);
 
   return 0;
 }
