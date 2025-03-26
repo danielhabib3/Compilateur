@@ -36,6 +36,7 @@ class  CodeGenVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprAndBit(ifccParser::ExprAndBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprOrBit(ifccParser::ExprOrBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprXorBit(ifccParser::ExprXorBitContext *ctx) override ;
+        virtual antlrcpp::Any visitFunc_call(ifccParser::Func_callContext *ctx) override ;
 
         
         private:

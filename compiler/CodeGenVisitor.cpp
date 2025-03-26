@@ -243,3 +243,25 @@ antlrcpp::Any CodeGenVisitor::visitExprXorBit(ifccParser::ExprXorBitContext *ctx
 
     return 0;
 }
+
+
+antlrcpp::Any CodeGenVisitor::visitFunc_call(ifccParser::Func_callContext *ctx) {
+    string func_name = ctx->ID()->getText();
+
+    std::vector<std::string> argRegisters = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+
+    for (size_t i = 0; i < ctx->expr().size(); ++i)
+    {
+        if (i >= argRegisters.size())
+        {
+            cerr << "Error: too many arguments\n";
+            exit(1);
+        }
+
+        this->visit(ctx->expr(i)); 
+        cout << "    movl %eax, " << argRegisters[i] << "\n";
+    }
+
+    cout << "    call " << func_name << "\n";
+    return 0;
+}

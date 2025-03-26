@@ -6,13 +6,15 @@ prog : type 'main' '(' ')' '{' block return_stmt '}' ;
 
 block : (instruction)* ;
 
-instruction : declaration | affectation ;
+instruction : declaration | affectation | func_call ';' ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
 affectationDeclaration : ID ('=' expr)? ;
 
 affectation : ID '=' expr ';' ;
+
+func_call : ID '(' (expr (',' expr)*)? ')' ;
 
 return_stmt: RETURN expr ';' ;
 
