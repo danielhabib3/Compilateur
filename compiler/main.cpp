@@ -8,6 +8,8 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 #include "VariableVisitor.h"
+#include "IR.h"
+#include "IRVisitor.h"
 
 #include "CodeGenVisitor.h"
 
@@ -95,6 +97,10 @@ int main(int argn, const char **argv)
   // cgv.setVariables(vv.getVariables());
   // cgv.visit(tree);
   IRVisitor irv(tree);
+  irv.setVariables(vv.getVariables());
+  irv.visit(tree);
+  CFG* cfg = irv.getCFG();
+  cfg->gen_asm(cout);
 
   return 0;
 }

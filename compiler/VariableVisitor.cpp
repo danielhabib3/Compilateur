@@ -40,8 +40,12 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
         }
 
         // cout << "Declaration : Visit Declaration end before visiting expr" << endl;
-        if(expression != nullptr)
+        if(expression != nullptr) {
+            infosVariable infos = _variables[variableName];
+            infos.set = 1;
+            _variables[variableName] = infos;
             this->visit(expression);
+        }
         // cout << "Declaration : Visit Declaration end after visiting expr" << endl;
 
     }

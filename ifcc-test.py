@@ -330,7 +330,7 @@ for jobname in jobs:
             # Affichage recap last_folder
             if last_folder != "" :
                 print(f"\n==== Summary of Tests for {last_folder}  ===")
-                print(f"{test_results[last_folder]["success"]} success, {test_results[last_folder]["failure"]} failures")
+                print(f"{test_results[last_folder]['success']} success, {test_results[last_folder]['failure']} failures")
 
             print("\n----------------------------------------------")
             print(f"\nStarting {current_folder}\n")

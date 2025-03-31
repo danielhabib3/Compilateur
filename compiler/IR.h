@@ -139,11 +139,7 @@ class CFG {
 
 class IRInstrAffect : public IRInstr {
 	public:
-	   IRInstrAffect(BasicBlock* bb_, string dest, string op1) {
-		   this->bb = bb_;
-		   this->dest = dest;
-		   this->op1 = op1;
-	   };
+	   IRInstrAffect(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
 	   void gen_asm(ostream &o);
 	protected:
 	   string dest; // partie gauche de l'affectation
@@ -152,12 +148,7 @@ class IRInstrAffect : public IRInstr {
    
 class IRInstrAdd : public IRInstr {
 	public:
-		IRInstrAdd(BasicBlock* bb_, string dest, string op1, string op2) {
-			this->bb = bb_;
-			this->dest = dest;
-			this->op1 = op1;
-			this->op2 = op2;
-		};
+		IRInstrAdd(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 		void gen_asm(ostream &o);
 	protected:
 		string dest;
@@ -167,12 +158,7 @@ class IRInstrAdd : public IRInstr {
 
 class IRInstrSub : public IRInstr {
 	public:
-		IRInstrSub(BasicBlock* bb_, string dest, string op1, string op2) {
-			this->bb = bb_;
-			this->dest = dest;
-			this->op1 = op1;
-			this->op2 = op2;
-		};
+		IRInstrSub(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 		void gen_asm(ostream &o);
 	protected:
 		string dest;
@@ -182,12 +168,7 @@ class IRInstrSub : public IRInstr {
 
 class IRInstrMul : public IRInstr {
 public:
-	IRInstrMul(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrMul(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -197,12 +178,7 @@ protected:
 
 class IRInstrMod : public IRInstr {
 public:
-	IRInstrMod(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrMod(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -212,12 +188,7 @@ protected:
 
 class IRInstrDiv : public IRInstr {
 public:
-	IRInstrDiv(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrDiv(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -227,12 +198,7 @@ protected:
 
 class IRInstrCmpEQ : public IRInstr {
 public:
-	IRInstrCmpEQ(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrCmpEQ(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -242,12 +208,7 @@ protected:
 
 class IRInstrCmpNE : public IRInstr {
 public:
-	IRInstrCmpNE(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrCmpNE(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -257,12 +218,7 @@ protected:
 
 class IRInstrCmpLT : public IRInstr {
 public:
-	IRInstrCmpLT(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrCmpLT(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -272,12 +228,7 @@ protected:
 
 class IRInstrCmpGT : public IRInstr {
 public:
-	IRInstrCmpGT(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrCmpGT(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -287,12 +238,7 @@ protected:
 
 class IRInstrAndBit : public IRInstr {
 public:
-	IRInstrAndBit(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrAndBit(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -302,12 +248,7 @@ protected:
 
 class IRInstrOrBit : public IRInstr {
 public:
-	IRInstrOrBit(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrOrBit(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -317,12 +258,7 @@ protected:
 
 class IRInstrXorBit : public IRInstr {
 public:
-	IRInstrXorBit(BasicBlock* bb_, string dest, string op1, string op2) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-		this->op2 = op2;
-	};
+	IRInstrXorBit(BasicBlock* bb_, string dest, string op1, string op2) : IRInstr(bb_), dest(dest), op1(op1), op2(op2) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -332,11 +268,7 @@ protected:
 
 class IRInstrNotUnary : public IRInstr {
 public:
-	IRInstrNotUnary(BasicBlock* bb_, string dest, string op1) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-	};
+	IRInstrNotUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
@@ -345,11 +277,7 @@ protected:
 
 class IRInstrSubUnary : public IRInstr {
 public:
-	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) {
-		this->bb = bb_;
-		this->dest = dest;
-		this->op1 = op1;
-	};
+	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
 	void gen_asm(ostream &o);
 protected:
 	string dest;
