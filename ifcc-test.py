@@ -261,7 +261,8 @@ for inputfilename in inputfilenames:
         print("error: "+e.args[1]+": "+inputfilename)
         exit(1)
 
-inputfilenames = new_inputfilenames
+if rename:
+    inputfilenames = new_inputfilenames
 ## We're going to copy every test-case in its own subdir of ifcc-test-output
 os.mkdir(pld_base_dir+'/ifcc-test-output')
 
