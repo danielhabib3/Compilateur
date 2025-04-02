@@ -304,4 +304,66 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     return 0;
  }
- 
+
+ antlrcpp::Any IRVisitor::visitTest(ifccParser::TestContext *ctx)
+ {
+    string test_true_bb_label = ".true" + to_string(current_test);
+    BasicBlock* test_true_bb = new BasicBlock(_cfg, test_true_bb_label, nullptr, nullptr);
+
+    BasicBlock* test_false_bb;
+
+    string test_endif_bb_label = ".endif" + to_string(current_test);
+    BasicBlock* test_endif_bb = new BasicBlock(_cfg, test_endif_bb_label, nullptr, nullptr);
+    
+
+    _cfg->current_bb->exit_true = test_true_bb;
+
+    // Quand il y a un if le exit_true et exit_false ne sont pas nullptr
+    // si il y a un if sans else le exit_false pointe vers le endif sinon il pointe vers le bloc false
+    if(ctx->ELSE() != nullptr)
+    {
+        string test_false_bb_label = ".false" + to_string(current_test);
+        test_false_bb = new BasicBlock(_cfg, test_false_bb_label, nullptr, nullptr);
+
+        test_false_bb->exit_true = test_endif_bb;
+
+        _cfg->current_bb->exit_false = test_false_bb;
+    }
+    else
+    {
+        _cfg->current_bb->exit_false = test_endif_bb;
+    }
+
+    this->visit(ctx->expr());
+    infosVariable infos;
+    infos.location = (_variables.size() + 1);
+    string test_var_name = "test" + to_string(current_temp);
+    _variables[test_var_name] = infos;
+    current_temp++;
+    _cfg->current_bb->test_var_name = test_var_name;
+    _cfg->current_bb->test_var_location = infos.location;
+
+    //std::cout << "    movl %eax, -"<<infos.location<<"(%rbp)\n" ;
+    IRInstr * instr = new IRInstrAffect(_cfg->current_bb, to_string(infos.location), "0");
+    _cfg->current_bb->add_IRInstr(instr);
+
+    test_true_bb->exit_true = test_endif_bb;
+
+    _cfg->add_bb(test_true_bb);
+    if(ctx->ELSE() != nullptr) {
+        _cfg->add_bb(test_false_bb);
+    }
+    _cfg->add_bb(test_endif_bb);
+
+    current_test++;
+
+    _cfg->current_bb = test_true_bb;
+    this->visit(ctx->block(0));
+    if(ctx->ELSE() != nullptr) {
+        _cfg->current_bb = test_false_bb;
+        this->visit(ctx->block(1));
+    }
+
+    
+    return 0;
+ }

@@ -13,28 +13,35 @@ string to_x86(string s) {
 }
 
 void BasicBlock::gen_asm(ostream &o) {
-    // o << label << ":\n"; 
     for (IRInstr* instr : instrs) {
         instr->gen_asm(o);
     }
+
+    // if  exit_true  is a  nullptr, 
+    //     the epilogue is generated
+    // else if exit_false is a nullptr, 
+    //     an unconditional jmp to the exit_true branch is generated
+    // else (we have two successors, hence a branch)
+    //         an instruction comparing the value of test_var_name to true is generated,
+    //         followed by a conditional branch to the exit_false branch,
+    //         followed by an unconditional branch to the exit_true branch
     
-    if (exit_true == nullptr) {
-        // o << "\tleave\n\tret\n";
-    } else if (exit_false == nullptr) {
-        o << "\tjmp " << exit_true->label << "\n";
-    } else {
-        o << "\tcmp $0, " << test_var_name << "\n";
-        o << "\tje " << exit_false->label << "\n";
-        o << "\tjmp " << exit_true->label << "\n";
+    if(exit_true != nullptr && exit_false != nullptr) {
+        o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
+        o << "    je " + exit_false->label + "\n";
+        exit_true->gen_asm(o);
+        o << "    jmp " + exit_true->exit_true->label + "\n";
+        o << exit_false->label << ":\n";
+        exit_false->gen_asm(o);
+        o << exit_true->exit_true->label << ":\n";
+        exit_true->exit_true->gen_asm(o);
     }
+
 }
 
 void CFG::gen_asm(ostream &o) {
     gen_asm_prologue(o);
-    for (BasicBlock* bb : bbs) {
-        // o << bb->label << ":\n";
-        bb->gen_asm(o);
-    }
+    bbs[0]->gen_asm(o);
     gen_asm_epilogue(o);
 }
 
@@ -56,116 +63,112 @@ void CFG::gen_asm_epilogue(ostream &o) {
 }
 
 void IRInstrAffect::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    movl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    movl " << new_op1 << ", " << new_dest << "\n";
 }
 
 void IRInstrAdd::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    addl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    addl " << new_op1 << ", " << new_dest << "\n";
 }
 
 void IRInstrSub::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    movl " << dest << ", " << op2 << "\n";
-    o << "    movl " << op1 << ", " << dest << "\n";
-    o << "    subl " << op2 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    string new_op2 = to_x86(op2);
+    o << "    movl " << new_dest << ", " << new_op2 << "\n";
+    o << "    movl " << new_op1 << ", " << new_dest << "\n";
+    o << "    subl " << new_op2 << ", " << new_dest << "\n";
 }
 
 void IRInstrMul::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    imull " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    imull " << new_op1 << ", " << new_dest << "\n";
 }
 
 void IRInstrDiv::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    movl " << dest << ", " << op2 << "\n";
-    o << "    movl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    string new_op2 = to_x86(op2);
+    o << "    movl " << new_dest << ", " << new_op2 << "\n";
+    o << "    movl " << new_op1 << ", " << new_dest << "\n";
     o << "    cltd\n";
-    o << "    idivl " << op2 << "\n";
+    o << "    idivl " << new_op2 << "\n";
 }
- 
 
 void IRInstrMod::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    movl " << dest << ", " << op2 << "\n";
-    o << "    movl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    string new_op2 = to_x86(op2);
+    o << "    movl " << new_dest << ", " << new_op2 << "\n";
+    o << "    movl " << new_op1 << ", " << new_dest << "\n";
     o << "    cltd\n";
-    o << "    idivl " << op2 << "\n";
-    o << "    movl %edx, %eax\n" ;  
+    o << "    idivl " << new_op2 << "\n";
+    o << "    movl %edx, " << new_dest << "\n";
 }
 
 void IRInstrCmpEQ::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    cmpl " << dest << ", " << op1 << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl " << new_dest << ", " << new_op1 << "\n";
     o << "    sete %al\n";
-    o << "    movzbl %al, " << dest << "\n";
+    o << "    movzbl %al, " << new_dest << "\n";
 }
 
 void IRInstrCmpNE::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    cmpl " << dest << ", " << op1 << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl " << new_dest << ", " << new_op1 << "\n";
     o << "    setne %al\n";
-    o << "    movzbl %al, " << dest << "\n";
+    o << "    movzbl %al, " << new_dest << "\n";
 }
+
 void IRInstrCmpLT::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    cmpl " << dest << ", " << op1 << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl " << new_dest << ", " << new_op1 << "\n";
     o << "    setl %al\n";
-    o << "    movzbl %al, " << dest << "\n";
+    o << "    movzbl %al, " << new_dest << "\n";
 }
 
 void IRInstrXorBit::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    xorl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    xorl " << new_op1 << ", " << new_dest << "\n";
 }
 
-void IRInstrNotUnary::gen_asm(ostream &o){
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    cmpl $0, " << op1 << "\n";
+void IRInstrNotUnary::gen_asm(ostream &o) {
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl $0, " << new_op1 << "\n";
     o << "    sete %al\n";
-    o << "    movzbl %al, " << dest << "\n";	
-
+    o << "    movzbl %al, " << new_dest << "\n";
 }
 
-void IRInstrSubUnary::gen_asm(ostream &o){
-    op1 = to_x86(op1);
-    o << "    negl " << op1 << "\n";
+void IRInstrSubUnary::gen_asm(ostream &o) {
+    string new_op1 = to_x86(op1);
+    o << "    negl " << new_op1 << "\n";
 }
 
 void IRInstrCmpGT::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    o << "    cmpl " << dest << ", " << op1 << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl " << new_dest << ", " << new_op1 << "\n";
     o << "    setg %al\n";
-    o << "    movzbl %al, " << dest << "\n";
+    o << "    movzbl %al, " << new_dest << "\n";
 }
 
 void IRInstrAndBit::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    andl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    andl " << new_op1 << ", " << new_dest << "\n";
 }
 
 void IRInstrOrBit::gen_asm(ostream &o) {
-    dest = to_x86(dest);
-    op1 = to_x86(op1);
-    op2 = to_x86(op2);
-    o << "    orl " << op1 << ", " << dest << "\n";
+    string new_dest = to_x86(dest);
+    string new_op1 = to_x86(op1);
+    o << "    orl " << new_op1 << ", " << new_dest << "\n";
 }

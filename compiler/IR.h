@@ -59,11 +59,10 @@ Possible optimization:
 
 class BasicBlock {
  public:
-	BasicBlock(CFG* cfg, string entry_label, BasicBlock* s, BasicBlock* exit_t, BasicBlock* exit_f, string test_var_name = "") {
+	BasicBlock(CFG* cfg, string entry_label, BasicBlock* exit_t, BasicBlock* exit_f, string test_var_name = "") {
 		this->cfg = cfg;
 		this->exit_true = exit_t;
 		this->exit_false = exit_f;
-		this->source = s;
 		this->label = entry_label;
 		this->test_var_name = test_var_name;
 		this->instrs = vector<IRInstr*>();
@@ -75,7 +74,6 @@ class BasicBlock {
 	};
 
 	// No encapsulation whatsoever here. Feel free to do better.
-	BasicBlock* source; /**< pointer to the unique predecessor of this basic block */
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
 	string label; /**< label of the BB, also will be the label in the generated code */
@@ -83,6 +81,7 @@ class BasicBlock {
 	vector<IRInstr*> instrs; /** < the instructions themselves. */
   	string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
 													 store here the name of the variable that holds the value of expr */
+	int test_var_location;
  protected:
 
  
@@ -127,6 +126,16 @@ class CFG {
 	void gen_asm(ostream& o);
 	void gen_asm_prologue(ostream& o);
 	void gen_asm_epilogue(ostream& o);
+
+	void affiche_cfg(ostream &o) {
+		cout << "________________________________________" << endl;
+		for (auto bb : bbs) {
+			string t = bb->exit_true != nullptr ? bb->exit_true->label : "nullptr";
+			string f = bb->exit_false != nullptr ? bb->exit_false->label : "nullptr";
+			o << bb->label << " : " << t << ", " << f << "\n";
+		}
+		cout << "________________________________________" << endl;
+	}
 
 	BasicBlock* current_bb; /**< The current basic block being built */
 

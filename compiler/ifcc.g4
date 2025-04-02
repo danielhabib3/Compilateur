@@ -2,11 +2,13 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : type 'main' '(' ')' '{' block return_stmt '}' ;
+prog : type 'main' '(' ')' block;
 
-block : (instruction)* ;
+block : '{' (instruction)* '}' ;
 
-instruction : declaration | affectation ;
+instruction : declaration | affectation | return_stmt | block | test ;
+
+test : IF '(' expr ')' block (ELSE block)? ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -32,7 +34,8 @@ expr : CONST                                                # exprConst
 
 type : 'int' ;
 
-
+IF: 'if' ;
+ELSE : 'else' ;
 RETURN : 'return' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 

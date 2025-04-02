@@ -1,0 +1,18 @@
+digraph G {
+    node [shape=ellipse];
+
+    main -> true0;
+    main -> false0;
+
+    true0 -> true1;
+    true0 -> false1;
+
+    false0 -> endif0;
+    
+    endif0;
+    
+    true1 -> endif1;
+    false1 -> endif1;
+
+    endif1;
+}

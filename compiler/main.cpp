@@ -96,6 +96,7 @@ int main(int argn, const char **argv)
   irv.setVariables(vv.getVariables());
   irv.visit(tree);
   CFG* cfg = irv.getCFG();
+  cfg->affiche_cfg(cout);
   cfg->gen_asm(cout);
 
   return 0;

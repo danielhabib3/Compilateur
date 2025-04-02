@@ -13,10 +13,11 @@ class IRVisitor : public ifccBaseVisitor {
             _cfg = new CFG();
             _ast = ast;
             
-		    _cfg->add_bb(new BasicBlock(_cfg, "main", nullptr, nullptr, nullptr));
+		    _cfg->add_bb(new BasicBlock(_cfg, "main", nullptr, nullptr));
             _cfg->current_bb = _cfg->get_bbs()[0];
 
             current_temp = 0;
+            current_test = 0;
         };
 
         ~IRVisitor() {
@@ -45,10 +46,12 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprAndBit(ifccParser::ExprAndBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprOrBit(ifccParser::ExprOrBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprXorBit(ifccParser::ExprXorBitContext *ctx) override ;
+        virtual antlrcpp::Any visitTest(ifccParser::TestContext *ctx) override ;
     
     protected:
         CFG* _cfg;
         antlr4::tree::ParseTree* _ast;
         map<string, infosVariable> _variables;
         int current_temp;
+        int current_test;
 };
