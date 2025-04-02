@@ -5,6 +5,7 @@ compiler/generated/
 compiler/build/
 compiler/*.dot
 compiler/*.png
+compiler/output.png
 
 
 # Prerequisites
