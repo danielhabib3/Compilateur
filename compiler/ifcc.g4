@@ -10,6 +10,8 @@ instruction : declaration | expr ';'| func_call ';' ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
+functiondeclaration : type declarationfunction '(' (expr (',' expr)*)? ')' ((block) | ';') ;
+
 affectationDeclaration : ID ('=' expr)? ;
 
 affectation : ID '=' expr ';' ;

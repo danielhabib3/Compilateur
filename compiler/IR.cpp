@@ -125,3 +125,21 @@ void IRInstrOrBit::gen_asm(ostream &o) {
     o << "    orl " << op2 << ", " << op1 << "\n";
     o << "    movl " << op1 << ", " << dest << "\n";
 }
+
+void IRInstrFunc_Call::gen_asm(std::ostream &o) {
+    std::vector<std::string> argRegisters = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+
+    for (size_t i = 0; i < args.size(); ++i) {
+        if (i >= argRegisters.size()) {
+            std::cerr << "Error: function call with more than 6 arguments not supported yet." << std::endl;
+            exit(1);
+        }
+        o << "    movl " << args[i] << ", " << argRegisters[i] << std::endl;
+    }
+
+    o << "    call " << func_name << std::endl;
+
+    if (dest != "") {
+        o << "    movl %eax, " << dest << std::endl;
+    }
+}

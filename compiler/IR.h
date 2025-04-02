@@ -284,4 +284,15 @@ protected:
 	string op1;
 };
 
+class IRInstrFunc_Call : public IRInstr {
+	public:
+		IRInstrFunc_Call(BasicBlock* bb_, std::string func_name, std::vector<std::string> args, std::string dest) : IRInstr(bb_), func_name(func_name), args(args), dest(dest){};
+		void gen_asm(ostream &o);
+	protected:
+		std::string func_name;
+		std::vector<std::string> args;
+		std::string dest;
+	
+	};
+
 #endif

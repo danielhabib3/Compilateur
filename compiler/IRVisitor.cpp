@@ -280,3 +280,24 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     return 0;
  }
  
+ antlrcpp::Any IRVisitor::visitFunc_call(ifccParser::Func_callContext *ctx) {
+    string func_name = ctx->ID()->getText();
+    vector<string> argVars;
+
+    for (size_t i = 0; i < ctx->expr().size(); ++i) {
+        std::any res = this->visit(ctx->expr(i));
+        string argName = std::any_cast<string>(res);
+        argVars.push_back(argName);
+    }
+
+    string tempVar = "!temp" + to_string(current_temp++);
+    infosVariable infos;
+    infos.location = (_variables.size() + 1) * 4;
+    _variables[tempVar] = infos;
+
+    IRInstr *instr = new IRInstrFunc_Call(_cfg->current_bb, func_name, argVars, tempVar);
+    _cfg->current_bb->add_IRInstr(instr);
+
+    return tempVar;
+}
+
