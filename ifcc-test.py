@@ -216,6 +216,11 @@ max = 0
 #         num_fichier = extract_test_numbers([inputfilename])[0]
 #         if(num_fichier >= max):
 #             max = num_fichier
+rename = False
+for inputfilename in inputfilenames:
+    if(len(extract_test_numbers([inputfilename])) == 0):
+        rename = True
+        break
 
 new_inputfilenames = []
 ## Check that we actually can read these files. Our goal is to
@@ -224,37 +229,40 @@ for inputfilename in inputfilenames:
     try:
         f=open(inputfilename,"r")
 
-        old_path = inputfilename
-        # if(len(extract_test_numbers([old_path])) == 0):
+        if rename:
+            old_path = inputfilename
+            # if(len(extract_test_numbers([old_path])) == 0):
 
-        # Extraire le dossier et le nom du fichier
-        dir_name = os.path.dirname(old_path)
-        filename = os.path.basename(old_path)
+            # Extraire le dossier et le nom du fichier
+            dir_name = os.path.dirname(old_path)
+            filename = os.path.basename(old_path)
 
-        # Enlever tout jusqu'à avoir un underscore, mais garder le underscore
-        filename = '_' + filename.split('_', 1)[-1]
+            # Enlever tout jusqu'à avoir un underscore, mais garder le underscore
+            filename = '_' + filename.split('_', 1)[-1]
 
-        # Nouveau nom avec un numéro (par exemple 3)
-        new_filename = str(max + 1) + filename
+            # Nouveau nom avec un numéro (par exemple 3)
+            new_filename = str(max + 1) + filename
 
-        # Nouveau chemin complet
-        new_path = os.path.join(dir_name, new_filename)
+            # Nouveau chemin complet
+            new_path = os.path.join(dir_name, new_filename)
 
-        # Renommer le fichier
-        os.rename(old_path, new_path)
+            # Renommer le fichier
+            os.rename(old_path, new_path)
 
-        max = max + 1
+            max = max + 1
 
-        # if(len(extract_test_numbers([old_path])) == 0):
-        new_inputfilenames.append(new_path)
-        # else:
-        #     new_inputfilenames.append(old_path)
+            # if(len(extract_test_numbers([old_path])) == 0):
+            new_inputfilenames.append(new_path)
+            # else:
+            #     new_inputfilenames.append(old_path)
+        
         f.close()
     except Exception as e:
         print("error: "+e.args[1]+": "+inputfilename)
         exit(1)
 
-inputfilenames = new_inputfilenames
+if rename:
+    inputfilenames = new_inputfilenames
 ## We're going to copy every test-case in its own subdir of ifcc-test-output
 os.mkdir(pld_base_dir+'/ifcc-test-output')
 
@@ -330,7 +338,7 @@ for jobname in jobs:
             # Affichage recap last_folder
             if last_folder != "" :
                 print(f"\n==== Summary of Tests for {last_folder}  ===")
-                print(f"{test_results[last_folder]["success"]} success, {test_results[last_folder]["failure"]} failures")
+                print(f"{test_results[last_folder]['success']} success, {test_results[last_folder]['failure']} failures")
 
             print("\n----------------------------------------------")
             print(f"\nStarting {current_folder}\n")

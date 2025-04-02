@@ -1,6 +1,7 @@
 #pragma once
 #include "generated/ifccBaseVisitor.h"
 #include "generated/ifccParser.h"
+#include "tree/ParseTree.h" // Ensure this header file defines tree::ParseTree
 #include "IR.h"
 #include <map>
 #include <string>
@@ -8,8 +9,8 @@
 
 class IRVisitor : public ifccBaseVisitor {
     public:
-        IRVisitor(tree::ParseTree* ast) {
-            _cfg = CFG();
+        IRVisitor(antlr4::tree::ParseTree* ast) {
+            _cfg = new CFG();
             _ast = ast;
             
 		    _cfg->add_bb(new BasicBlock(_cfg, "main", nullptr, nullptr, nullptr));
@@ -17,6 +18,10 @@ class IRVisitor : public ifccBaseVisitor {
 
             current_temp = 0;
         };
+
+        ~IRVisitor() {
+            delete _cfg;
+        }
 
         CFG* getCFG() {
             return _cfg;
@@ -28,6 +33,10 @@ class IRVisitor : public ifccBaseVisitor {
 
         // virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
         // virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
+        virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *ctx) override ;
+        virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override ;
+        virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override ;
+        virtual antlrcpp::Any visitExprConst(ifccParser::ExprConstContext *ctx) override ;
         virtual antlrcpp::Any visitExprAddSub(ifccParser::ExprAddSubContext *ctx) override ;
         virtual antlrcpp::Any visitExprMulDivMod(ifccParser::ExprMulDivModContext *ctx) override ;
         virtual antlrcpp::Any visitExprUnary(ifccParser::ExprUnaryContext *ctx) override ;
@@ -39,7 +48,7 @@ class IRVisitor : public ifccBaseVisitor {
     
     protected:
         CFG* _cfg;
-        tree::ParseTree* _ast;
+        antlr4::tree::ParseTree* _ast;
         map<string, infosVariable> _variables;
         int current_temp;
 };
