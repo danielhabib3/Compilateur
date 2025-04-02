@@ -75,7 +75,7 @@ cfg:
 	dot -Tpng fichier.dot -o output.png
 	rm -f fichier.dot
 	cat $(FILE)
-	eog output.png
+	feh output.png
 
 ##########################################
 # delete all machine-generated files
