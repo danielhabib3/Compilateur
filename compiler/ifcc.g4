@@ -4,7 +4,7 @@ axiom : prog EOF ;
 
 prog : type 'main' '(' ')' block;
 
-block : '{'instruction*'}' ;
+block : '{' (instruction)* '}' ; 
 
 instruction : declaration | affectation | return_stmt | block ;
 
