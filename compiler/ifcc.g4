@@ -2,11 +2,11 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : type 'main' '(' ')' '{' block return_stmt '}' ;
+prog : type 'main' '(' ')' block;
 
-block : (instruction)* ;
+block : '{'instruction*'}' ;
 
-instruction : declaration | affectation ;
+instruction : declaration | affectation | return_stmt | block ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
