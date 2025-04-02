@@ -11,7 +11,6 @@
 #include "IR.h"
 #include "IRVisitor.h"
 
-#include "CodeGenVisitor.h"
 
 using namespace antlr4;
 using namespace std;
@@ -93,9 +92,6 @@ int main(int argn, const char **argv)
   }
 
   
-  // CodeGenVisitor cgv;
-  // cgv.setVariables(vv.getVariables());
-  // cgv.visit(tree);
   IRVisitor irv(tree);
   irv.setVariables(vv.getVariables());
   irv.visit(tree);

@@ -23,7 +23,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
         {
             // cout << "Declaration : Adding variable : " << variableName << endl;
             infosVariable infos;
-            infos.location = (_variables.size() + 1)*4;
+            infos.location = (_variables.size() + 1);
             if(type == "int")
             {
                 infos.type = INT;
