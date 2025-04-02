@@ -13,4 +13,5 @@ int main() {
     else {
         a = 5;
     }
+    return a;
 }

@@ -128,13 +128,29 @@ class CFG {
 	void gen_asm_epilogue(ostream& o);
 
 	void affiche_cfg(ostream &o) {
-		cout << "________________________________________" << endl;
+		o << "digraph G {\n";
+		o << "    node [shape=ellipse];\n\n";
 		for (auto bb : bbs) {
-			string t = bb->exit_true != nullptr ? bb->exit_true->label : "nullptr";
-			string f = bb->exit_false != nullptr ? bb->exit_false->label : "nullptr";
-			o << bb->label << " : " << t << ", " << f << "\n";
+			string label = bb->label;
+			if (!label.empty() && label[0] == '.') {
+				label = label.substr(1); // Remove the leading '.'
+			}
+			if (bb->exit_true != nullptr) {
+				string exit_true_label = bb->exit_true->label;
+				if (!exit_true_label.empty() && exit_true_label[0] == '.') {
+					exit_true_label = exit_true_label.substr(1); // Remove the leading '.'
+				}
+				o << "    " << label << " -> " << exit_true_label << ";\n";
+			}
+			if (bb->exit_false != nullptr) {
+				string exit_false_label = bb->exit_false->label;
+				if (!exit_false_label.empty() && exit_false_label[0] == '.') {
+					exit_false_label = exit_false_label.substr(1); // Remove the leading '.'
+				}
+				o << "    " << label << " -> " << exit_false_label << ";\n";
+			}
 		}
-		cout << "________________________________________" << endl;
+		o << "}\n";
 	}
 
 	BasicBlock* current_bb; /**< The current basic block being built */

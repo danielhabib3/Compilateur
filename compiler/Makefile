@@ -67,6 +67,11 @@ gui:
 	javac -cp $(ANTLRJAR) -d build generated/*.java
 	java -cp $(ANTLRJAR):build org.antlr.v4.gui.TestRig ifcc axiom -gui $(FILE)
 
+cfg:
+	rm -f output.png
+	dot -Tpng fichier.dot -o output.png
+	rm -f fichier.dot
+
 ##########################################
 # delete all machine-generated files
 clean:

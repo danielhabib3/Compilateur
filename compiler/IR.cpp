@@ -33,8 +33,10 @@ void BasicBlock::gen_asm(ostream &o) {
         o << "    jmp " + exit_true->exit_true->label + "\n";
         o << exit_false->label << ":\n";
         exit_false->gen_asm(o);
-        o << exit_true->exit_true->label << ":\n";
-        exit_true->exit_true->gen_asm(o);
+        if(exit_false->label != exit_true->exit_true->label) {
+            o << exit_true->exit_true->label << ":\n";
+            exit_true->exit_true->gen_asm(o);
+        }
     }
 
 }

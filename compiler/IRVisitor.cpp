@@ -363,6 +363,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
         _cfg->current_bb = test_false_bb;
         this->visit(ctx->block(1));
     }
+    _cfg->current_bb = test_endif_bb;
 
     
     return 0;
