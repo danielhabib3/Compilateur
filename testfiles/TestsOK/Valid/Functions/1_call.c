@@ -1,4 +1,7 @@
 int main() {
-    printf("%d", 42);
+    int x=17;
+    int y=42;
+    int z = 'x';
+    putchar(z+1);
     return 0;
     }

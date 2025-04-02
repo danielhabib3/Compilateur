@@ -6,7 +6,7 @@ prog : type 'main' '(' ')' '{' block return_stmt '}' ;
 
 block : (instruction)* ;
 
-instruction : declaration | affectation | func_call ';' ;
+instruction : declaration | expr ';'| func_call ';' ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -19,6 +19,7 @@ func_call : ID '(' (expr (',' expr)*)? ')' ;
 return_stmt: RETURN expr ';' ;
 
 expr : CONST                                                # exprConst
+     | CHAR                                                 # exprChar
      | ID                                                   # exprID
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
@@ -28,7 +29,8 @@ expr : CONST                                                # exprConst
      | expr OP=('!=' | '==') expr                           # exprCompEqual
      | expr '&' expr                                        # exprAndBit
      | expr '^' expr                                        # exprXorBit
-     | expr '|' expr                                        # exprOrBit            
+     | expr '|' expr                                        # exprOrBit       
+     | ID '=' expr                                          # exprAssign
     ;
       
 
@@ -39,6 +41,7 @@ RETURN : 'return' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
 CONST : [0-9]+ ;
+CHAR : '\'' . '\'' ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;
 WS    : [ \t\r\n] -> channel(HIDDEN);

@@ -22,7 +22,15 @@ antlrcpp::Any CodeGenVisitor::visitProg(ifccParser::ProgContext *ctx)
     return 0;
 }
 
-antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+/*antlrcpp::Any CodeGenVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+{
+    this->visit(ctx->expr());
+    infosVariable infosV = _variables[ctx->ID()->getText()];
+    std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
+    return 0;
+}*/
+
+antlrcpp::Any CodeGenVisitor::visitExprAssign(ifccParser::ExprAssignContext *ctx)
 {
     this->visit(ctx->expr());
     infosVariable infosV = _variables[ctx->ID()->getText()];
@@ -52,6 +60,14 @@ antlrcpp::Any CodeGenVisitor::visitExprConst(ifccParser::ExprConstContext *ctx)
     int val = stoi(ctx->CONST()->getText());
     std::cout << "    movl $"<<val<<", %eax\n" ;
     return 0;
+}
+
+antlrcpp::Any CodeGenVisitor::visitExprChar(ifccParser::ExprCharContext *ctx)
+{
+    char c = ctx->CHAR()->getText()[1]; // extract the character between the quotes
+    int ascii = (int)c;
+    std::cout << "    movl $" << ascii << ", %eax\n";
+    return nullptr;
 }
 
 antlrcpp::Any CodeGenVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
