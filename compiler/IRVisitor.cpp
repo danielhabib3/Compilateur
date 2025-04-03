@@ -307,6 +307,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
  antlrcpp::Any IRVisitor::visitTest(ifccParser::TestContext *ctx)
  {
+    BasicBlock* source_bb = _cfg->current_bb;
+
     string test_true_bb_label = ".true" + to_string(current_test);
     BasicBlock* test_true_bb = new BasicBlock(_cfg, test_true_bb_label, nullptr, nullptr);
 
@@ -325,7 +327,6 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
         string test_false_bb_label = ".false" + to_string(current_test);
         test_false_bb = new BasicBlock(_cfg, test_false_bb_label, nullptr, nullptr);
 
-        test_false_bb->exit_true = test_endif_bb;
 
         _cfg->current_bb->exit_false = test_false_bb;
     }
@@ -347,7 +348,6 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     IRInstr * instr = new IRInstrAffect(_cfg->current_bb, to_string(infos.location), "0");
     _cfg->current_bb->add_IRInstr(instr);
 
-    test_true_bb->exit_true = test_endif_bb;
 
     _cfg->add_bb(test_true_bb);
     if(ctx->ELSE() != nullptr) {
@@ -359,11 +359,15 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     _cfg->current_bb = test_true_bb;
     this->visit(ctx->block(0));
+    _cfg->current_bb->exit_true = test_endif_bb;
+
     if(ctx->ELSE() != nullptr) {
         _cfg->current_bb = test_false_bb;
         this->visit(ctx->block(1));
+        _cfg->current_bb->exit_true = test_endif_bb;
     }
     _cfg->current_bb = test_endif_bb;
+    source_bb->endif = test_endif_bb;
 
     
     return 0;

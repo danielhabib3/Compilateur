@@ -30,13 +30,13 @@ void BasicBlock::gen_asm(ostream &o) {
         o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
         o << "    je " + exit_false->label + "\n";
         exit_true->gen_asm(o);
-        o << "    jmp " + exit_true->exit_true->label + "\n";
-        o << exit_false->label << ":\n";
-        exit_false->gen_asm(o);
-        if(exit_false->label != exit_true->exit_true->label) {
-            o << exit_true->exit_true->label << ":\n";
-            exit_true->exit_true->gen_asm(o);
+        o << "    jmp " + endif->label + "\n";
+        if(exit_false->label != endif->label) {
+            o << exit_false->label << ":\n";
+            exit_false->gen_asm(o);
         }
+        o << endif->label << ":\n";
+        endif->gen_asm(o);
     }
 
 }
