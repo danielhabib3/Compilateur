@@ -128,6 +128,9 @@ class CFG {
 	void gen_asm_prologue(ostream& o);
 	void gen_asm_epilogue(ostream& o);
 
+	// cette méthode revoit vrai si il y a un chemain sans return
+	bool check_return_stmt();
+
 	void affiche_cfg(ostream &o) {
 		o << "digraph G {\n";
 		o << "    node [shape=ellipse];\n\n";
@@ -158,9 +161,10 @@ class CFG {
 
 
 
- protected:
 	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+
+	protected:
 };
 
 class IRInstrAffect : public IRInstr {
@@ -170,6 +174,13 @@ class IRInstrAffect : public IRInstr {
 	protected:
 	   string dest; // partie gauche de l'affectation
 	   string op1; // partie droite de l'affectation
+};
+
+class IRInstrReturn : public IRInstr {
+	public:
+		IRInstrReturn(BasicBlock* bb_) : IRInstr(bb_) {};
+		void gen_asm(ostream &o);
+	protected:
 };
    
 class IRInstrAdd : public IRInstr {

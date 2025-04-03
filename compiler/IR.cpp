@@ -13,8 +13,13 @@ string to_x86(string s) {
 }
 
 void BasicBlock::gen_asm(ostream &o) {
+    bool return_found = false;
     for (IRInstr* instr : instrs) {
         instr->gen_asm(o);
+        if (dynamic_cast<IRInstrReturn*>(instr)) {
+            return_found = true;
+            break;
+        }
     }
 
     // if  exit_true  is a  nullptr, 
@@ -26,7 +31,7 @@ void BasicBlock::gen_asm(ostream &o) {
     //         followed by a conditional branch to the exit_false branch,
     //         followed by an unconditional branch to the exit_true branch
     
-    if(exit_true != nullptr && exit_false != nullptr) {
+    if(exit_true != nullptr && exit_false != nullptr && !return_found) {
         o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
         o << "    je " + exit_false->label + "\n";
         exit_true->gen_asm(o);
@@ -44,6 +49,11 @@ void BasicBlock::gen_asm(ostream &o) {
 void CFG::gen_asm(ostream &o) {
     gen_asm_prologue(o);
     bbs[0]->gen_asm(o);
+    o << "." << bbs[0]->label << "_out:\n";
+    bool return_missing = check_return_stmt();
+    if (return_missing) {
+        o << "    movl $0, %eax\n";
+    }
     gen_asm_epilogue(o);
 }
 
@@ -62,6 +72,69 @@ void CFG::gen_asm_prologue(ostream &o) {
 void CFG::gen_asm_epilogue(ostream &o) {
     o << "    popq %rbp\n";
     o << "    ret\n";
+}
+
+bool CFG::check_return_stmt() {
+    BasicBlock* bb_start = bbs[0];
+    BasicBlock* bb_end = nullptr;
+    for (BasicBlock* bb : bbs) {
+        if (bb->exit_true == nullptr && bb->exit_false == nullptr) {
+            bb_end = bb;
+            break;
+        }
+    }
+
+    vector<vector<BasicBlock*>> paths;
+    vector<BasicBlock*> current_path;
+
+    function<void(BasicBlock*)> dfs = [&](BasicBlock* bb) {
+        current_path.push_back(bb);
+
+        if (bb == bb_end) {
+            paths.push_back(current_path);
+        } else {
+            if (bb->exit_true) {
+                dfs(bb->exit_true);
+            }
+            if (bb->exit_false) {
+                dfs(bb->exit_false);
+            }
+        }
+
+        current_path.pop_back();
+    };
+
+    dfs(bb_start);
+
+    // // Print paths for debugging
+    // for (const auto& path : paths) {
+    //     std::cout << "Path: ";
+    //     for (const auto& block : path) {
+    //         std::cout << block->label << " ";
+    //     }
+    //     std::cout << "\n";
+    // }
+
+    bool return_missing = false;
+    for (const auto& path : paths) {
+        bool return_found = false;
+        for (const auto& block : path) {
+            for (const auto& instr : block->instrs) {
+                if (dynamic_cast<IRInstrReturn*>(instr)) {
+                    return_found = true;
+                    break;
+                }
+            }
+            if (return_found) {
+                break;
+            }
+        }
+        if (!return_found) {
+            return_missing = true;
+            break;
+        }
+    }
+    return return_missing;
 }
 
 void IRInstrAffect::gen_asm(ostream &o) {
@@ -173,4 +246,9 @@ void IRInstrOrBit::gen_asm(ostream &o) {
     string new_dest = to_x86(dest);
     string new_op1 = to_x86(op1);
     o << "    orl " << new_op1 << ", " << new_dest << "\n";
+}
+
+void IRInstrReturn::gen_asm(ostream &o)
+{
+    o << "    jmp ." << this->bb->cfg->bbs[0]->label << "_out\n";
 }

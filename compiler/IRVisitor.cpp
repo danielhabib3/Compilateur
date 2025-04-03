@@ -372,3 +372,12 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     
     return 0;
  }
+
+ antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
+ {
+    this->visit(ctx->expr());
+    // std::cout << "    jmp ." << this->_cfg->current_bb->label << "_out\n";
+    IRInstr * instr = new IRInstrReturn(_cfg->current_bb);
+    _cfg->current_bb->add_IRInstr(instr);
+    return 0;
+ }
