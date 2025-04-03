@@ -49,11 +49,11 @@ void BasicBlock::gen_asm(ostream &o) {
 void CFG::gen_asm(ostream &o) {
     gen_asm_prologue(o);
     bbs[0]->gen_asm(o);
-    o << "." << bbs[0]->label << "_out:\n";
     bool return_missing = check_return_stmt();
     if (return_missing) {
         o << "    movl $0, %eax\n";
     }
+    o << "." << bbs[0]->label << "_out:\n";
     gen_asm_epilogue(o);
 }
 
