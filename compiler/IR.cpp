@@ -14,6 +14,15 @@ string to_x86(string s) {
     return s;
 }
 
+bool BasicBlock::has_return_instr() {
+    for (IRInstr* instr : instrs) {
+        if (dynamic_cast<IRInstrReturn*>(instr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void BasicBlock::gen_asm(ostream &o) {
     bool return_found = false;
     for (IRInstr* instr : instrs) {
@@ -37,13 +46,25 @@ void BasicBlock::gen_asm(ostream &o) {
         o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
         o << "    je " + exit_false->label + "\n";
         exit_true->gen_asm(o);
-        o << "    jmp " + endif->label + "\n";
+        if (!exit_true->has_return_instr()) {
+            o << "    jmp " + endif->label + "\n";
+        }
         if(exit_false->label != endif->label) {
             o << exit_false->label << ":\n";
             exit_false->gen_asm(o);
+            if (!exit_true->has_return_instr()) {
+                o << "    jmp " + endif->label + "\n";
+            }
         }
-        o << endif->label << ":\n";
-        endif->gen_asm(o);
+        // on genere le endif que s'il n'y a pas de return dans le if et le else
+        // ou si le else n'est pas le endif
+        if(!(exit_true->has_return_instr() && exit_false->label != endif->label && exit_false->has_return_instr())) {
+            o << endif->label << ":\n";
+            endif->gen_asm(o);
+        }
+    } else if(exit_true != nullptr && exit_false == nullptr && !return_found && exit_true->label.rfind(".endif", 0) != 0) {
+        o << exit_true->label + ":\n";
+        exit_true->gen_asm(o);
     }
 
 }

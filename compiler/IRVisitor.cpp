@@ -307,6 +307,11 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
  antlrcpp::Any IRVisitor::visitTest(ifccParser::TestContext *ctx)
  {
+
+    BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr);
+    _cfg->current_bb->exit_true = test_bb;
+    _cfg->current_bb = test_bb;
+
     BasicBlock* source_bb = _cfg->current_bb;
 
     string test_true_bb_label = ".true" + to_string(current_test);
@@ -349,6 +354,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     _cfg->current_bb->add_IRInstr(instr);
 
 
+    _cfg->add_bb(test_bb);
     _cfg->add_bb(test_true_bb);
     if(ctx->ELSE() != nullptr) {
         _cfg->add_bb(test_false_bb);
