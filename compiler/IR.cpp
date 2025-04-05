@@ -1,4 +1,6 @@
 #include "IR.h"
+#include <functional>
+
 
 string to_x86(string s) {
     if(s[0] != '$') {
