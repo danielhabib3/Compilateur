@@ -295,4 +295,15 @@ class IRInstrFunc_Call : public IRInstr {
 	
 	};
 
+class IRInstrFunc_Def : public IRInstr {
+	public:
+		IRInstrFunc_Def(BasicBlock* bb_, const std::string& func_name)
+			: IRInstr(bb_), func_name(func_name) {}
+	
+		void gen_asm(std::ostream &o) override;
+	
+	protected:
+		std::string func_name;
+	};
+		
 #endif

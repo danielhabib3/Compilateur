@@ -8,7 +8,7 @@ block : (instruction)* ;
 
 instruction : declaration | expr ';'| func_call ';' ;
 
-declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
+functiondeclaration : type ID '(' (ID (',' ID)*)? ')' block ;
 
 functiondeclaration : type declarationfunction '(' (expr (',' expr)*)? ')' ((block) | ';') ;
 

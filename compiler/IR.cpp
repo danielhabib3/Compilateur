@@ -143,3 +143,13 @@ void IRInstrFunc_Call::gen_asm(std::ostream &o) {
         o << "    movl %eax, " << dest << std::endl;
     }
 }
+
+void IRInstrFunc_Def::gen_asm(std::ostream &o) {
+    o << ".globl " << func_name << "\n";
+    o << func_name << ":\n";
+    o << "    pushq %rbp\n";
+    o << "    movq %rsp, %rbp\n";
+
+    o << "    leave\n";
+    o << "    ret\n";
+}

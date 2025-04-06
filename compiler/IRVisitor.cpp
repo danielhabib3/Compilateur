@@ -301,3 +301,36 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     return tempVar;
 }
 
+antlrcpp::Any IRVisitor::visitFunctiondeclaration(ifccParser::FunctiondeclarationContext *ctx) {
+    string funcName = ctx->declarationfunction()->ID()->getText();
+
+    map<string, infosVariable> previous_variables = _variables;
+    _cfg = new CFG(funcName);
+    _variables.clear();
+
+    BasicBlock* entryBB = new BasicBlock(_cfg, "entry");
+    _cfg->current_bb = entryBB;
+    _cfg->add_basic_block(entryBB);
+
+    _cfg->current_bb->add_IRInstr(new IRInstrFunc_Def(_cfg->current_bb, funcName));
+
+    if (ctx->declarationfunction()->ID().size() > 1) {
+        for (size_t i = 1; i < ctx->declarationfunction()->ID().size(); ++i) { 
+            string paramName = ctx->declarationfunction()->ID(i)->getText();
+            infosVariable info;
+            info.location = (_variables.size() + 1) * 4;
+            info.set = 1;
+            info.line = ctx->getStart()->getLine();
+            info.column = ctx->getStart()->getCharPositionInLine();
+            info.type = INT;
+            _variables[paramName] = info;
+        }
+    }
+
+    if (ctx->block()) {
+        visit(ctx->block());
+    }
+
+    return 0;
+}
+
