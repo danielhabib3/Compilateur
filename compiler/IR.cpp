@@ -24,58 +24,72 @@ bool BasicBlock::has_return_instr() {
 }
 
 void BasicBlock::gen_asm(ostream &o) {
-    bool return_found = false;
-    for (IRInstr* instr : instrs) {
-        instr->gen_asm(o);
-        if (dynamic_cast<IRInstrReturn*>(instr)) {
-            return_found = true;
-            break;
+    if(!this->already_generated) {
+        if (this->label != "main") {
+            o << this->label + ":\n";
         }
-    }
+        this->already_generated = true;
 
-    // if  exit_true  is a  nullptr, 
-    //     the epilogue is generated
-    // else if exit_false is a nullptr, 
-    //     an unconditional jmp to the exit_true branch is generated
-    // else (we have two successors, hence a branch)
-    //         an instruction comparing the value of test_var_name to true is generated,
-    //         followed by a conditional branch to the exit_false branch,
-    //         followed by an unconditional branch to the exit_true branch
-    
-    if(exit_true != nullptr && exit_false != nullptr && !return_found) {
-        o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
-        o << "    je " + exit_false->label + "\n";
-        exit_true->gen_asm(o);
-        if (!exit_true->has_return_instr()) {
-            o << "    jmp " + endif->label + "\n";
-        }
-        if(exit_false->label != endif->label) {
-            o << exit_false->label << ":\n";
-            exit_false->gen_asm(o);
-            if (!exit_true->has_return_instr()) {
-                o << "    jmp " + endif->label + "\n";
+        bool return_found = false;
+        for (IRInstr* instr : instrs) {
+            instr->gen_asm(o);
+            if (dynamic_cast<IRInstrReturn*>(instr)) {
+                return_found = true;
+                break;
             }
         }
-        // on genere le endif que s'il n'y a pas de return dans le if et le else
-        // ou si le else n'est pas le endif
-        if(!(exit_true->has_return_instr() && exit_false->label != endif->label && exit_false->has_return_instr())) {
-            o << endif->label << ":\n";
-            endif->gen_asm(o);
-        }
-    } else if(exit_true != nullptr && exit_false == nullptr && !return_found && exit_true->label.rfind(".endif", 0) != 0) {
-        o << exit_true->label + ":\n";
-        exit_true->gen_asm(o);
-    }
 
+        // if  exit_true  is a  nullptr, 
+        //     the epilogue is generated
+        // else if exit_false is a nullptr, 
+        //     an unconditional jmp to the exit_true branch is generated
+        // else (we have two successors, hence a branch)
+        //         an instruction comparing the value of test_var_name to true is generated,
+        //         followed by a conditional branch to the exit_false branch,
+        //         followed by an unconditional branch to the exit_true branch
+        
+        if(exit_true != nullptr && exit_false != nullptr && !return_found) {
+            if(this->test_type == TEST_IF) {
+                o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
+                o << "    je " + exit_false->label + "\n";
+                exit_true->gen_asm(o);
+                if (!exit_true->has_return_instr()) {
+                    o << "    jmp " + endif->label + "\n";
+                }
+                if(exit_false->label != endif->label) {
+                    exit_false->gen_asm(o);
+                    if (!exit_true->has_return_instr()) {
+                        o << "    jmp " + endif->label + "\n";
+                    }
+                }
+                // on genere le endif que s'il n'y a pas de return dans le if et le else
+                // ou si le else n'est pas le endif
+                if(!(exit_true->has_return_instr() && exit_false->label != endif->label && exit_false->has_return_instr())) {
+                    endif->gen_asm(o);
+                }
+            }
+            else if(this->test_type == TEST_WHILE) {
+                o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
+                o << "    je " + exit_false->label + "\n";
+                exit_true->gen_asm(o);
+                if (!exit_true->has_return_instr()) {
+                    o << "    jmp " + this->label + "\n";
+                }
+                exit_false->gen_asm(o);
+            }
+        } else if(exit_true != nullptr && exit_false == nullptr && !return_found && exit_true->label.rfind(".endif", 0) != 0) {
+            exit_true->gen_asm(o);
+        }
+    }
 }
 
 void CFG::gen_asm(ostream &o) {
     gen_asm_prologue(o);
     bbs[0]->gen_asm(o);
-    bool return_missing = check_return_stmt();
-    if (return_missing) {
-        o << "    movl $0, %eax\n";
-    }
+    // bool return_missing = check_return_stmt();
+    // if (return_missing) {
+    //     o << "    movl $0, %eax\n";
+    // }
     o << "." << bbs[0]->label << "_out:\n";
     gen_asm_epilogue(o);
 }

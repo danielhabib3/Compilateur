@@ -48,6 +48,7 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprXorBit(ifccParser::ExprXorBitContext *ctx) override ;
         virtual antlrcpp::Any visitTest(ifccParser::TestContext *ctx) override ;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override ;
+        virtual antlrcpp::Any visitBoucle_while(ifccParser::Boucle_whileContext *ctx) override ;
     
     protected:
         CFG* _cfg;

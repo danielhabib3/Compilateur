@@ -6,9 +6,11 @@ prog : type 'main' '(' ')' block;
 
 block : '{' (instruction)* '}' ;
 
-instruction : declaration | affectation | return_stmt | block | test ;
+instruction : declaration | affectation | return_stmt | block | test | boucle_while ;
 
 test : IF '(' expr ')' block (ELSE block)? ;
+
+boucle_while : WHILE '(' expr ')' block ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -34,6 +36,7 @@ expr : CONST                                                # exprConst
 
 type : 'int' ;
 
+WHILE : 'while' ;
 IF: 'if' ;
 ELSE : 'else' ;
 RETURN : 'return' ;

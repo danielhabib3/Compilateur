@@ -9,6 +9,8 @@
 #include "tree/ParseTree.h" // Ensure this header file defines tree::ParseTree
 #include "VariableVisitor.h"
 
+enum t_type { TEST_IF, TEST_WHILE, NOT_TEST };
+
 using namespace std;
 
 class BasicBlock;
@@ -59,13 +61,14 @@ Possible optimization:
 
 class BasicBlock {
  public:
-	BasicBlock(CFG* cfg, string entry_label, BasicBlock* exit_t, BasicBlock* exit_f, string test_var_name = "") {
+	BasicBlock(CFG* cfg, string entry_label, BasicBlock* exit_t, BasicBlock* exit_f, t_type test_type = NOT_TEST) {
 		this->cfg = cfg;
 		this->exit_true = exit_t;
 		this->exit_false = exit_f;
 		this->label = entry_label;
 		this->test_var_name = test_var_name;
 		this->instrs = vector<IRInstr*>();
+		this->test_type = test_type;
 	};
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
@@ -78,7 +81,9 @@ class BasicBlock {
 	// No encapsulation whatsoever here. Feel free to do better.
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
-	BasicBlock* endif; 
+	BasicBlock* endif;
+	t_type test_type; /**< type of test for this block, if any */
+	bool already_generated; /**< true if the assembly code for this block has already been generated */
 	string label; /**< label of the BB, also will be the label in the generated code */
 	CFG* cfg; /** < the CFG where this block belongs */
 	vector<IRInstr*> instrs; /** < the instructions themselves. */

@@ -308,7 +308,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  antlrcpp::Any IRVisitor::visitTest(ifccParser::TestContext *ctx)
  {
 
-    BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr);
+    BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr, TEST_IF);
     _cfg->current_bb->exit_true = test_bb;
     _cfg->current_bb = test_bb;
 
@@ -379,11 +379,57 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     return 0;
  }
 
+
+
  antlrcpp::Any IRVisitor::visitReturn_stmt(ifccParser::Return_stmtContext *ctx)
  {
     this->visit(ctx->expr());
     // std::cout << "    jmp ." << this->_cfg->current_bb->label << "_out\n";
     IRInstr * instr = new IRInstrReturn(_cfg->current_bb);
     _cfg->current_bb->add_IRInstr(instr);
+    return 0;
+ }
+
+ antlrcpp::Any IRVisitor::visitBoucle_while(ifccParser::Boucle_whileContext *ctx)
+ {
+    BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr, TEST_WHILE);
+    _cfg->current_bb->exit_true = test_bb;
+    _cfg->current_bb = test_bb;
+
+    string body_bb_label = ".body" + to_string(current_test);
+    BasicBlock* body_bb = new BasicBlock(_cfg, body_bb_label, nullptr, nullptr);
+
+    string test_endwhile_bb_label = ".endwhile" + to_string(current_test);
+    BasicBlock* test_endwhile_bb = new BasicBlock(_cfg, test_endwhile_bb_label, nullptr, nullptr);
+    
+
+    _cfg->current_bb->exit_true = body_bb;
+    _cfg->current_bb->exit_false = test_endwhile_bb;
+
+    this->visit(ctx->expr());
+    infosVariable infos;
+    infos.location = (_variables.size() + 1);
+    string test_var_name = "test" + to_string(current_temp);
+    _variables[test_var_name] = infos;
+    current_temp++;
+    _cfg->current_bb->test_var_name = test_var_name;
+    _cfg->current_bb->test_var_location = infos.location;
+
+    //std::cout << "    movl %eax, -"<<infos.location<<"(%rbp)\n" ;
+    IRInstr * instr = new IRInstrAffect(_cfg->current_bb, to_string(infos.location), "0");
+    _cfg->current_bb->add_IRInstr(instr);
+
+
+    _cfg->add_bb(test_bb);
+    _cfg->add_bb(body_bb);
+    _cfg->add_bb(test_endwhile_bb);
+
+    current_test++;
+
+    _cfg->current_bb = body_bb;
+    this->visit(ctx->block());
+    _cfg->current_bb->exit_true = test_bb;
+
+    _cfg->current_bb = test_endwhile_bb;
     return 0;
  }
