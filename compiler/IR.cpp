@@ -86,10 +86,10 @@ void BasicBlock::gen_asm(ostream &o) {
 void CFG::gen_asm(ostream &o) {
     gen_asm_prologue(o);
     bbs[0]->gen_asm(o);
-    // bool return_missing = check_return_stmt();
-    // if (return_missing) {
-    //     o << "    movl $0, %eax\n";
-    // }
+    bool return_missing = check_return_stmt();
+    if (return_missing) {
+        o << "    movl $0, %eax\n";
+    }
     o << "." << bbs[0]->label << "_out:\n";
     gen_asm_epilogue(o);
 }
@@ -130,10 +130,10 @@ bool CFG::check_return_stmt() {
         if (bb == bb_end) {
             paths.push_back(current_path);
         } else {
-            if (bb->exit_true) {
+            if (bb->exit_true && count(current_path.begin(), current_path.end(), bb->exit_true) < 2) {
                 dfs(bb->exit_true);
             }
-            if (bb->exit_false) {
+            if (bb->exit_false  && count(current_path.begin(), current_path.end(), bb->exit_false) < 2) {
                 dfs(bb->exit_false);
             }
         }
