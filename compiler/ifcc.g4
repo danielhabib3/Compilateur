@@ -2,11 +2,15 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : type 'main' '(' ')' block;
+prog : (function_definition | function_declaration)+ ;
+
+function_definition : type ID '('  (type ID (',' type ID)*)? ')' block;
+
+function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 
 block : '{' (instruction)* '}' ;
 
-instruction : declaration | affectation | return_stmt | block | test | boucle_while ;
+instruction : declaration | affectation | return_stmt | block | test | boucle_while | (expr ';') ;
 
 test : IF '(' expr ')' block (ELSE block)? ;
 
@@ -20,8 +24,11 @@ affectation : ID '=' expr ';' ;
 
 return_stmt: RETURN expr ';' ;
 
+function_call : ID '(' (expr (',' expr)*)? ')' ;
+
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
+     | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
      | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod
