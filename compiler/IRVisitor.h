@@ -49,7 +49,8 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitTest(ifccParser::TestContext *ctx) override ;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override ;
         virtual antlrcpp::Any visitBoucle_while(ifccParser::Boucle_whileContext *ctx) override ;
-    
+        virtual antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
+
     protected:
         CFG* _cfg;
         antlr4::tree::ParseTree* _ast;

@@ -393,7 +393,9 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  antlrcpp::Any IRVisitor::visitBoucle_while(ifccParser::Boucle_whileContext *ctx)
  {
     BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr, TEST_WHILE);
+
     _cfg->current_bb->exit_true = test_bb;
+
     _cfg->current_bb = test_bb;
 
     string body_bb_label = ".body" + to_string(current_test);
@@ -401,9 +403,10 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     string test_endwhile_bb_label = ".endwhile" + to_string(current_test);
     BasicBlock* test_endwhile_bb = new BasicBlock(_cfg, test_endwhile_bb_label, nullptr, nullptr);
-    
+    _cfg->stack_break_destinations.push(test_endwhile_bb); // On push le basicblock endwhile qui sera la destination en cas de break trouvé dans le body
 
     _cfg->current_bb->exit_true = body_bb;
+
     _cfg->current_bb->exit_false = test_endwhile_bb;
 
     this->visit(ctx->expr());
@@ -428,8 +431,31 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     _cfg->current_bb = body_bb;
     this->visit(ctx->block());
+
+    _cfg->stack_break_destinations.pop(); // On pop le basicblock endwhile une fois qu'on a fini le body
+
     _cfg->current_bb->exit_true = test_bb;
 
     _cfg->current_bb = test_endwhile_bb;
     return 0;
  }
+
+
+antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
+
+    // TO DO : Faire la gestion d'erreur autre part ??!
+    if (_cfg->stack_break_destinations.empty()) {
+        std::cerr << "Erreur : break en dehors d’une boucle !" << std::endl;
+        exit(1);
+    }
+    
+    BasicBlock* destinationBreak = _cfg->stack_break_destinations.top();
+    
+    string exit_label;
+    exit_label = destinationBreak->label;
+
+    IRInstr * instr = new IRInstrBreak(_cfg->current_bb, exit_label);
+    _cfg->current_bb->add_IRInstr(instr);
+    
+    return 0;
+}

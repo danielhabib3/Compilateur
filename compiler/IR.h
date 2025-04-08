@@ -164,12 +164,9 @@ class CFG {
 		o << "}\n";
 	}
 
-	BasicBlock* current_bb; /**< The current basic block being built */
-
-
-
-	
+	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	stack <BasicBlock*> stack_break_destinations;
 
 	protected:
 };
@@ -327,5 +324,16 @@ protected:
 	string dest;
 	string op1;
 };
+
+
+class IRInstrBreak : public IRInstr {
+	public:
+		IRInstrBreak(BasicBlock* bb_, string exit_label): IRInstr(bb_), exit_label(exit_label) {};
+		void gen_asm(ostream &o);
+
+	protected:
+		string exit_label; // Etiquette de là où il faut sauter après le break
+};
+
 
 #endif
