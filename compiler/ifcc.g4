@@ -55,9 +55,9 @@ ELSE : 'else' ;
 RETURN : 'return' ;
 BREAK : 'break' ;
 CONTINUE : 'continue' ;
-SWITCH : 'switch'
+SWITCH : 'switch' ;
 CASE : 'case' ;
-DEFAULT :'default';
+DEFAULT :'default' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
 CONST : [0-9]+ ;
