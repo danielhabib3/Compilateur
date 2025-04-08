@@ -167,6 +167,7 @@ class CFG {
 	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 	stack <BasicBlock*> stack_break_destinations;
+	stack <BasicBlock*> stack_boucle_test_block_for_continue;
 
 	protected:
 };
@@ -326,13 +327,13 @@ protected:
 };
 
 
-class IRInstrBreak : public IRInstr {
+class IRInstrJump : public IRInstr {
 	public:
-		IRInstrBreak(BasicBlock* bb_, string exit_label): IRInstr(bb_), exit_label(exit_label) {};
+		IRInstrJump(BasicBlock* bb_, string jump_label): IRInstr(bb_), jump_label(jump_label) {};
 		void gen_asm(ostream &o);
 
 	protected:
-		string exit_label; // Etiquette de là où il faut sauter après le break
+		string jump_label; // Etiquette de là où il faut sauter après le break
 };
 
 

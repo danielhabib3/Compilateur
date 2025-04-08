@@ -393,6 +393,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  antlrcpp::Any IRVisitor::visitBoucle_while(ifccParser::Boucle_whileContext *ctx)
  {
     BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr, TEST_WHILE);
+    _cfg->stack_boucle_test_block_for_continue.push(test_bb); // On push le basicblock test_bb qui sera la destination en cas de continue trouvé dans le body
 
     _cfg->current_bb->exit_true = test_bb;
 
@@ -433,6 +434,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->block());
 
     _cfg->stack_break_destinations.pop(); // On pop le basicblock endwhile une fois qu'on a fini le body
+    _cfg->stack_boucle_test_block_for_continue.pop(); // On pop le basicblock test une fois qu'on a fini le body
 
     _cfg->current_bb->exit_true = test_bb;
 
@@ -451,11 +453,31 @@ antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
     
     BasicBlock* destinationBreak = _cfg->stack_break_destinations.top();
     
-    string exit_label;
-    exit_label = destinationBreak->label;
+    string jump_label;
+    jump_label = destinationBreak->label;
 
-    IRInstr * instr = new IRInstrBreak(_cfg->current_bb, exit_label);
+    IRInstr * instr = new IRInstrJump(_cfg->current_bb, jump_label);
     _cfg->current_bb->add_IRInstr(instr);
     
+    return 0;
+}
+
+// TO DO : Ne pas faire 2 fonctions pour visitCOntinue et visitBreak mais les merge
+antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx){
+
+    // TO DO : Faire la gestion d'erreur autre part ??!
+    if (_cfg->stack_boucle_test_block_for_continue.empty()) {
+        std::cerr << "Erreur : Continue en dehors d’une boucle !" << std::endl;
+        exit(1);
+    }
+
+    BasicBlock* destinationContinue = _cfg->stack_boucle_test_block_for_continue.top();
+
+    string jump_label;
+    jump_label = destinationContinue->label;
+
+    IRInstr * instr = new IRInstrJump(_cfg->current_bb, jump_label);
+    _cfg->current_bb->add_IRInstr(instr);
+
     return 0;
 }

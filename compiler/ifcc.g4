@@ -10,13 +10,15 @@ function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 
 block : '{' (instruction)* '}' ;
 
-instruction : declaration | affectation | return_stmt | block | test | boucle_while | break | (expr ';');
+instruction : declaration | affectation | return_stmt | block | test | boucle_while | break | continue | (expr ';');
 
 test : IF '(' expr ')' block (ELSE block)? ;
 
 boucle_while : WHILE '(' expr ')' block ;
 
 break : (BREAK ';') ;
+
+continue : (CONTINUE ';') ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -50,6 +52,7 @@ IF: 'if' ;
 ELSE : 'else' ;
 RETURN : 'return' ;
 BREAK : 'break' ;
+CONTINUE : 'continue' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
 CONST : [0-9]+ ;
