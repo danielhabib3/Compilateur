@@ -12,7 +12,7 @@ block : '{' (instruction)* '}' ;
 
 instruction : declaration | affectation | return_stmt | block | test | switch_case | boucle_while | break | continue | (expr ';') | ';' ;
 
-switch_case : SWITCH '(' expr ')' '{' (CASE expr ':' (block | instruction)*)* DEFAULT ':' (block | instruction)* '}' ;
+switch_case : SWITCH '(' expr ')' '{' (CASE expr ':' (block | instruction)*)* (DEFAULT ':' (block | instruction)*)? '}' ;
 
 test : IF '(' expr ')' block (ELSE block)? ;
 

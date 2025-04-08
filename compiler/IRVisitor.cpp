@@ -25,7 +25,7 @@ antlrcpp::Any IRVisitor::visitAffectationDeclaration(ifccParser::AffectationDecl
 antlrcpp::Any IRVisitor::visitExprID(ifccParser::ExprIDContext *ctx)
 {
     infosVariable infosV = _variables[ctx->ID()->getText()];
-    // std::cout << "    movl -"<<infosV.location<<"(%rbp), %eax\n" ;
+    // std::cout << "    movl -"<<inffosV.location<<"(%rbp), %eax\n" ;
     IRInstr * instr = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
     _cfg->current_bb->add_IRInstr(instr);
     return 0;
@@ -481,3 +481,126 @@ antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx){
 
     return 0;
 }
+
+antlrcpp::Any IRVisitor::visitSwitch_case(ifccParser::Switch_caseContext *ctx) {
+
+    // Évalue l'expression du switch qui sera à comparer avec les cases
+    this->visit(ctx->expr(0));
+
+    infosVariable switch_var;
+    switch_var.location = (_variables.size() + 1);
+    string switch_var_name = "switch" + to_string(current_temp++);
+    _variables[switch_var_name] = switch_var;
+
+    IRInstr *store_switch = new IRInstrAffect(_cfg->current_bb, to_string(switch_var.location), "0");
+    _cfg->current_bb->add_IRInstr(store_switch);
+
+    BasicBlock* switch_end_bb = new BasicBlock(_cfg, ".endswitch" + to_string(current_test), nullptr, nullptr);
+    _cfg->stack_break_destinations.push(switch_end_bb);
+
+    vector<BasicBlock*> case_blocks;
+    vector<ifccParser::ExprContext*> case_exprs;
+    BasicBlock* default_block = nullptr;
+
+    int num_cases = ctx->expr().size();
+    int block_index = 0;
+
+    // Création des blocs pour chaque case
+    for (int i = 1; i <= num_cases; i++) {
+        string label = ".case" + to_string(current_test) + "_" + to_string(i); 
+        BasicBlock* case_bb = new BasicBlock(_cfg, label, nullptr, nullptr);
+        _cfg->add_bb(case_bb);
+        case_blocks.push_back(case_bb);
+
+        case_exprs.push_back(ctx->expr(i));
+    }
+
+    // Bloc default s’il existe
+    if (ctx->DEFAULT() != nullptr) {
+        default_block = new BasicBlock(_cfg, ".default" + to_string(current_test), nullptr, nullptr);
+        _cfg->add_bb(default_block);
+    }
+
+    // Création des blocs de test
+    vector<BasicBlock*> test_blocks;
+
+    for (int i = 0; i < num_cases; i++) {
+        BasicBlock* cmp_bb = new BasicBlock(_cfg, ".cmp" + to_string(current_test) + "_" + to_string(i), nullptr, nullptr);
+        _cfg->add_bb(cmp_bb);
+        test_blocks.push_back(cmp_bb);
+    }
+
+    // Le bloc actuel pointe vers le 1er test
+    _cfg->current_bb->exit_true = test_blocks[0];
+
+    // Génération des tests
+    for (int i = 0; i < num_cases; i++) {
+        BasicBlock* cmp_bb = test_blocks[i];
+
+        // Évalue l'expression du case[i]
+        _cfg->current_bb = cmp_bb;
+        this->visit(case_exprs[i]);
+
+        string case_val_name = "case_val_" + to_string(current_temp++);
+        infosVariable case_var;
+        case_var.location = (_variables.size() + 1);
+        _variables[case_val_name] = case_var;
+
+        IRInstr *store_case = new IRInstrAffect(cmp_bb, to_string(case_var.location), "0");
+        cmp_bb->add_IRInstr(store_case);
+
+        // Crée un nouveau temp pour le résultat de la comparaison
+        string cmp_result_name = "cmp_result_" + to_string(current_temp++);
+        infosVariable cmp_var;
+        cmp_var.location = (_variables.size() + 1);
+        _variables[cmp_result_name] = cmp_var;
+
+        // Génère l’instruction de comparaison (switch == case)
+        IRInstr *cmp = new IRInstrCmpEQ(cmp_bb, to_string(cmp_var.location), to_string(switch_var.location), to_string(case_var.location));
+        cmp_bb->add_IRInstr(cmp);
+
+        cmp_bb->test_var_name = cmp_result_name;
+        cmp_bb->test_var_location = cmp_var.location;
+        cmp_bb->test_type = TEST_SWITCH;
+
+        cmp_bb->exit_true = case_blocks[i];
+        
+        if (i + 1 < num_cases) {
+            cmp_bb->exit_false = test_blocks[i + 1]; // Aller au test suivant
+        } else if (default_block != nullptr) {
+            cmp_bb->exit_false = default_block; // Sinon, aller au bloc default s’il existe
+        } else {
+            cmp_bb->exit_false = switch_end_bb; // Sinon, aller directement à la fin du switch
+        }
+    }
+
+    // Génération des blocs de chaque case
+    for (int i = 0; i < case_blocks.size(); i++) {
+        _cfg->current_bb = case_blocks[i];
+        this->visit(ctx->block(block_index++));
+
+        if (_cfg->current_bb->exit_true == nullptr)
+            _cfg->current_bb->exit_true = switch_end_bb;
+    }
+
+    // Bloc default
+    if (default_block != nullptr) {
+        _cfg->current_bb = default_block;
+        this->visit(ctx->block(block_index++));
+
+        if (_cfg->current_bb->exit_true == nullptr)
+            _cfg->current_bb->exit_true = switch_end_bb;
+    }
+
+    _cfg->current_bb = switch_end_bb;
+    _cfg->add_bb(switch_end_bb);
+
+    _cfg->stack_break_destinations.pop();
+    current_test++;
+
+    return 0;
+}
+
+
+
+

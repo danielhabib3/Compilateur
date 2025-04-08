@@ -1,4 +1,4 @@
 int main() {
-    break; // Erreur: break en dehors d'une boucle ou d'un switch
+    break; 
     return 0;
 }

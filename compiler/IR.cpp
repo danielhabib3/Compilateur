@@ -53,6 +53,7 @@ void BasicBlock::gen_asm(ostream &o) {
                 o << "    cmpl $0, -" + to_string(test_var_location*4) + "(%rbp)\n";
                 o << "    je " + exit_false->label + "\n";
                 exit_true->gen_asm(o);
+
                 if (!exit_true->has_return_instr()) {
                     o << "    jmp " + endif->label + "\n";
                 }
@@ -62,6 +63,7 @@ void BasicBlock::gen_asm(ostream &o) {
                         o << "    jmp " + endif->label + "\n";
                     }
                 }
+
                 // on genere le endif que s'il n'y a pas de return dans le if et le else
                 // ou si le else n'est pas le endif
                 if(!(exit_true->has_return_instr() && exit_false->label != endif->label && exit_false->has_return_instr())) {
@@ -77,6 +79,15 @@ void BasicBlock::gen_asm(ostream &o) {
                 }
                 exit_false->gen_asm(o);
             }
+
+            else if (this->test_type == TEST_SWITCH){
+                
+                o << "    cmpl $0, -" + to_string(test_var_location * 4) + "(%rbp)\n";
+                o << "    je " + exit_false->label + "\n";
+                o << "    jmp " + exit_true->label + "\n";
+                
+            }
+
         } else if(exit_true != nullptr && exit_false == nullptr && !return_found && exit_true->label.rfind(".endif", 0) != 0) {
             exit_true->gen_asm(o);
         }
