@@ -1,6 +1,6 @@
 #include "IRVisitor.h"
 
-antlrcpp::Any IRVisitor::visitAffectation(ifccParser::AffectationContext *ctx)
+antlrcpp::Any IRVisitor::visitExprAffectation(ifccParser::ExprAffectationContext *ctx)
 {
     this->visit(ctx->expr());
     infosVariable infosV = _variables[ctx->ID()->getText()];
@@ -45,7 +45,8 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!tempIR" + to_string(current_temp)] = infosGauche;
     current_temp++;
 
@@ -56,7 +57,8 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!tempIR" + to_string(current_temp)] = infosDroite;
     current_temp++;
     
@@ -83,7 +85,8 @@ antlrcpp::Any IRVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
 
@@ -94,7 +97,8 @@ antlrcpp::Any IRVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -151,7 +155,8 @@ antlrcpp::Any IRVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     // std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -161,7 +166,8 @@ antlrcpp::Any IRVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -191,7 +197,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     // std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -201,7 +208,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -230,7 +238,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -240,7 +249,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -257,7 +267,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -267,7 +278,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -283,7 +295,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = (_variables.size() + 1);
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -293,7 +306,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = (_variables.size() + 1);
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
     _variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -342,7 +356,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     this->visit(ctx->expr());
     infosVariable infos;
-    infos.location = (_variables.size() + 1);
+    infos.location = this->next_free_location;
+    this->next_free_location++;
     string test_var_name = "test" + to_string(current_temp);
     _variables[test_var_name] = infos;
     current_temp++;
@@ -408,7 +423,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     this->visit(ctx->expr());
     infosVariable infos;
-    infos.location = (_variables.size() + 1);
+    infos.location = this->next_free_location;
+    this->next_free_location++;
     string test_var_name = "test" + to_string(current_temp);
     _variables[test_var_name] = infos;
     current_temp++;
@@ -431,5 +447,79 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     _cfg->current_bb->exit_true = test_bb;
 
     _cfg->current_bb = test_endwhile_bb;
+    return 0;
+ }
+
+ antlrcpp::Any IRVisitor::visitAffectationDeclarationTable(ifccParser::AffectationDeclarationTableContext *ctx)
+ {
+    infosVariable infosV = _variables[ctx->ID()->getText()];
+    int nbAffectation = ctx->expr().size() > infosV.size ? infosV.size : ctx->expr().size();
+    for(int i = 0; i < nbAffectation; i++) 
+    {
+        this->visit(ctx->expr(i));
+        
+        // std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
+        IRInstr * instr = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location + i), "0");
+        _cfg->current_bb->add_IRInstr(instr);
+    }
+    if(ctx->expr().size() < infosV.size)
+    {
+        for(int i = ctx->expr().size(); i < infosV.size; i++)
+        {
+            // std::cout << "    movl $0, -"<<infosV.location<<"(%rbp)\n" ;
+            IRInstr * instr = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location + i), "$0");
+            _cfg->current_bb->add_IRInstr(instr);
+        }
+    }
+    return 0;
+ }
+
+ antlrcpp::Any IRVisitor::visitExprTable(ifccParser::ExprTableContext *ctx)
+ {
+    infosVariable infosV = _variables[ctx->ID()->getText()];
+    // std::cout << "    movl -"<<infosV.location<<"(%rbp), %eax\n" ;
+
+    this->visit(ctx->expr());
+    IRInstr * instr = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location), 4, 2);
+    _cfg->current_bb->add_IRInstr(instr);
+    return 0;
+ }
+
+ antlrcpp::Any IRVisitor::visitExprAffectationTable(ifccParser::ExprAffectationTableContext *ctx)
+ {
+    infosVariable infosV = _variables[ctx->ID()->getText()];
+
+    this->visit(ctx->expr(0));
+
+    infosVariable infosGauche;
+    infosGauche.location = this->next_free_location;
+    this->next_free_location++;
+    _variables["!temp" + to_string(current_temp)] = infosGauche;
+    current_temp++;
+
+
+    IRInstr * instr1 = new IRInstrAffect(_cfg->current_bb, to_string(infosGauche.location), "0");
+    _cfg->current_bb->add_IRInstr(instr1);
+
+    this->visit(ctx->expr(1));
+
+    infosVariable infosDroite;
+    infosDroite.location = this->next_free_location;
+    this->next_free_location++;
+    _variables["!temp" + to_string(current_temp)] = infosDroite;
+    current_temp++;
+
+    IRInstr * instr2 = new IRInstrAffect(_cfg->current_bb, to_string(infosDroite.location), "0");
+    _cfg->current_bb->add_IRInstr(instr2);
+
+    IRInstr * instr3 = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosGauche.location));
+    _cfg->current_bb->add_IRInstr(instr3);
+
+    IRInstr * instr4 = new IRInstrAffect(_cfg->current_bb, "-1", to_string(infosDroite.location));
+    _cfg->current_bb->add_IRInstr(instr4);
+
+    IRInstr * instr5 = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location), "-1", 4, 1);
+    _cfg->current_bb->add_IRInstr(instr5);
+
     return 0;
  }

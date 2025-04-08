@@ -10,17 +10,19 @@ function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 
 block : '{' (instruction)* '}' ;
 
-instruction : declaration | affectation | return_stmt | block | test | boucle_while | (expr ';') ;
+instruction : declaration | declarationTable | return_stmt | block | test | boucle_while | expr ';' ;
 
 test : IF '(' expr ')' block (ELSE block)? ;
 
 boucle_while : WHILE '(' expr ')' block ;
 
+declarationTable : type affectationDeclarationTable (',' affectationDeclarationTable )* ';' ;
+
+affectationDeclarationTable : ID'['CONST']' ('=' '{' (expr (',' expr)*)? '}')? ;
+
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
 affectationDeclaration : ID ('=' expr)? ;
-
-affectation : ID '=' expr ';' ;
 
 return_stmt: RETURN expr ';' ;
 
@@ -28,6 +30,7 @@ function_call : ID '(' (expr (',' expr)*)? ')' ;
 
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
+     | ID'['expr']'                                         # exprTable
      | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
@@ -38,6 +41,8 @@ expr : CONST                                                # exprConst
      | expr '&' expr                                        # exprAndBit
      | expr '^' expr                                        # exprXorBit
      | expr '|' expr                                        # exprOrBit            
+     | ID'['expr']' '=' expr                                # exprAffectationTable
+     | ID '=' expr                                          # exprAffectation
     ;
       
 

@@ -32,9 +32,29 @@ class IRVisitor : public ifccBaseVisitor {
             _variables = variables;
         }
 
+        void setVariableErrorsWarnings(map<string, ErrorType> variableErrorsWarnings) {
+            _variableErrorsWarnings = variableErrorsWarnings;
+        }
+
+        map<string, infosVariable> getVariables() {
+            return _variables;
+        }
+
+        map<string, ErrorType> getVariableErrorsWarnings() {
+            return _variableErrorsWarnings;
+        }
+
+        int getNextFreeLocation() const {
+            return next_free_location;
+        }
+
+        void setNextFreeLocation(int location) {
+            next_free_location = location;
+        }
+
         // virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
         // virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
-        virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *ctx) override ;
+        virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *ctx) override ;
         virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override ;
         virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override ;
         virtual antlrcpp::Any visitExprConst(ifccParser::ExprConstContext *ctx) override ;
@@ -49,11 +69,16 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitTest(ifccParser::TestContext *ctx) override ;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override ;
         virtual antlrcpp::Any visitBoucle_while(ifccParser::Boucle_whileContext *ctx) override ;
+        virtual antlrcpp::Any visitAffectationDeclarationTable(ifccParser::AffectationDeclarationTableContext *ctx) override ;
+        virtual antlrcpp::Any visitExprTable(ifccParser::ExprTableContext *ctx) override ;
+        virtual antlrcpp::Any visitExprAffectationTable(ifccParser::ExprAffectationTableContext *ctx) override ;
     
     protected:
         CFG* _cfg;
         antlr4::tree::ParseTree* _ast;
         map<string, infosVariable> _variables;
+        map<string, ErrorType> _variableErrorsWarnings;
         int current_temp;
         int current_test;
+        int next_free_location;
 };

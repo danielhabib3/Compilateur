@@ -176,11 +176,14 @@ class CFG {
 
 class IRInstrAffect : public IRInstr {
 	public:
-	   IRInstrAffect(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
+	   IRInstrAffect(BasicBlock* bb_, string dest, string op1, int sizeOfType = 0, int offsetAppliedTo = 0) 
+	   	: IRInstr(bb_), dest(dest), op1(op1), sizeOfType(sizeOfType), offsetAppliedTo(offsetAppliedTo) {};
 	   void gen_asm(ostream &o);
 	protected:
 	   string dest; // partie gauche de l'affectation
 	   string op1; // partie droite de l'affectation
+	   int sizeOfType; // taille du type de la variable
+	   int offsetAppliedTo; // 0 si c'est une variable, 1 ou 2 si c'est un tableau : 1 pour appliqué le offset au dest et 2 pour op1
 };
 
 class IRInstrReturn : public IRInstr {

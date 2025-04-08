@@ -6,6 +6,14 @@ string to_x86(string s) {
     if(s[0] != '$') {
         if(s[0] == '0') {
             s = "%eax";
+        } else if(s[0] == '-') {
+            string num = s.substr(1);
+            int num_int = stoi(num);
+            switch (num_int) {
+                case 1:
+                    s = "%ecx";
+                    break;
+            }
         } else {
             int num = stoi(s) * 4;
             s = "-" + to_string(num) + "(%rbp)";
@@ -175,9 +183,31 @@ bool CFG::check_return_stmt() {
 }
 
 void IRInstrAffect::gen_asm(ostream &o) {
-    string new_dest = to_x86(dest);
-    string new_op1 = to_x86(op1);
-    o << "    movl " << new_op1 << ", " << new_dest << "\n";
+    if(offsetAppliedTo == 0) {
+        string new_dest = to_x86(dest);
+        string new_op1 = to_x86(op1);
+        o << "    movl " << new_op1 << ", " << new_dest << "\n";
+    } else {
+        if(offsetAppliedTo == 1) {
+            // dest c'est un tableau
+
+            // cltq
+	        // movl	-32(%rbp,%rax,4), %eax
+
+            string new_op1 = to_x86(op1);
+            string dest_location = to_string(stoi(dest)*4);
+            o << "    cltq\n";
+            o << "    neg %rax\n";
+            o << "    movl " + new_op1 + ", -" + dest_location + "(%rbp, %rax, " + to_string(sizeOfType) + ")\n";
+        } else if(offsetAppliedTo == 2) {
+            // op1 c'est un tableau
+            string new_dest = to_x86(dest);
+            string op1_location = to_string(stoi(op1)*4);
+            o << "    cltq\n";
+            o << "    neg %rax\n";
+            o << "    movl -" + op1_location + "(%rbp, %rax, " + to_string(sizeOfType) + "), " + new_dest + "\n";
+        }
+    }
 }
 
 void IRInstrAdd::gen_asm(ostream &o) {

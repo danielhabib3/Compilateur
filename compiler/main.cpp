@@ -91,10 +91,35 @@ int main(int argn, const char **argv)
     // cout << "Variable analysis done without errors" << endl;
   }
 
+  int nbErrorsWarnings = vv.getVariableErrorsWarnings().size();
   
   IRVisitor irv(tree);
+  irv.setNextFreeLocation(vv.getNextFreeLocation());
   irv.setVariables(vv.getVariables());
+  irv.setVariableErrorsWarnings(vv.getVariableErrorsWarnings());
   irv.visit(tree);
+
+  _variableErrorsWarnings = irv.getVariableErrorsWarnings();
+  // afficher les erreurs et/ou les warnings à partir de nbErrorsWarnings
+  int currentIndex = 0;
+  for(auto it = _variableErrorsWarnings.begin(); it != _variableErrorsWarnings.end(); it++, currentIndex++)
+  {
+    if(currentIndex >= nbErrorsWarnings)
+    {
+      cerr << it->first << endl;
+    }
+  }
+
+  if(_variableErrorsWarnings.size() > nbErrorsWarnings)
+  {
+    cerr << "error: syntax error during IR generation" << endl;
+    exit(1);
+  }
+  else
+  {
+    // cout << "IR generation done without errors" << endl;
+  }
+
   CFG* cfg = irv.getCFG();
   ofstream fichier("fichier.dot");
   cfg->affiche_cfg(fichier);
