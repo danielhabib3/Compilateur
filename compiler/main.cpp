@@ -96,18 +96,21 @@ int main(int argn, const char **argv)
   FunctionVisitor fv;
   fv.visit(tree);
 
+  map<string, infosFunction> _functions = fv.getFunctions();
+  map<string, FUNCTION_MESSAGE_TYPE> _functionMessages = fv.getFunctionMessages();
+
   fv.checkMainFunction();
 
     // Check for unused functions
-    for (const auto &[name, info] : fv._functions) {
+    for (const auto &[name, info] : _functions) {
         if (!info.used && info.state == DEFINED) {
-            fv._functionMessages["Warning : Unused Function : " + to_string(info.line) + ":" + to_string(info.column) +
+            _functionMessages["Warning : Unused Function : " + to_string(info.line) + ":" + to_string(info.column) +
                                       " : Function \"" + name + "\" defined but never used"] = FUNC_WARNING;
         }
     }
 
     // Print messages
-    for (const auto &[msg, type] : fv._functionMessages) {
+    for (const auto &[msg, type] : _functionMessages) {
         if (type == FUNC_ERROR) {
             cerr << msg << endl;
         } else if (type == FUNC_WARNING) {

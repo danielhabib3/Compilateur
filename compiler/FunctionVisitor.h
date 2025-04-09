@@ -17,20 +17,36 @@ enum FunctionState {
     DEFINED
 };
 
-struct FunctionInfo {
+typedef struct FunctionInfo {
     int line;
     int column;
     bool used = false;
     FunctionState state;
-};
+} infosFunction;
 
 class FunctionVisitor : public ifccBaseVisitor {
 public:
+    // constructor
+    FunctionVisitor() {
+        _functions = {};
+        _functionMessages = {};
+    };
+
+    // getter
+    map<string, infosFunction> getFunctions() {
+        return _functions;
+    }
+
+    map<string, FUNCTION_MESSAGE_TYPE> getFunctionMessages() {
+        return _functionMessages;
+    }
+
     virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override;
     virtual antlrcpp::Any visitFunction_declaration(ifccParser::Function_declarationContext *ctx) override;
     virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override;
     void checkMainFunction();
 
+private:
     map<string, FunctionInfo> _functions;
     map<string, FUNCTION_MESSAGE_TYPE> _functionMessages;
 };

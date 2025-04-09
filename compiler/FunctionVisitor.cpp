@@ -1,7 +1,7 @@
 #include "FunctionVisitor.h"
 
 antlrcpp::Any FunctionVisitor::visitFunction_declaration(ifccParser::Function_declarationContext *ctx) {
-    string functionName = ctx->ID()->getText();
+    string functionName = ctx->ID(0)->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
 
@@ -22,7 +22,7 @@ antlrcpp::Any FunctionVisitor::visitFunction_declaration(ifccParser::Function_de
 }
 
 antlrcpp::Any FunctionVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx) {
-    string functionName = ctx->ID()->getText();
+    string functionName = ctx->ID(0)->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
 
