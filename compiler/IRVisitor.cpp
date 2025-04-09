@@ -440,7 +440,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     _cfg->current_bb = test_endwhile_bb;
     return 0;
- }
+}
 
 
 antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
@@ -484,7 +484,7 @@ antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx){
 
 antlrcpp::Any IRVisitor::visitSwitch_case(ifccParser::Switch_caseContext *ctx) {
 
-    // Évalue l'expression du switch qui sera à comparer avec les cases
+    // Expression du switch qui sera à comparer avec les cases
     this->visit(ctx->expr(0));
 
     infosVariable switch_var;
