@@ -2,25 +2,15 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : (function_definition | function_declaration)+ ;
+prog : type 'main' '(' ')' '{' block return_stmt '}' ;
 
-function_definition : type ID '('  (type ID (',' type ID)*)? ')' block;
+block : (instruction)* ;
 
-function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
-
-block : '{' (instruction)* '}' ;
-
-instruction : declaration | affectation | return_stmt | block | test | boucle_while | (expr ';') ;
-
-test : IF '(' expr ')' block (ELSE block)? ;
-
-boucle_while : WHILE '(' expr ')' block ;
+instruction : declaration | affectation ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
 affectationDeclaration : ID ('=' expr)? ;
-
-affectation : ID '=' expr ';' ;
 
 return_stmt: RETURN expr ';' ;
 
@@ -28,7 +18,6 @@ function_call : ID '(' (expr (',' expr)*)? ')' ;
 
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
-     | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
      | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod
@@ -38,7 +27,13 @@ expr : CONST                                                # exprConst
      | expr '&' expr                                        # exprAndBit
      | expr '^' expr                                        # exprXorBit
      | expr '|' expr                                        # exprOrBit            
-    ;
+     | ID '[' expr ']' '=' expr                             # exprAffectationTable
+     | ID '=' expr                                          # exprAffectation
+     | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
+     | ID OP=('++' | '--')                                  # exprPostfixIncDec
+     | OP=('++' | '--') ID                                  # exprPrefixIncDec
+     ;
+
       
 
 type : 'int' ;
@@ -47,6 +42,11 @@ WHILE : 'while' ;
 IF: 'if' ;
 ELSE : 'else' ;
 RETURN : 'return' ;
+BREAK : 'break' ;
+CONTINUE : 'continue' ;
+SWITCH : 'switch' ;
+CASE : 'case' ;
+DEFAULT :'default' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
 CONST : [0-9]+ ;

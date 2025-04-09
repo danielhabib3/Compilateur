@@ -78,6 +78,26 @@ cfg:
 	cat $(FILE)
 	feh output.png
 
+bloc:
+	rm -f output_bloc.png
+	rm -f fichier_bloc.dot
+	make ifcc
+	if [ ! -f fichier_bloc.dot ]; then ./ifcc $(FILE); fi
+	dot -Tpng fichier_bloc.dot -o output_bloc.png
+	rm -f fichier_bloc.dot
+	cat $(FILE)
+	feh output_bloc.png
+
+cfg:
+	rm -f output.png
+	rm -f fichier.dot
+	make ifcc
+	if [ ! -f fichier.dot ]; then ./ifcc $(FILE); fi
+	dot -Tpng fichier.dot -o output.png
+	rm -f fichier.dot
+	cat $(FILE)
+	feh output.png
+
 ##########################################
 # delete all machine-generated files
 clean:
