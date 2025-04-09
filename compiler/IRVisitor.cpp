@@ -593,7 +593,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx)
 {
     string id = ctx->ID()->getText();
-    infosVariable infosV = _variables[id];
+    infosVariable infosV = getInfosVariable(currentBlock, id);
 
     // On Charge la valeur actuelle de la variable dans %eax
     IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
@@ -603,7 +603,7 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
     infosVariable infosGauche;
     infosGauche.location = this->next_free_location++;
     string tempVarGauche = "!temp" + to_string(current_temp++);
-    _variables[tempVarGauche] = infosGauche;
+    currentBlock->_variables[tempVarGauche] = infosGauche;
 
     IRInstr *instrStoreLeft = new IRInstrAffect(_cfg->current_bb, to_string(infosGauche.location), "0");
     _cfg->current_bb->add_IRInstr(instrStoreLeft);
@@ -615,7 +615,7 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
     infosVariable infosDroite;
     infosDroite.location = this->next_free_location++;
     string tempVarDroite = "!temp" + to_string(current_temp++);
-    _variables[tempVarDroite] = infosDroite;
+    currentBlock->_variables[tempVarDroite] = infosDroite;
 
     IRInstr *instrStoreRight = new IRInstrAffect(_cfg->current_bb, to_string(infosDroite.location), "0");
     _cfg->current_bb->add_IRInstr(instrStoreRight);
