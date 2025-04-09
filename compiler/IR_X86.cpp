@@ -13,11 +13,11 @@ string to_x86(string s) {
 }
 
 void BasicBlock::gen_asm(ostream &o) {
-    // o << label << ":\n"; 
+    // o << label << ":\n";
     for (IRInstr* instr : instrs) {
         instr->gen_asm(o);
     }
-    
+
     if (exit_true == nullptr) {
         // o << "\tleave\n\tret\n";
     } else if (exit_false == nullptr) {
@@ -91,7 +91,7 @@ void IRInstrDiv::gen_asm(ostream &o) {
     o << "    cltd\n";
     o << "    idivl " << op2 << "\n";
 }
- 
+
 
 void IRInstrMod::gen_asm(ostream &o) {
     dest = to_x86(dest);
@@ -101,7 +101,7 @@ void IRInstrMod::gen_asm(ostream &o) {
     o << "    movl " << op1 << ", " << dest << "\n";
     o << "    cltd\n";
     o << "    idivl " << op2 << "\n";
-    o << "    movl %edx, %eax\n" ;  
+    o << "    movl %edx, %eax\n" ;
 }
 
 void IRInstrCmpEQ::gen_asm(ostream &o) {
@@ -139,7 +139,7 @@ void IRInstrNotUnary::gen_asm(ostream &o){
     op1 = to_x86(op1);
     o << "    cmpl $0, " << op1 << "\n";
     o << "    sete %al\n";
-    o << "    movzbl %al, " << dest << "\n";	
+    o << "    movzbl %al, " << dest << "\n";
 
 }
 
