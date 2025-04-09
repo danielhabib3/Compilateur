@@ -523,3 +523,61 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     return 0;
  }
+
+
+antlrcpp::Any IRVisitor::visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx){
+
+    return 0;
+}
+antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx){
+
+    return 0;
+}
+antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx)
+{
+    string id = ctx->ID()->getText();
+    infosVariable infosV = _variables[id];
+
+    // On Charge la valeur actuelle de la variable dans %eax
+    IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
+    _cfg->current_bb->add_IRInstr(instrLoad);
+
+    // On Stocke la valeur actuelle temporairement
+    infosVariable infosGauche;
+    infosGauche.location = this->next_free_location++;
+    string tempVarGauche = "!temp" + to_string(current_temp++);
+    _variables[tempVarGauche] = infosGauche;
+
+    IRInstr *instrStoreLeft = new IRInstrAffect(_cfg->current_bb, to_string(infosGauche.location), "0");
+    _cfg->current_bb->add_IRInstr(instrStoreLeft);
+
+    // On visite la nouvelle expression qui sera à ajotuer à la valeur actuelle (la partie droite de += ou -=)
+    this->visit(ctx->expr());
+
+    // On Stocke cette nouvelle valeur dans une autre temporaire
+    infosVariable infosDroite;
+    infosDroite.location = this->next_free_location++;
+    string tempVarDroite = "!temp" + to_string(current_temp++);
+    _variables[tempVarDroite] = infosDroite;
+
+    IRInstr *instrStoreRight = new IRInstrAffect(_cfg->current_bb, to_string(infosDroite.location), "0");
+    _cfg->current_bb->add_IRInstr(instrStoreRight);
+
+    // Effectuer l'opération += ou -=
+    if(ctx->OP->getText() == "+=")
+    {
+        IRInstr *instrAdd = new IRInstrAdd(_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
+        _cfg->current_bb->add_IRInstr(instrAdd);
+    }
+    else
+    {
+        IRInstr *instrSub = new IRInstrSub(_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
+        _cfg->current_bb->add_IRInstr(instrSub);
+    }
+
+    // Affecter le résultat à la variable d'origine
+    IRInstr *instrAffect = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location), "0");
+    _cfg->current_bb->add_IRInstr(instrAffect);
+
+    return 0;
+}
