@@ -446,7 +446,10 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  antlrcpp::Any IRVisitor::visitBoucle_while(ifccParser::Boucle_whileContext *ctx)
  {
     BasicBlock* test_bb = new BasicBlock(_cfg, ".test" + to_string(current_test), nullptr, nullptr, TEST_WHILE);
+    _cfg->stack_boucle_test_block_for_continue.push(test_bb); // On push le basicblock test_bb qui sera la destination en cas de continue trouvé dans le body
+
     _cfg->current_bb->exit_true = test_bb;
+
     _cfg->current_bb = test_bb;
 
     string body_bb_label = ".body" + to_string(current_test);
@@ -454,9 +457,10 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     string test_endwhile_bb_label = ".endwhile" + to_string(current_test);
     BasicBlock* test_endwhile_bb = new BasicBlock(_cfg, test_endwhile_bb_label, nullptr, nullptr);
-    
+    _cfg->stack_break_destinations.push(test_endwhile_bb); // On push le basicblock endwhile qui sera la destination en cas de break trouvé dans le body
 
     _cfg->current_bb->exit_true = body_bb;
+
     _cfg->current_bb->exit_false = test_endwhile_bb;
 
     this->visit(ctx->expr());
@@ -482,6 +486,10 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     _cfg->current_bb = body_bb;
     this->visit(ctx->block());
+
+    _cfg->stack_break_destinations.pop(); // On pop le basicblock endwhile une fois qu'on a fini le body
+    _cfg->stack_boucle_test_block_for_continue.pop(); // On pop le basicblock test une fois qu'on a fini le body
+
     _cfg->current_bb->exit_true = test_bb;
 
     _cfg->current_bb = test_endwhile_bb;

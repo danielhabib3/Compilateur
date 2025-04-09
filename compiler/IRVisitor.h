@@ -76,7 +76,10 @@ class IRVisitor : public ifccBaseVisitor {
         // virtual antlrcpp::Any visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx) override ;
         // virtual antlrcpp::Any visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx) override ;
         virtual antlrcpp::Any visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx) override ;
-    
+        virtual antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
+        virtual antlrcpp::Any visitContinue(ifccParser::ContinueContext *ctx) override;
+        virtual antlrcpp::Any visitSwitch_case(ifccParser::Switch_caseContext *ctx) override;
+
     protected:
         CFG* _cfg;
         antlr4::tree::ParseTree* _ast;

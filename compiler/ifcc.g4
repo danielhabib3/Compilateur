@@ -10,7 +10,9 @@ function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 
 block : '{' (instruction)* '}' ;
 
-instruction : declaration | declarationTable | return_stmt | block | test | boucle_while | expr ';' ;
+instruction : declaration | declarationTable | return_stmt | block | test | switch_case | boucle_while | break | continue | expr ';' | ';' ;
+
+switch_case : SWITCH '(' expr ')' '{' (CASE expr ':' (block | instruction)*)* (DEFAULT ':' (block | instruction)*)? '}' ;
 
 test : IF '(' expr ')' block (ELSE block)? ;
 
@@ -19,6 +21,10 @@ boucle_while : WHILE '(' expr ')' block ;
 declarationTable : type affectationDeclarationTable (',' affectationDeclarationTable )* ';' ;
 
 affectationDeclarationTable : ID'['CONST']' ('=' '{' (expr (',' expr)*)? '}')? ;
+
+break : (BREAK ';') ;
+
+continue : (CONTINUE ';') ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -56,6 +62,11 @@ WHILE : 'while' ;
 IF: 'if' ;
 ELSE : 'else' ;
 RETURN : 'return' ;
+BREAK : 'break' ;
+CONTINUE : 'continue' ;
+SWITCH : 'switch' ;
+CASE : 'case' ;
+DEFAULT :'default' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
 
 CONST : [0-9]+ ;

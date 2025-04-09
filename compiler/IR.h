@@ -9,7 +9,7 @@
 #include "tree/ParseTree.h" // Ensure this header file defines tree::ParseTree
 #include "VariableVisitor.h"
 
-enum t_type { TEST_IF, TEST_WHILE, NOT_TEST };
+enum t_type { TEST_IF, TEST_WHILE, TEST_SWITCH, NOT_TEST };
 
 using namespace std;
 
@@ -164,12 +164,10 @@ class CFG {
 		o << "}\n";
 	}
 
-	BasicBlock* current_bb; /**< The current basic block being built */
-
-
-
-	
+	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	stack <BasicBlock*> stack_break_destinations;
+	stack <BasicBlock*> stack_boucle_test_block_for_continue;
 
 	protected:
 };
