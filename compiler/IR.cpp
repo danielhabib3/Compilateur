@@ -319,3 +319,18 @@ void IRInstrReturn::gen_asm(ostream &o)
 {
     o << "    jmp ." << this->bb->cfg->bbs[0]->label << "_out\n";
 }
+
+// void IRInstrPreInc::gen_asm(ostream &o)
+// {
+
+//     string new_dest = to_x86(dest);
+//     string new_op1 = to_x86(op1);
+//     o << " mov " << new_dest << ", " << new_op1 << "\n";
+//     o << " inc " <<  new_dest  << "\n";
+//     o << " mov " << new_op1 << ", " << new_dest << "\n";
+// }
+
+// void IRInstrPreDec::gen_asm(ostream &o)
+// {
+    
+// }

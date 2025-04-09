@@ -525,14 +525,33 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  }
 
 
-antlrcpp::Any IRVisitor::visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx){
+// antlrcpp::Any IRVisitor::visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx){
 
-    return 0;
-}
-antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx){
+//     string id = ctx->ID()->getText();
+//     infosVariable infosV = _variables[id];
 
-    return 0;
-}
+//     return 0;
+// }
+
+// antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx){
+ 
+//     string id = ctx->ID()->getText();
+//     infosVariable infosV = _variables[id];
+
+//     if(ctx->OP->getText() == "++")
+//     {
+//         IRInstr* IRInstrPreInc = new IRInstrPreInc(_cfg->current_bb, "0", to_string(infosV.location));
+//         _cfg->current_bb->add_IRInstr(IRInstrPreInc);
+//     }
+//     else
+//     {
+//         IRInstr * IRInstrPreDec = new IRInstrPreDec(_cfg->current_bb, "0", to_string(infosV.location));
+//         _cfg->current_bb->add_IRInstr(IRInstrPreDec);
+//     }
+
+//     return 0;
+// }
+
 antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx)
 {
     string id = ctx->ID()->getText();
