@@ -301,6 +301,33 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     return tempVar;
 }
 
+
+antlrcpp::Any IRVisitor::visitFunction_declaration(ifccParser::Function_declarationContext *ctx) {
+    string funcName = ctx->ID(0)->getText(); 
+
+    if (_functions.find(funcName) != _functions.end()) {
+        cerr << "Error: Function '" << funcName << "' already declared." << endl;
+        exit(1);
+    }
+
+    vector<string> paramNames;
+
+    for (size_t i = 1; i < ctx->ID().size(); ++i) {
+        string paramName = ctx->ID(i) ? ctx->ID(i)->getText() : "param" + to_string(i);
+        paramNames.push_back(paramName);
+    }
+
+    _functions[funcName] = FunctionPrototype{
+        .name = funcName,
+        .paramNames = paramNames,
+        .paramCount = paramNames.size()
+    };
+
+    return 0;
+}
+
+
+
 antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx) {
     string funcName = ctx->ID(0)->getText(); 
 

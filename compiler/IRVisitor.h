@@ -31,6 +31,16 @@ class IRVisitor : public ifccBaseVisitor {
             _variables = variables;
         }
 
+        std::map<std::string, FunctionPrototype> _declaredFunctions;
+
+        struct FunctionPrototype {
+            std::string name;
+            std::vector<std::string> paramNames;
+            int paramCount;
+        };
+        
+
+
         // virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
         // virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
         virtual antlrcpp::Any visitAffectation(ifccParser::AffectationContext *ctx) override ;
@@ -46,6 +56,7 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprOrBit(ifccParser::ExprOrBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprXorBit(ifccParser::ExprXorBitContext *ctx) override ;
         virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override ;
+        virtual antlrcpp::Any visitFunction_declaration(ifccParser::Function_declarationContext *ctx) override ;
         virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override ;
 
     

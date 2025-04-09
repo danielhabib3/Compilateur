@@ -305,5 +305,7 @@ class IRInstrFunc_Def : public IRInstr {
 	protected:
 		std::string func_name;
 	};
+
+		
 		
 #endif
