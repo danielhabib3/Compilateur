@@ -27,15 +27,10 @@ void CFG::gen_asm(ostream &o) {
 }
 
 void CFG::gen_asm_prologue(ostream &o) {
-    #ifdef __APPLE__
-    o << ".globl _main\n" ;
-    o << " _main: \n" ;
-    #else
-    o << ".globl main\n" ;
-    o << " main: \n" ;
-    #endif
-    o << "    pushq %rbp\n";
-    o << "    movq %rsp, %rbp\n";
+        o << ".globl " << entry_label << "\n";
+        o << entry_label << ":\n";
+        o << "    pushq %rbp\n";
+        o << "    movq %rsp, %rbp\n";
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
@@ -144,14 +139,5 @@ void IRInstrFunc_Call::gen_asm(std::ostream &o) {
     }
 }
 
-void IRInstrFunc_Def::gen_asm(std::ostream &o) {
-    o << ".globl " << func_name << "\n";
-    o << func_name << ":\n";
-    o << "    pushq %rbp\n";
-    o << "    movq %rsp, %rbp\n";
-
-    o << "    leave\n";
-    o << "    ret\n";
-}
 
 

@@ -107,9 +107,14 @@ class CFG {
 	};
 
 	CFG(string entry_label) {
+		this->entry_label = entry_label;
 		bbs = vector<BasicBlock*>();
 		bbs.push_back(new BasicBlock(this, entry_label, nullptr, nullptr, nullptr));
 		current_bb = bbs[0];
+	};
+
+	string get_entry_label() {
+		return this->entry_label;
 	};
 
 	// destructor
@@ -140,6 +145,7 @@ class CFG {
 
  protected:
 	
+	std::string entry_label; /**< label of the entry block */
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 };
 
@@ -301,16 +307,6 @@ class IRInstrFunc_Call : public IRInstr {
 	
 	};
 
-class IRInstrFunc_Def : public IRInstr {
-	public:
-		IRInstrFunc_Def(BasicBlock* bb_, const std::string& func_name)
-			: IRInstr(bb_), func_name(func_name) {}
-	
-		void gen_asm(std::ostream &o) override;
-	
-	protected:
-		std::string func_name;
-	};
 
 		
 		

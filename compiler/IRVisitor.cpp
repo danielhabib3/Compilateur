@@ -314,7 +314,7 @@ antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitio
     _cfg->current_bb = entryBB;
     _cfg->add_bb(entryBB);
 
-    _cfg->current_bb->add_IRInstr(new IRInstrFunc_Def(_cfg->current_bb, funcName));
+    _cfg->gen_asm_prologue(std::cout);
 
     if (ctx->block()) {
         visit(ctx->block());

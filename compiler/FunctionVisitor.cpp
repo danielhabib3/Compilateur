@@ -82,11 +82,22 @@ antlrcpp::Any FunctionVisitor::visitFunction_definition(ifccParser::Function_def
 
     return visitChildren(ctx);
 }
+std::set<std::string> standardFunctions = {
+    "getchar", "putchar", "printf", "scanf", "exit" // Ajoute toutes les fonctions standard nécessaires
+};
 
 antlrcpp::Any FunctionVisitor::visitFunction_call(ifccParser::Function_callContext *ctx) {
     string functionName = ctx->ID()->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
+
+    if (standardFunctions.find(functionName) != standardFunctions.end()) {
+        // Si la fonction est une fonction standard, on ignore les vérifications de déclaration/ définition
+        if (!_functions[functionName].used) {
+            _functions[functionName].used = true;
+        }
+        return visitChildren(ctx);
+    }
 
     if (_functions.find(functionName) == _functions.end()) {
         _functionMessages["Error : Undeclared Function : " + to_string(line) + ":" + to_string(column) +
