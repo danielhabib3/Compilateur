@@ -280,7 +280,7 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     return 0;
  }
  
- antlrcpp::Any IRVisitor::visitFunc_call(ifccParser::Func_callContext *ctx) {
+ antlrcpp::Any IRVisitor::visitFunction_call(ifccParser::Function_callContext *ctx) {
     string func_name = ctx->ID()->getText();
     vector<string> argVars;
 

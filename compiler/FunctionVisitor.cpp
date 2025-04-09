@@ -48,7 +48,7 @@ antlrcpp::Any FunctionVisitor::visitFunction_definition(ifccParser::Function_def
     return visitChildren(ctx);
 }
 
-antlrcpp::Any FunctionVisitor::visitFunc_call(ifccParser::Func_callContext *ctx) {
+antlrcpp::Any FunctionVisitor::visitFunction_call(ifccParser::Function_callContext *ctx) {
     string functionName = ctx->ID()->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
@@ -61,4 +61,12 @@ antlrcpp::Any FunctionVisitor::visitFunc_call(ifccParser::Func_callContext *ctx)
     }
 
     return visitChildren(ctx);
+}
+
+void FunctionVisitor::checkMainFunction() {
+    if (_functions.find("main") == _functions.end()) {
+        _functionMessages["Error : Missing main function : Function \"main\" is not defined"] = FUNC_ERROR;
+    } else if (_functions["main"].state != DEFINED) {
+        _functionMessages["Error : Incomplete main function : Function \"main\" is declared but not defined"] = FUNC_ERROR;
+    }
 }

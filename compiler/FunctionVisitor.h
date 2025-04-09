@@ -3,7 +3,7 @@
 
 #include <map>
 #include <string>
-#include "ifccBaseVisitor.h"
+#include "generated/ifccBaseVisitor.h"
 
 using namespace std;
 
@@ -26,9 +26,10 @@ struct FunctionInfo {
 
 class FunctionVisitor : public ifccBaseVisitor {
 public:
-    virtual antlrcpp::Any visitFunc_call(ifccParser::Func_callContext *ctx) override;
+    virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override;
     virtual antlrcpp::Any visitFunction_declaration(ifccParser::Function_declarationContext *ctx) override;
     virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override;
+    void checkMainFunction();
 
     map<string, FunctionInfo> _functions;
     map<string, FUNCTION_MESSAGE_TYPE> _functionMessages;

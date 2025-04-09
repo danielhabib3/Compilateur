@@ -8,6 +8,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 #include "VariableVisitor.h"
+#include "FunctionVisitor.h"
 #include "IR.h"
 #include "IRVisitor.h"
 
@@ -94,6 +95,8 @@ int main(int argn, const char **argv)
 
   FunctionVisitor fv;
   fv.visit(tree);
+
+  fv.checkMainFunction();
 
     // Check for unused functions
     for (const auto &[name, info] : fv._functions) {
