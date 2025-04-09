@@ -91,6 +91,13 @@ antlrcpp::Any FunctionVisitor::visitFunction_call(ifccParser::Function_callConte
     if (_functions.find(functionName) == _functions.end()) {
         _functionMessages["Error : Undeclared Function : " + to_string(line) + ":" + to_string(column) +
                           " : Function \"" + functionName + "\" called but not declared"] = FUNC_ERROR;
+    } else if (_functions[functionName].state == DECLARED) {
+        _functionMessages["Error : Incomplete Function Call : " + to_string(line) + ":" + to_string(column) +
+                          " : Function \"" + functionName + "\" called but not defined"] = FUNC_ERROR;
+    } else if (_functions[functionName].used) {
+        _functionMessages["Warning : Multiple Calls : " + to_string(line) + ":" + to_string(column) +
+                          " : Function \"" + functionName + "\" already called at " +
+                          to_string(_functions[functionName].line) + ":" + to_string(_functions[functionName].column)] = FUNC_WARNING;
     } else {
         _functions[functionName].used = true;
     }
@@ -103,5 +110,11 @@ void FunctionVisitor::checkMainFunction() {
         _functionMessages["Error : Missing main function : Function \"main\" is not defined"] = FUNC_ERROR;
     } else if (_functions["main"].state != DEFINED) {
         _functionMessages["Error : Incomplete main function : Function \"main\" is declared but not defined"] = FUNC_ERROR;
+    }
+    else if (_functions["main"].paramCount != 0) {
+        _functionMessages["Error : Invalid main function : Function \"main\" should not have parameters"] = FUNC_ERROR;
+    }
+    else{
+        _functions["main"].used = true;
     }
 }

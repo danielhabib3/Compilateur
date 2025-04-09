@@ -44,6 +44,18 @@ public:
         return _functionMessages;
     }
 
+    int countErrors() {
+        int count = 0;
+        for(auto it = _functionMessages.begin(); it != _functionMessages.end(); it++)
+        {
+            if(it->second == FUNC_ERROR)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+
     virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override;
     virtual antlrcpp::Any visitFunction_declaration(ifccParser::Function_declarationContext *ctx) override;
     virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override;

@@ -4,4 +4,4 @@ int main() {
     int z = 'x';
     putchar(z+1);
     return 0;
-    }
+}

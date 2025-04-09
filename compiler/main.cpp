@@ -100,22 +100,28 @@ int main(int argn, const char **argv)
 
   fv.checkMainFunction();
 
-    // Check for unused functions
-    for (const auto &[name, info] : _functions) {
-        if (!info.used && info.state == DEFINED) {
-            _functionMessages["Warning : Unused Function : " + to_string(info.line) + ":" + to_string(info.column) +
-                                      " : Function \"" + name + "\" defined but never used"] = FUNC_WARNING;
-        }
-    }
+  // Check for unused functions
+  for (const auto &[name, info] : _functions) {
+      if (!info.used && info.state == DEFINED) {
+          _functionMessages["Warning : Unused Function : " + to_string(info.line) + ":" + to_string(info.column) +
+                                    " : Function \"" + name + "\" defined but never used"] = FUNC_WARNING;
+      }
+  }
 
-    // Print messages
-    for (const auto &[msg, type] : _functionMessages) {
-        if (type == FUNC_ERROR) {
-            cerr << msg << endl;
-        } else if (type == FUNC_WARNING) {
-            cout << msg << endl;
-        }
-    }
+  // Print messages
+  for (const auto &[msg, type] : _functionMessages) {
+      if (type == FUNC_ERROR) {
+          cerr << msg << endl;
+      } else if (type == FUNC_WARNING) {
+          // cout << msg << endl;
+      }
+  }
+
+  if(fv.countErrors() > 0)
+  {
+    cerr << "error: syntax error during functions analysis" << endl;
+    exit(1);
+  }
 
   
   // CodeGenVisitor cgv;
