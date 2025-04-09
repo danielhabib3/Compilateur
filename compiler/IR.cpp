@@ -331,10 +331,6 @@ void IRInstrReturn::gen_asm(ostream &o)
     o << "    jmp ." << this->bb->cfg->bbs[0]->label << "_out\n";
 }
 
-void IRInstrJump::gen_asm(ostream &o)
-{
-    o << "    jmp " << jump_label << "\n";
-}
 
 // void IRInstrPreInc::gen_asm(ostream &o)
 // {
