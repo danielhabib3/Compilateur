@@ -30,7 +30,7 @@ function_call : ID '(' (expr (',' expr)*)? ')' ;
 
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
-     | ID'['expr']'                                         # exprTable
+     | ID '[' expr ']'                                      # exprTable
      | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
@@ -41,9 +41,13 @@ expr : CONST                                                # exprConst
      | expr '&' expr                                        # exprAndBit
      | expr '^' expr                                        # exprXorBit
      | expr '|' expr                                        # exprOrBit            
-     | ID'['expr']' '=' expr                                # exprAffectationTable
+     | ID '[' expr ']' '=' expr                             # exprAffectationTable
      | ID '=' expr                                          # exprAffectation
-    ;
+     | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
+     | ID OP=('++' | '--')                                  # exprPostfixIncDec
+     | OP=('++' | '--') ID                                  # exprPrefixIncDec
+     ;
+
       
 
 type : 'int' ;
