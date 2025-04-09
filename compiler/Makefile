@@ -18,8 +18,8 @@ OBJECTS=build/ifccBaseVisitor.o \
 	build/ifccVisitor.o \
 	build/ifccParser.o \
 	build/main.o \
-	build/CodeGenVisitor.o \
 	build/VariableVisitor.o \
+	build/FunctionVisitor.o \
 	build/IR.o \
 	build/IRVisitor.o
 
@@ -67,6 +67,16 @@ gui:
 	java -jar $(ANTLRJAR) -Dlanguage=Java -o generated ifcc.g4
 	javac -cp $(ANTLRJAR) -d build generated/*.java
 	java -cp $(ANTLRJAR):build org.antlr.v4.gui.TestRig ifcc axiom -gui $(FILE)
+
+cfg:
+	rm -f output.png
+	rm -f fichier.dot
+	make ifcc
+	if [ ! -f fichier.dot ]; then ./ifcc $(FILE); fi
+	dot -Tpng fichier.dot -o output.png
+	rm -f fichier.dot
+	cat $(FILE)
+	feh output.png
 
 ##########################################
 # delete all machine-generated files

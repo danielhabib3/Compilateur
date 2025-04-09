@@ -12,7 +12,6 @@
 #include "IR.h"
 #include "IRVisitor.h"
 
-#include "CodeGenVisitor.h"
 
 using namespace antlr4;
 using namespace std;

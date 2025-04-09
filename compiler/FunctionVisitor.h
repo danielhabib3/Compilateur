@@ -22,6 +22,9 @@ typedef struct FunctionInfo {
     int column;
     bool used = false;
     FunctionState state;
+    std::string name;                          // Function name
+    std::vector<std::string> paramNames;       // List of parameter names
+    int paramCount = 0;
 } infosFunction;
 
 class FunctionVisitor : public ifccBaseVisitor {

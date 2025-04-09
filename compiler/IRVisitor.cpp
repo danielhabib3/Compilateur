@@ -302,31 +302,6 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 }
 
 
-antlrcpp::Any IRVisitor::visitFunction_declaration(ifccParser::Function_declarationContext *ctx) {
-    string funcName = ctx->ID(0)->getText(); 
-
-    if (_functions.find(funcName) != _functions.end()) {
-        cerr << "Error: Function '" << funcName << "' already declared." << endl;
-        exit(1);
-    }
-
-    vector<string> paramNames;
-
-    for (size_t i = 1; i < ctx->ID().size(); ++i) {
-        string paramName = ctx->ID(i) ? ctx->ID(i)->getText() : "param" + to_string(i);
-        paramNames.push_back(paramName);
-    }
-
-    _functions[funcName] = FunctionPrototype{
-        .name = funcName,
-        .paramNames = paramNames,
-        .paramCount = paramNames.size()
-    };
-
-    return 0;
-}
-
-
 
 antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx) {
     string funcName = ctx->ID(0)->getText(); 
@@ -340,17 +315,6 @@ antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitio
     _cfg->add_basic_block(entryBB);
 
     _cfg->current_bb->add_IRInstr(new IRInstrFunc_Def(_cfg->current_bb, funcName));
-
-    for (size_t i = 1; i < ctx->ID().size(); ++i) {
-        string paramName = ctx->ID(i)->getText();
-        infosVariable info;
-        info.location = (_variables.size() + 1) * 4;
-        info.set = 1;
-        info.line = ctx->getStart()->getLine();
-        info.column = ctx->getStart()->getCharPositionInLine();
-        info.type = INT;
-        _variables[paramName] = info;
-    }
 
     if (ctx->block()) {
         visit(ctx->block());

@@ -30,14 +30,6 @@ class IRVisitor : public ifccBaseVisitor {
         void setVariables(map<string, infosVariable> variables) {
             _variables = variables;
         }
-
-        std::map<std::string, FunctionPrototype> _declaredFunctions;
-
-        struct FunctionPrototype {
-            std::string name;
-            std::vector<std::string> paramNames;
-            int paramCount;
-        };
         
 
 
