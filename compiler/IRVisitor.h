@@ -18,6 +18,8 @@ class IRVisitor : public ifccBaseVisitor {
 
             current_temp = 0;
             current_test = 0;
+
+            currentBlock = nullptr;
         };
 
         ~IRVisitor() {
@@ -28,17 +30,16 @@ class IRVisitor : public ifccBaseVisitor {
             return _cfg;
         }
 
-        void setVariables(map<string, infosVariable> variables) {
-            _variables = variables;
-        }
 
         void setVariableErrorsWarnings(map<string, ErrorType> variableErrorsWarnings) {
             _variableErrorsWarnings = variableErrorsWarnings;
         }
 
-        map<string, infosVariable> getVariables() {
-            return _variables;
+
+        void setRootBlock(Block* rootBlock) {
+            _rootBlock = rootBlock;
         }
+
 
         map<string, ErrorType> getVariableErrorsWarnings() {
             return _variableErrorsWarnings;
@@ -53,7 +54,7 @@ class IRVisitor : public ifccBaseVisitor {
         }
 
         // virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
-        // virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
+        virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
         virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *ctx) override ;
         virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override ;
         virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override ;
@@ -76,7 +77,9 @@ class IRVisitor : public ifccBaseVisitor {
     protected:
         CFG* _cfg;
         antlr4::tree::ParseTree* _ast;
-        map<string, infosVariable> _variables;
+        // map<string, infosVariable> _variables;
+        Block* currentBlock;
+        Block* _rootBlock;
         map<string, ErrorType> _variableErrorsWarnings;
         int current_temp;
         int current_test;

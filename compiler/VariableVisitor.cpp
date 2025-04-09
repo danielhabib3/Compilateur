@@ -1,7 +1,33 @@
 #include "VariableVisitor.h"
 
+antlrcpp::Any VariableVisitor::visitBlock(ifccParser::BlockContext *ctx)
+{
+    if(currentBlock == nullptr) {
+        // Si c'est le premier bloc, on l'initialise
+        currentBlock = new Block();
+        _rootBlock = currentBlock;
+    }
+    else {
+        // Sinon, on crée un nouveau bloc enfant
+        Block* newBlock = new Block(currentBlock);
+        currentBlock->addChild(newBlock);
+        currentBlock = newBlock; // Passer au nouveau bloc
+    }
+    // Parcourir toutes les instructions du bloc
+    for (auto instruction : ctx->instruction()) {
+        this->visit(instruction); // Visiter chaque instruction
+    }
 
-antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx) 
+    // Revenir au bloc parent
+    if(currentBlock->parent != nullptr)
+    {
+        currentBlock = currentBlock->parent;
+    }
+
+    return 0;
+}
+
+antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *ctx)
 {
     // cout << "Declaration : Visiting declaration" << endl;
     for(int i = 0; i < ctx->affectationDeclaration().size(); i++)
@@ -14,9 +40,9 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
         string type = ctx->type()->getText();
         int line = ctx->getStart()->getLine();
         int column = ctx->getStart()->getCharPositionInLine();
-        if(_variables.find(variableName) != _variables.end())
+        if(currentBlock->_variables.find(variableName) != currentBlock->_variables.end())
         {
-            infosVariable infosDeclaredVariable = _variables[variableName];
+            infosVariable infosDeclaredVariable = currentBlock->_variables[variableName];
             _variableErrorsWarnings["Error : Multiple Declarations : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" already declared in " + to_string(infosDeclaredVariable.line) + ":" + to_string(infosDeclaredVariable.column)] = ERROR;
         }
         else
@@ -36,15 +62,15 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             infos.line = ctx->getStart()->getLine();
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
-            _variables[variableName] = infos;
+            currentBlock->_variables[variableName] = infos;
             this->next_free_location++;
         }
 
         // cout << "Declaration : Visit Declaration end before visiting expr" << endl;
         if(expression != nullptr) {
-            infosVariable infos = _variables[variableName];
+            infosVariable infos = currentBlock->_variables[variableName];
             infos.set = 1;
-            _variables[variableName] = infos;
+            currentBlock->_variables[variableName] = infos;
             this->visit(expression);
         }
         // cout << "Declaration : Visit Declaration end after visiting expr" << endl;
@@ -61,15 +87,27 @@ antlrcpp::Any VariableVisitor::visitExprAffectation(ifccParser::ExprAffectationC
 
     string variableGaucheName = ctx->ID()->getText();
 
-    if(_variables.find(variableGaucheName) == _variables.end())
+    Block* block = this->currentBlock;
+    bool found = false;
+    while(block != nullptr)
+    {
+        if(block->_variables.find(variableGaucheName) != block->_variables.end())
+        {
+            found = true;
+            break;
+        }
+        block = block->parent;
+    }
+
+    if(!found)
     {
         _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
     }
     else
     {
-        infosVariable infos = _variables[variableGaucheName];
+        infosVariable infos = block->_variables[variableGaucheName];
         infos.set = 1;
-        _variables[variableGaucheName] = infos;
+        block->_variables[variableGaucheName] = infos;
     }
     
 
@@ -85,15 +123,28 @@ antlrcpp::Any VariableVisitor::visitExprID(ifccParser::ExprIDContext *ctx)
     string variableName = ctx->ID()->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
-    if(_variables.find(variableName) == _variables.end())
+
+    Block* block = this->currentBlock;
+    bool found = false;
+    while(block != nullptr)
+    {
+        if(block->_variables.find(variableName) != block->_variables.end())
+        {
+            found = true;
+            break;
+        }
+        block = block->parent;
+    }
+
+    if(!found)
     {
         _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" not declared"] = ERROR;
     }
     else
     {
-        infosVariable infos = _variables[variableName];
+        infosVariable infos = block->_variables[variableName];
         infos.nbUse++;
-        _variables[variableName] = infos;
+        block->_variables[variableName] = infos;
         if(infos.set == 0) {
             _variableErrorsWarnings["Warning : Using variable not initialized : " + to_string(line) + ":" + to_string(column) + " : Using variable \"" + variableName + "\" not initialized, declared at " + to_string(infos.line) + ":" + to_string(infos.column)] = WARNING;
         }
@@ -120,9 +171,9 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
         string type = ctx->type()->getText();
         int line = ctx->getStart()->getLine();
         int column = ctx->getStart()->getCharPositionInLine();
-        if(_variables.find(variableName) != _variables.end())
+        if(currentBlock->_variables.find(variableName) != currentBlock->_variables.end())
         {
-            infosVariable infosDeclaredVariable = _variables[variableName];
+            infosVariable infosDeclaredVariable = currentBlock->_variables[variableName];
             _variableErrorsWarnings["Error : Multiple Declarations : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" already declared in " + to_string(infosDeclaredVariable.line) + ":" + to_string(infosDeclaredVariable.column)] = ERROR;
         }
         else
@@ -143,11 +194,11 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
             infos.line = ctx->getStart()->getLine();
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
-            _variables[variableName] = infos;
+            currentBlock->_variables[variableName] = infos;
             this->next_free_location += infos.size;
         }
 
-        infosVariable infos = _variables[variableName];
+        infosVariable infos = currentBlock->_variables[variableName];
         if(infos.size < expressions.size())
         {
             _variableErrorsWarnings["Warning : Array size too small : " + to_string(line) + ":" + to_string(column) + " : Array \"" + variableName + "\" size is " + to_string(infos.size) + ", but " + to_string(expressions.size()) + " values are given"] = WARNING;
@@ -176,15 +227,29 @@ antlrcpp::Any VariableVisitor::visitExprTable(ifccParser::ExprTableContext *ctx)
     string variableName = ctx->ID()->getText();
     int line = ctx->getStart()->getLine();
     int column = ctx->getStart()->getCharPositionInLine();
-    if(_variables.find(variableName) == _variables.end())
+    
+
+    Block* block = this->currentBlock;
+    bool found = false;
+    while(block != nullptr)
+    {
+        if(block->_variables.find(variableName) != block->_variables.end())
+        {
+            found = true;
+            break;
+        }
+        block = block->parent;
+    }
+
+    if(!found)
     {
         _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable \"" + variableName + "\" not declared"] = ERROR;
     }
     else
     {
-        infosVariable infos = _variables[variableName];
+        infosVariable infos = block->_variables[variableName];
         infos.nbUse++;
-        _variables[variableName] = infos;
+        block->_variables[variableName] = infos;
     }
     this->visit(ctx->expr());
     return 0;
@@ -198,7 +263,19 @@ antlrcpp::Any VariableVisitor::visitExprAffectationTable(ifccParser::ExprAffecta
 
     string variableGaucheName = ctx->ID()->getText();
 
-    if(_variables.find(variableGaucheName) == _variables.end())
+    Block* block = this->currentBlock;
+    bool found = false;
+    while(block != nullptr)
+    {
+        if(block->_variables.find(variableGaucheName) != block->_variables.end())
+        {
+            found = true;
+            break;
+        }
+        block = block->parent;
+    }
+
+    if(!found)
     {
         _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
     }
