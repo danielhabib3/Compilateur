@@ -116,6 +116,10 @@ antlrcpp::Any FunctionVisitor::visitFunction_call(ifccParser::Function_callConte
     return visitChildren(ctx);
 }
 
+antlrcpp::Any FunctionVisitor::visitExprFunctionCall(ifccParser::ExprFunctionCallContext *ctx) {
+    return visitFunction_call(ctx->function_call());
+}
+
 void FunctionVisitor::checkMainFunction() {
     if (_functions.find("main") == _functions.end()) {
         _functionMessages["Error : Missing main function : Function \"main\" is not defined"] = FUNC_ERROR;
@@ -129,3 +133,4 @@ void FunctionVisitor::checkMainFunction() {
         _functions["main"].used = true;
     }
 }
+

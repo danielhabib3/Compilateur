@@ -114,10 +114,15 @@ void CFG::gen_asm(ostream &o) {
 }
 
 void CFG::gen_asm_prologue(ostream &o) {
-        o << ".globl " << entry_label << "\n";
-        o << entry_label << ":\n";
-        o << "    pushq %rbp\n";
-        o << "    movq %rsp, %rbp\n";
+    #ifdef __APPLE__
+    o << ".globl _main\n" ;
+    o << " _main: \n" ;
+    #else
+    o << ".globl main\n" ;
+    o << " main: \n" ;
+    #endif
+    o << "    pushq %rbp\n";
+    o << "    movq %rsp, %rbp\n";
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
@@ -324,6 +329,21 @@ void IRInstrOrBit::gen_asm(ostream &o) {
 void IRInstrReturn::gen_asm(ostream &o)
 {
     o << "    jmp ." << this->bb->cfg->bbs[0]->label << "_out\n";
+}
+
+
+void IRInstrFunc_Call::gen_asm(std::ostream &o) {
+    std::vector<std::string> argRegisters = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
+
+    for (size_t i = 0; i < args.size(); ++i) {
+        string arg = to_x86(args[i]);
+        o << "    movl " << arg << ", " << argRegisters[i] << "\n";
+    }
+
+    o << "    call " << func_name << "\n";
+
+    string new_dest = to_x86(dest);
+    o << "    movl %eax, " << new_dest << "\n";
 }
 
 

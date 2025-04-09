@@ -28,8 +28,12 @@ antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)
         currentBlock->notVisitedChildren.erase(currentBlock->notVisitedChildren.begin());
         currentBlock = tempBlock;
     }
-    for (auto instruction : ctx->instruction()) {
-        this->visit(instruction); // Visiter chaque instruction
+    for (int i = 0; i < ctx->instruction().size(); i++) {
+        this->visit(ctx->instruction(i)); // Visiter chaque instruction
+        // si break on break pour ne pas generer les instruction du bb
+        if(ctx->instruction(i)->break_() != nullptr) {
+            break;
+        }
     }
     if(currentBlock->parent != nullptr)
     {
@@ -68,6 +72,19 @@ antlrcpp::Any IRVisitor::visitExprID(ifccParser::ExprIDContext *ctx)
     _cfg->current_bb->add_IRInstr(instr);
     return 0;
 }
+
+antlrcpp::Any IRVisitor::visitExprChar(ifccParser::ExprCharContext *ctx)
+{
+    string raw = ctx->CHAR()->getText(); // e.g., "'x'"
+    char c = raw[1]; // assumes format is valid, like 'x'
+    int asciiValue = static_cast<int>(c);
+
+    IRInstr* instr = new IRInstrAffect(_cfg->current_bb, "0", "$" + to_string(asciiValue));
+    _cfg->current_bb->add_IRInstr(instr);
+
+    return 0;
+}
+
 
 antlrcpp::Any IRVisitor::visitExprConst(ifccParser::ExprConstContext *ctx)
 {
@@ -805,23 +822,38 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 //     return 0;
 // }
 
- antlrcpp::Any IRVisitor::visitFunction_call(ifccParser::Function_callContext *ctx) {
+antlrcpp::Any IRVisitor::visitFunction_call(ifccParser::Function_callContext *ctx) {
     string func_name = ctx->ID()->getText();
     vector<string> argVars;
 
     for (size_t i = 0; i < ctx->expr().size(); ++i) {
         std::any res = this->visit(ctx->expr(i));
-        string argName = std::any_cast<string>(res);
+        string argName;
+
+        try {
+            argName = std::any_cast<std::string>(res);
+        } catch (const std::bad_any_cast&) {
+            // fallback: could be int constant or empty result
+            try {
+                int val = std::any_cast<int>(res);
+                argName = to_string(val);
+            } catch (...) {
+                std::cerr << "Error: Unexpected return type from expr() in function call\n";
+                exit(1);
+            }
+        }
+
         argVars.push_back(argName);
     }
 
     string tempVar = "!temp" + to_string(current_temp++);
     infosVariable infos;
-    infos.location = (Variable.size() + 1) * 4;
-    Variable[tempVar] = infos;
+    infos.location = (_variables.size() + 1) * 4;
+    _variables[tempVar] = infos;
 
     IRInstr *instr = new IRInstrFunc_Call(_cfg->current_bb, func_name, argVars, tempVar);
     _cfg->current_bb->add_IRInstr(instr);
+
 
     return tempVar;
 }
@@ -829,21 +861,26 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 
 
 antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx) {
+
     string funcName = ctx->ID(0)->getText(); 
 
-    map<string, infosVariable> previous_variables = Variable;
+    map<string, infosVariable> previous_variables = _variables;
     _cfg = new CFG(funcName);
-    Variable.clear();
+    _variables.clear();
 
     BasicBlock* entryBB = new BasicBlock(_cfg, funcName, nullptr, nullptr);
     _cfg->current_bb = entryBB;
     _cfg->add_bb(entryBB);
 
-    _cfg->gen_asm_prologue(std::cout);
 
     if (ctx->block()) {
-        visit(ctx->block());
-    }
+
+        std::cout << "[IRVisitor] Entering function: " << funcName << std::endl;
+        this->visit(ctx->block());
+        std::cout << "[IRVisitor] Finished function: " << funcName << std::endl;    }
 
     return 0;
 }
+
+
+

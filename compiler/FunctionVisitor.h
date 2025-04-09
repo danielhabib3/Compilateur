@@ -59,6 +59,7 @@ public:
     virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override;
     virtual antlrcpp::Any visitFunction_declaration(ifccParser::Function_declarationContext *ctx) override;
     virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override;
+    virtual antlrcpp::Any visitExprFunctionCall(ifccParser::ExprFunctionCallContext *ctx) override;   
     void checkMainFunction();
 
 private:

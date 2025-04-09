@@ -51,6 +51,27 @@ int main(int argn, const char **argv)
     exit(1);
   }
 
+
+  
+  // FunctionVisitor fv;
+  // fv.visit(tree);
+  // fv.checkMainFunction();
+  // map<string, FUNCTION_MESSAGE_TYPE> funcErrorsWarnings = fv.getFunctionMessages();
+  // bool hasFunctionError = false;
+  
+  // for (const auto& [msg, type] : funcErrorsWarnings) {
+  //     cerr << msg << endl;
+  //     if (type == FUNC_ERROR) {
+  //         hasFunctionError = true;
+  //     }
+  // }
+  
+  // if (hasFunctionError) {
+  //     cerr << "error: syntax error during functions analysis" << endl;
+  //     exit(1);
+  // }
+  
+
   VariableVisitor vv;
   vv.visit(tree);
   ofstream fichier_bloc("fichier_bloc.dot");

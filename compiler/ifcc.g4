@@ -34,7 +34,11 @@ return_stmt: RETURN expr ';' ;
 
 function_call : ID '(' (expr (',' expr)*)? ')' ;
 
+CHAR : '\'' . '\'' ; 
+
+
 expr : CONST                                                # exprConst
+     | CHAR                                                 # exprChar
      | ID                                                   # exprID
      | ID '[' expr ']'                                      # exprTable
      | function_call                                        # exprFunctionCall

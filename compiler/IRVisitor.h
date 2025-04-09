@@ -60,6 +60,7 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *ctx) override ;
         virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override ;
         virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override ;
+        virtual antlrcpp::Any visitExprChar(ifccParser::ExprCharContext *ctx) override ;
         virtual antlrcpp::Any visitExprConst(ifccParser::ExprConstContext *ctx) override ;
         virtual antlrcpp::Any visitExprAddSub(ifccParser::ExprAddSubContext *ctx) override ;
         virtual antlrcpp::Any visitExprMulDivMod(ifccParser::ExprMulDivModContext *ctx) override ;
@@ -95,4 +96,6 @@ class IRVisitor : public ifccBaseVisitor {
         int current_temp;
         int current_test;
         int next_free_location;
+        std::map<std::string, infosVariable> _variables;
+
 };
