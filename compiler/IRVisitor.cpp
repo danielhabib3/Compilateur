@@ -310,9 +310,9 @@ antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitio
     _cfg = new CFG(funcName);
     _variables.clear();
 
-    BasicBlock* entryBB = new BasicBlock(_cfg, "entry");
+    BasicBlock* entryBB = new BasicBlock(_cfg, funcName, nullptr, nullptr, nullptr);
     _cfg->current_bb = entryBB;
-    _cfg->add_basic_block(entryBB);
+    _cfg->add_bb(entryBB);
 
     _cfg->current_bb->add_IRInstr(new IRInstrFunc_Def(_cfg->current_bb, funcName));
 

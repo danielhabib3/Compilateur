@@ -106,6 +106,12 @@ class CFG {
 		bbs = vector<BasicBlock*>();
 	};
 
+	CFG(string entry_label) {
+		bbs = vector<BasicBlock*>();
+		bbs.push_back(new BasicBlock(this, entry_label, nullptr, nullptr, nullptr));
+		current_bb = bbs[0];
+	};
+
 	// destructor
 	~CFG() {
 		for (auto bb : bbs) {
