@@ -28,8 +28,12 @@ antlrcpp::Any IRVisitor::visitBlock(ifccParser::BlockContext *ctx)
         currentBlock->notVisitedChildren.erase(currentBlock->notVisitedChildren.begin());
         currentBlock = tempBlock;
     }
-    for (auto instruction : ctx->instruction()) {
-        this->visit(instruction); // Visiter chaque instruction
+    for (int i = 0; i < ctx->instruction().size(); i++) {
+        this->visit(ctx->instruction(i)); // Visiter chaque instruction
+        // si break on break pour ne pas generer les instruction du bb
+        if(ctx->instruction(i)->break_() != nullptr) {
+            break;
+        }
     }
     if(currentBlock->parent != nullptr)
     {
@@ -647,41 +651,38 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
     return 0;
 }
 
-// antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
+// antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx)
+// {
+//     int line = ctx->getStart()->getLine();
+//     int column = ctx->getStart()->getCharPositionInLine();
 
-//     // TO DO : Faire la gestion d'erreur autre part ??!
-//     if (_cfg->stack_break_destinations.empty()) {
-//         std::cerr << "Erreur : break en dehors d’une boucle !" << std::endl;
-//         exit(1);
+//     if (_cfg->stack_break_destinations.empty()) 
+//     {
+//         _variableErrorsWarnings["ERROR : " + to_string(line) + ":" + to_string(column) + " le break est en dehors d'une ou d'un switch case"] = ERROR;
 //     }
-    
-//     BasicBlock* destinationBreak = _cfg->stack_break_destinations.top();
-    
-//     string jump_label;
-//     jump_label = destinationBreak->label;
-
-//     IRInstr * instr = new IRInstrJump(_cfg->current_bb, jump_label);
-//     _cfg->current_bb->add_IRInstr(instr);
-    
+//     else 
+//     {
+//         BasicBlock* destinationBreak = _cfg->stack_break_destinations.top();
+//         _cfg->current_bb->exit_true = destinationBreak->exit_false;
+//     }
 //     return 0;
 // }
 
-// // TO DO : Ne pas faire 2 fonctions pour visitCOntinue et visitBreak mais les merge
-// antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx){
+// antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx)
+// {
 
+//     int line = ctx->getStart()->getLine();
+//     int column = ctx->getStart()->getCharPositionInLine();
 //     // TO DO : Faire la gestion d'erreur autre part ??!
-//     if (_cfg->stack_boucle_test_block_for_continue.empty()) {
-//         std::cerr << "Erreur : Continue en dehors d’une boucle !" << std::endl;
-//         exit(1);
+//     if (_cfg->stack_boucle_test_block_for_continue.empty()) 
+//     {
+//         _variableErrorsWarnings["ERROR : " + to_string(line) + ":" + to_string(column) + " le continue est en dehors d'une ou d'un switch case"] = ERROR;
 //     }
-
-//     BasicBlock* destinationContinue = _cfg->stack_boucle_test_block_for_continue.top();
-
-//     string jump_label;
-//     jump_label = destinationContinue->label;
-
-//     IRInstr * instr = new IRInstrJump(_cfg->current_bb, jump_label);
-//     _cfg->current_bb->add_IRInstr(instr);
+//     else
+//     {
+//         BasicBlock* destinationContinue = _cfg->stack_boucle_test_block_for_continue.top();
+//         _cfg->current_bb->exit_true = destinationContinue;
+//     }
 
 //     return 0;
 // }

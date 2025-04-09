@@ -111,6 +111,8 @@ class CFG {
  public:
 	CFG() {
 		bbs = vector<BasicBlock*>();
+		stack_break_destinations = {};
+		stack_boucle_test_block_for_continue = {};
 	};
 
 	// destructor
