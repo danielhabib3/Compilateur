@@ -116,7 +116,8 @@ class CFG {
 	CFG(string entry_label) {
 		this->entry_label = entry_label;
 		bbs = vector<BasicBlock*>();
-		bbs.push_back(new BasicBlock(this, entry_label, nullptr, nullptr, nullptr));
+		bbs.push_back(new BasicBlock(this, entry_label, nullptr, nullptr));
+
 		current_bb = bbs[0];
 	};
 
@@ -174,6 +175,7 @@ class CFG {
 		}
 		o << "}\n";
 	}
+	string entry_label;
 
 	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/

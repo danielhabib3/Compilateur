@@ -2,11 +2,29 @@ grammar ifcc;
 
 axiom : prog EOF ;
 
-prog : type 'main' '(' ')' '{' block return_stmt '}' ;
+prog : (function_definition | function_declaration)+ ;
 
-block : (instruction)* ;
+function_definition : type ID '('  (type ID (',' type ID)*)? ')' block;
 
-instruction : declaration | affectation ;
+function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
+
+block : '{' (instruction)* '}' ;
+
+instruction : declaration | declarationTable | return_stmt | block | test | switch_case | boucle_while | break | continue | expr ';' | ';' ;
+
+switch_case : SWITCH '(' expr ')' '{' (CASE expr ':' (block | instruction)*)* (DEFAULT ':' (block | instruction)*)? '}' ;
+
+test : IF '(' expr ')' block (ELSE block)? ;
+
+boucle_while : WHILE '(' expr ')' block ;
+
+declarationTable : type affectationDeclarationTable (',' affectationDeclarationTable )* ';' ;
+
+affectationDeclarationTable : ID'['CONST']' ('=' '{' (expr (',' expr)*)? '}')? ;
+
+break : (BREAK ';') ;
+
+continue : (CONTINUE ';') ;
 
 declaration : type affectationDeclaration (',' affectationDeclaration )* ';' ;
 
@@ -18,6 +36,8 @@ function_call : ID '(' (expr (',' expr)*)? ')' ;
 
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
+     | ID '[' expr ']'                                      # exprTable
+     | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
      | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod

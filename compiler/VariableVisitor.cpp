@@ -72,6 +72,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             infos.set = 1;
             currentBlock->_variables[variableName] = infos;
             this->visit(expression);
+        }
         // cout << "Declaration : Visit Declaration end after visiting expr" << endl;
 
     }
@@ -114,33 +115,7 @@ antlrcpp::Any VariableVisitor::visitExprAffectation(ifccParser::ExprAffectationC
     this->visit(ctx->expr());
 
     return 0;
-}*/
-
-// antlrcpp::Any VariableVisitor::visitExprAssign(ifccParser::ExprAssignContext *ctx) 
-// {
-//     // cout << "Visiting affectation" << endl;
-//     int line = ctx->getStart()->getLine();
-//     int column = ctx->getStart()->getCharPositionInLine();
-
-//     string variableGaucheName = ctx->ID()->getText();
-
-//     if(_variables.find(variableGaucheName) == _variables.end())
-//     {
-//         _variableErrorsWarnings["Error : Unknown variable : " + to_string(line) + ":" + to_string(column) + " : Variable " + variableGaucheName + " not declared"] = ERROR;
-//     }
-//     else
-//     {
-//         infosVariable infos = _variables[variableGaucheName];
-//         infos.set = 1;
-//         _variables[variableGaucheName] = infos;
-//     }
-    
-
-//     // visiter la dernière valeur qui ne sera pas affectée
-//     this->visit(ctx->expr());
-
-//     return 0;
-// }
+}
 
 antlrcpp::Any VariableVisitor::visitExprID(ifccParser::ExprIDContext *ctx) 
 {

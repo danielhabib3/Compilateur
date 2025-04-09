@@ -817,8 +817,8 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 
     string tempVar = "!temp" + to_string(current_temp++);
     infosVariable infos;
-    infos.location = (_variables.size() + 1) * 4;
-    _variables[tempVar] = infos;
+    infos.location = (Variable.size() + 1) * 4;
+    Variable[tempVar] = infos;
 
     IRInstr *instr = new IRInstrFunc_Call(_cfg->current_bb, func_name, argVars, tempVar);
     _cfg->current_bb->add_IRInstr(instr);
@@ -831,11 +831,11 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx) {
     string funcName = ctx->ID(0)->getText(); 
 
-    map<string, infosVariable> previous_variables = _variables;
+    map<string, infosVariable> previous_variables = Variable;
     _cfg = new CFG(funcName);
-    _variables.clear();
+    Variable.clear();
 
-    BasicBlock* entryBB = new BasicBlock(_cfg, funcName, nullptr, nullptr, nullptr);
+    BasicBlock* entryBB = new BasicBlock(_cfg, funcName, nullptr, nullptr);
     _cfg->current_bb = entryBB;
     _cfg->add_bb(entryBB);
 
