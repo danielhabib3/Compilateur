@@ -52,26 +52,28 @@ int main(int argn, const char **argv)
 
   VariableVisitor vv;
   vv.visit(tree);
+  ofstream fichier_bloc("fichier_bloc.dot");
+  vv.getRootBlock()->affiche_bloc(fichier_bloc);
 
   // cout << "Variable analysis done checking errors .." << endl;
 
-  map<string, infosVariable> _variables = vv.getVariables();
+  Block* _rootBlock = vv.getRootBlock();
   map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
 
-  // warnings pour les variables déclarées et pas utilisées
-  for(auto it = _variables.begin(); it != _variables.end(); it++)
-  {
-    if(it->second.nbUse == 0)
-    {
-      string warning = "warning: variable declared ";
-      if(it->second.set == 0)
-        warning += "and not initialized ";
-      else
-        warning += "and initialized ";
-      warning += "but not used: " + it->first + " at " + to_string(it->second.line) + ":" + to_string(it->second.column) + "\n";
-      _variableErrorsWarnings[warning] = WARNING;
-    }
-  }
+  // // warnings pour les variables déclarées et pas utilisées
+  // for(auto it = _rootBlock->begin(); it != _rootBlock->end(); it++)
+  // {
+  //   if(it->second.nbUse == 0)
+  //   {
+  //     string warning = "warning: variable declared ";
+  //     if(it->second.set == 0)
+  //       warning += "and not initialized ";
+  //     else
+  //       warning += "and initialized ";
+  //     warning += "but not used: " + it->first + " at " + to_string(it->second.line) + ":" + to_string(it->second.column) + "\n";
+  //     _variableErrorsWarnings[warning] = WARNING;
+  //   }
+  // }
 
   vv.setVariableErrorsWarnings(_variableErrorsWarnings);
   
@@ -91,11 +93,38 @@ int main(int argn, const char **argv)
     // cout << "Variable analysis done without errors" << endl;
   }
 
+  int nbErrorsWarnings = vv.getVariableErrorsWarnings().size();
   
   IRVisitor irv(tree);
-  irv.setVariables(vv.getVariables());
+  irv.setNextFreeLocation(vv.getNextFreeLocation());
+  irv.setRootBlock(vv.getRootBlock());
+  irv.setVariableErrorsWarnings(vv.getVariableErrorsWarnings());
   irv.visit(tree);
+
+  _variableErrorsWarnings = irv.getVariableErrorsWarnings();
+  // afficher les erreurs et/ou les warnings à partir de nbErrorsWarnings
+  int currentIndex = 0;
+  for(auto it = _variableErrorsWarnings.begin(); it != _variableErrorsWarnings.end(); it++, currentIndex++)
+  {
+    if(currentIndex >= nbErrorsWarnings)
+    {
+      cerr << it->first << endl;
+    }
+  }
+
+  if(_variableErrorsWarnings.size() > nbErrorsWarnings)
+  {
+    cerr << "error: syntax error during IR generation" << endl;
+    exit(1);
+  }
+  else
+  {
+    // cout << "IR generation done without errors" << endl;
+  }
+
   CFG* cfg = irv.getCFG();
+  ofstream fichier("fichier.dot");
+  cfg->affiche_cfg(fichier);
   cfg->gen_asm(cout);
 
   return 0;

@@ -9,6 +9,8 @@
 #include "tree/ParseTree.h" // Ensure this header file defines tree::ParseTree
 #include "VariableVisitor.h"
 
+enum t_type { TEST_IF, TEST_WHILE, TEST_SWITCH, NOT_TEST };
+
 using namespace std;
 
 class BasicBlock;
@@ -59,14 +61,14 @@ Possible optimization:
 
 class BasicBlock {
  public:
-	BasicBlock(CFG* cfg, string entry_label, BasicBlock* s, BasicBlock* exit_t, BasicBlock* exit_f, string test_var_name = "") {
+	BasicBlock(CFG* cfg, string entry_label, BasicBlock* exit_t, BasicBlock* exit_f, t_type test_type = NOT_TEST) {
 		this->cfg = cfg;
 		this->exit_true = exit_t;
 		this->exit_false = exit_f;
-		this->source = s;
 		this->label = entry_label;
 		this->test_var_name = test_var_name;
 		this->instrs = vector<IRInstr*>();
+		this->test_type = test_type;
 	};
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
@@ -74,15 +76,20 @@ class BasicBlock {
 		instrs.push_back(instr);
 	};
 
+	bool has_return_instr();
+
 	// No encapsulation whatsoever here. Feel free to do better.
-	BasicBlock* source; /**< pointer to the unique predecessor of this basic block */
 	BasicBlock* exit_true;  /**< pointer to the next basic block, true branch. If nullptr, return from procedure */ 
 	BasicBlock* exit_false; /**< pointer to the next basic block, false branch. If null_ptr, the basic block ends with an unconditional jump */
+	BasicBlock* endif;
+	t_type test_type; /**< type of test for this block, if any */
+	bool already_generated; /**< true if the assembly code for this block has already been generated */
 	string label; /**< label of the BB, also will be the label in the generated code */
 	CFG* cfg; /** < the CFG where this block belongs */
 	vector<IRInstr*> instrs; /** < the instructions themselves. */
   	string test_var_name;  /** < when generating IR code for an if(expr) or while(expr) etc,
 													 store here the name of the variable that holds the value of expr */
+	int test_var_location;
  protected:
 
  
@@ -104,6 +111,8 @@ class CFG {
  public:
 	CFG() {
 		bbs = vector<BasicBlock*>();
+		stack_break_destinations = {};
+		stack_boucle_test_block_for_continue = {};
 	};
 
 	// destructor
@@ -128,22 +137,60 @@ class CFG {
 	void gen_asm_prologue(ostream& o);
 	void gen_asm_epilogue(ostream& o);
 
-	BasicBlock* current_bb; /**< The current basic block being built */
+	// cette méthode revoit vrai si il y a un chemain sans return
+	bool check_return_stmt();
 
+	void affiche_cfg(ostream &o) {
+		o << "digraph G {\n";
+		o << "    node [shape=ellipse];\n\n";
+		for (auto bb : bbs) {
+			string label = bb->label;
+			if (!label.empty() && label[0] == '.') {
+				label = label.substr(1); // Remove the leading '.'
+			}
+			if (bb->exit_true != nullptr) {
+				string exit_true_label = bb->exit_true->label;
+				if (!exit_true_label.empty() && exit_true_label[0] == '.') {
+					exit_true_label = exit_true_label.substr(1); // Remove the leading '.'
+				}
+				o << "    " << label << " -> " << exit_true_label << ";\n";
+			}
+			if (bb->exit_false != nullptr) {
+				string exit_false_label = bb->exit_false->label;
+				if (!exit_false_label.empty() && exit_false_label[0] == '.') {
+					exit_false_label = exit_false_label.substr(1); // Remove the leading '.'
+				}
+				o << "    " << label << " -> " << exit_false_label << ";\n";
+			}
+		}
+		o << "}\n";
+	}
 
-
- protected:
-	
+	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
+	stack <BasicBlock*> stack_break_destinations;
+	stack <BasicBlock*> stack_boucle_test_block_for_continue;
+
+	protected:
 };
 
 class IRInstrAffect : public IRInstr {
 	public:
-	   IRInstrAffect(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
+	   IRInstrAffect(BasicBlock* bb_, string dest, string op1, int sizeOfType = 0, int offsetAppliedTo = 0) 
+	   	: IRInstr(bb_), dest(dest), op1(op1), sizeOfType(sizeOfType), offsetAppliedTo(offsetAppliedTo) {};
 	   void gen_asm(ostream &o);
 	protected:
 	   string dest; // partie gauche de l'affectation
 	   string op1; // partie droite de l'affectation
+	   int sizeOfType; // taille du type de la variable
+	   int offsetAppliedTo; // 0 si c'est une variable, 1 ou 2 si c'est un tableau : 1 pour appliqué le offset au dest et 2 pour op1
+};
+
+class IRInstrReturn : public IRInstr {
+	public:
+		IRInstrReturn(BasicBlock* bb_) : IRInstr(bb_) {};
+		void gen_asm(ostream &o);
+	protected:
 };
    
 class IRInstrAdd : public IRInstr {
@@ -278,6 +325,26 @@ protected:
 class IRInstrSubUnary : public IRInstr {
 public:
 	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
+	void gen_asm(ostream &o);
+protected:
+	string dest;
+	string op1;
+};
+
+class IRInstrPreInc : public IRInstr {
+	public:
+		IRInstrPreInc(BasicBlock* bb_, string dest, string op1) 
+			: IRInstr(bb_), dest(dest), op1(op1) {}
+		void gen_asm(ostream &o);
+	protected:
+		string dest;
+		string op1;
+	};
+	
+class IRInstrPreDec : public IRInstr {
+public:
+	IRInstrPreDec(BasicBlock* bb_, string dest, string op1) 
+		: IRInstr(bb_), dest(dest), op1(op1) {}
 	void gen_asm(ostream &o);
 protected:
 	string dest;
