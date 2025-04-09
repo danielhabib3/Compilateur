@@ -29,29 +29,82 @@ typedef struct Variable {
     }
 } infosVariable;
 
+class Block {
+
+    public:
+
+        Block(Block* parent = nullptr) {
+            this->parent = parent;
+            this->_variables = {};
+        }
+
+        // Getter for variables
+        std::map<std::string, infosVariable> getVariables() const {
+            return _variables;
+        }
+
+        // Setter for variables
+        void setVariables(const std::map<std::string, infosVariable>& variables) {
+            _variables = variables;
+        }
+
+        // Method to add a child block
+        void addChild(Block* child) {
+            children.push_back(child);
+            notVisitedChildren.push_back(child);
+        }
+
+        // Method to generate a CFG representation for blocks
+        void affiche_bloc(std::ostream &o) {
+            o << "digraph G {\n";
+            o << "    node [shape=ellipse];\n\n";
+            affiche_bloc_recursive(o);
+            o << "}\n";
+        }
+
+    private:
+
+        void affiche_bloc_recursive(std::ostream &o) {
+            static int nodeCounter = 0;
+            int currentNode = nodeCounter++;
+
+            for (auto child : children) {
+            int childNode = nodeCounter++;
+            o << "    Node" << currentNode << " -> Node" << childNode << ";\n";
+            child->affiche_bloc_recursive(o);
+            }
+        }
+
+    public:
+        Block * parent;
+        std::vector<Block *> children;
+        std::map<std::string, infosVariable> _variables;
+        std::vector<Block *> notVisitedChildren;
+};
+
 
 
 class VariableVisitor : public ifccBaseVisitor {
     public:
         // constructor
         VariableVisitor() {
-            _variables = {};
             _variableErrorsWarnings = {};
+            _rootBlock = nullptr;
+            currentBlock = nullptr;
             next_free_location = 1;
         };
 
-        // getter
-        map<string, infosVariable> getVariables() {
-            return _variables;
-        }
 
         map<string, ErrorType> getVariableErrorsWarnings() {
             return _variableErrorsWarnings;
         }
 
-        // setter
-        void setVariables(map<string, infosVariable> variables) {
-            _variables = variables;
+        void setRootBlock(Block* rootBlock) {
+            _rootBlock = rootBlock;
+        }
+
+        Block* getRootBlock() {
+            return _rootBlock;
         }
         
         void setVariableErrorsWarnings(map<string, ErrorType> variableErrors) {
@@ -78,6 +131,7 @@ class VariableVisitor : public ifccBaseVisitor {
             return count;
         }
 
+        virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
         virtual antlrcpp::Any visitDeclaration(ifccParser::DeclarationContext *ctx) override;
         virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *ctx) override;
         virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override;
@@ -88,7 +142,9 @@ class VariableVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprAffectationTable(ifccParser::ExprAffectationTableContext *ctx) override;
     
         private:
-            map<string, infosVariable> _variables;
+            // map<string, infosVariable> _variables;
+            Block* currentBlock;
+            Block* _rootBlock;
             map<string, ErrorType> _variableErrorsWarnings;
             int next_free_location;
         
