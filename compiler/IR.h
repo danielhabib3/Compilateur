@@ -24,6 +24,7 @@ class IRInstr {
 	IRInstr(BasicBlock* bb_) {
 		this->bb = bb_;
 	};
+
 	
 	/** Actual code generation */
 	virtual void gen_asm(ostream &o) = 0; /**< x86 assembly code generation for this IR instruction */
@@ -322,29 +323,10 @@ protected:
 	string op1;
 };
 
+
 class IRInstrSubUnary : public IRInstr {
 public:
 	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
-	void gen_asm(ostream &o);
-protected:
-	string dest;
-	string op1;
-};
-
-class IRInstrPreInc : public IRInstr {
-	public:
-		IRInstrPreInc(BasicBlock* bb_, string dest, string op1) 
-			: IRInstr(bb_), dest(dest), op1(op1) {}
-		void gen_asm(ostream &o);
-	protected:
-		string dest;
-		string op1;
-	};
-	
-class IRInstrPreDec : public IRInstr {
-public:
-	IRInstrPreDec(BasicBlock* bb_, string dest, string op1) 
-		: IRInstr(bb_), dest(dest), op1(op1) {}
 	void gen_asm(ostream &o);
 protected:
 	string dest;

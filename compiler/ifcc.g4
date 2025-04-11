@@ -36,7 +36,9 @@ function_call : ID '(' (expr (',' expr)*)? ')' ;
 
 expr : CONST                                                # exprConst
      | ID                                                   # exprID
+     | OP=('++' | '--') ID                                  # exprPrefixIncDec                                             
      | ID '[' expr ']'                                      # exprTable
+     | ID OP=('++' | '--')                                  # exprPostfixIncDec
      | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
@@ -50,8 +52,6 @@ expr : CONST                                                # exprConst
      | ID '[' expr ']' '=' expr                             # exprAffectationTable
      | ID '=' expr                                          # exprAffectation
      | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
-     | ID OP=('++' | '--')                                  # exprPostfixIncDec
-     | OP=('++' | '--') ID                                  # exprPrefixIncDec
      ;
 
       

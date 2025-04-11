@@ -73,8 +73,8 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitAffectationDeclarationTable(ifccParser::AffectationDeclarationTableContext *ctx) override ;
         virtual antlrcpp::Any visitExprTable(ifccParser::ExprTableContext *ctx) override ;
         virtual antlrcpp::Any visitExprAffectationTable(ifccParser::ExprAffectationTableContext *ctx) override ;
-        // virtual antlrcpp::Any visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx) override ;
-        // virtual antlrcpp::Any visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx) override ;
+        virtual antlrcpp::Any visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx) override ;
+        virtual antlrcpp::Any visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx) override ;
         virtual antlrcpp::Any visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx) override ;
         // virtual antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
         // virtual antlrcpp::Any visitContinue(ifccParser::ContinueContext *ctx) override;

@@ -575,32 +575,69 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
  }
 
 
-// antlrcpp::Any IRVisitor::visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx){
-
-//     string id = ctx->ID()->getText();
-//     infosVariable infosV = _variables[id];
-
-//     return 0;
-// }
-
-// antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx){
+ antlrcpp::Any IRVisitor::visitExprPostfixIncDec(ifccParser::ExprPostfixIncDecContext *ctx)
+ {
+     string id = ctx->ID()->getText();
+     infosVariable infosV = getInfosVariable(currentBlock, id);
  
-//     string id = ctx->ID()->getText();
-//     infosVariable infosV = _variables[id];
+     // On met dans eax
+     IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
+     _cfg->current_bb->add_IRInstr(instrLoad);
 
-//     if(ctx->OP->getText() == "++")
-//     {
-//         IRInstr* IRInstrPreInc = new IRInstrPreInc(_cfg->current_bb, "0", to_string(infosV.location));
-//         _cfg->current_bb->add_IRInstr(IRInstrPreInc);
-//     }
-//     else
-//     {
-//         IRInstr * IRInstrPreDec = new IRInstrPreDec(_cfg->current_bb, "0", to_string(infosV.location));
-//         _cfg->current_bb->add_IRInstr(IRInstrPreDec);
-//     }
+    // Sauvegarde la valeur actuelle dans un temp car postfix
+    infosVariable tempVar;
+    tempVar.location = next_free_location++;
+    currentBlock->_variables["!temp" + to_string(current_temp++)] = tempVar;
 
-//     return 0;
-// }
+    IRInstr *instrSave = new IRInstrAffect(_cfg->current_bb, to_string(tempVar.location), "0");
+    _cfg->current_bb->add_IRInstr(instrSave);
+ 
+
+    string valeur;
+    string op = ctx->OP->getText();
+    if (op == "++") {
+    valeur = "1";
+    } else {
+        valeur = "-1";
+    }
+     
+     // Effectuer inc / dec
+     IRInstr *instrAdd = new IRInstrAdd(_cfg->current_bb, to_string(infosV.location), "$" + valeur,  "0");
+     _cfg->current_bb->add_IRInstr(instrAdd);
+ 
+     // Restaure ancienne valeur car postfix
+     IRInstr *instrRestore = new IRInstrAffect(_cfg->current_bb, "0", to_string(tempVar.location));
+     _cfg->current_bb->add_IRInstr(instrRestore);
+ 
+     return 0;
+ }
+
+
+antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecContext *ctx)
+{
+    string id = ctx->ID()->getText();
+    infosVariable infosV = getInfosVariable(currentBlock, id);
+
+    IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
+    _cfg->current_bb->add_IRInstr(instrLoad);
+
+    string op = ctx->OP->getText();
+
+    string valeur;
+    if (op == "++") {
+        valeur = "1";
+    } else {
+        valeur = "-1";
+    }
+
+    IRInstr *instrAdd = new IRInstrAdd(_cfg->current_bb, "0", "$" + valeur,"0");
+    _cfg->current_bb->add_IRInstr(instrAdd);
+
+    IRInstr *instrStore = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location), "0");
+    _cfg->current_bb->add_IRInstr(instrStore);
+
+    return 0;
+}
 
 antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectationComposeeContext *ctx)
 {
