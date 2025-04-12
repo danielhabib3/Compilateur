@@ -177,10 +177,6 @@ class CFG {
 		o << "    }\n";
 	}
 
-	void set_next_free_location(int location) {
-		next_free_location = location;
-	}
-
 	string entry_label;
 
 	BasicBlock* current_bb; /**< The current basic block being built */	
@@ -188,7 +184,6 @@ class CFG {
 	stack <BasicBlock*> stack_break_destinations;
 	stack <BasicBlock*> stack_boucle_test_block_for_continue;
 
-	int next_free_location; /**< the next free location for each block */
 
 	protected:
 };

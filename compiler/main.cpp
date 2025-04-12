@@ -124,7 +124,7 @@ int main(int argn, const char **argv)
   int nbErrorsWarnings = vv.getVariableErrorsWarnings().size();
   
   IRVisitor irv(tree);
-  irv.setNextFreeLocations(vv.getNextFreeLocations());
+  irv.setNextFreeLocation(vv.getNextFreeLocation());
   irv.setRootBlocks(vv.getRootBlocks());
   irv.setVariableErrorsWarnings(vv.getVariableErrorsWarnings());
   irv.visit(tree);
@@ -151,10 +151,6 @@ int main(int argn, const char **argv)
   }
 
   vector<CFG*> cfgs = irv.getCfgs();
-  for(int i = 0; i < cfgs.size(); i++)
-  {
-    cfgs[i]->set_next_free_location(vv.getNextFreeLocations()[i]);
-  }
   ofstream fichier("fichier.dot");
   fichier << "digraph G {\n";
   for(auto cfg : cfgs)

@@ -35,12 +35,12 @@ class IRVisitor : public ifccBaseVisitor {
             return _variableErrorsWarnings;
         }
 
-        vector<int> getNextFreeLocations() const {
-            return next_free_locations;
+        int getNextFreeLocation() const {
+            return next_free_location;
         }
 
-        void setNextFreeLocations(vector<int> locations) {
-            next_free_locations = locations;
+        void setNextFreeLocation(int location) {
+            next_free_location = location;
         }
         
 
@@ -87,6 +87,6 @@ class IRVisitor : public ifccBaseVisitor {
         map<string, ErrorType> _variableErrorsWarnings;
         int current_temp;
         int current_test;
-        vector<int> next_free_locations;
+        int next_free_location;
 
 };

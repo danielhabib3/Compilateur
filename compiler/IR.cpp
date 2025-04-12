@@ -143,7 +143,7 @@ void CFG::gen_asm_prologue(ostream &o) {
     #endif
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
-    o << "    subq $" + to_string((this->next_free_location-1)*4) + ", %rsp\n";
+    o << "    subq $64, %rsp\n";
     
 }
 
