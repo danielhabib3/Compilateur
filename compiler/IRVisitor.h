@@ -10,24 +10,14 @@
 class IRVisitor : public ifccBaseVisitor {
     public:
         IRVisitor(antlr4::tree::ParseTree* ast) {
-            _cfg = new CFG();
             _ast = ast;
-            
-		    _cfg->add_bb(new BasicBlock(_cfg, "main", nullptr, nullptr));
-            _cfg->current_bb = _cfg->get_bbs()[0];
-
-            current_temp = 0;
             current_test = 0;
-
-            currentBlock = nullptr;
         };
 
-        ~IRVisitor() {
-            delete _cfg;
-        }
 
-        CFG* getCFG() {
-            return _cfg;
+
+        vector<CFG*> getCfgs() const {
+            return _cfgs;
         }
 
 
@@ -36,8 +26,8 @@ class IRVisitor : public ifccBaseVisitor {
         }
 
 
-        void setRootBlock(Block* rootBlock) {
-            _rootBlock = rootBlock;
+        void setRootBlocks(vector<Block*> rootBlocks) {
+            _rootBlocks = rootBlocks;
         }
 
 
@@ -52,12 +42,15 @@ class IRVisitor : public ifccBaseVisitor {
         void setNextFreeLocation(int location) {
             next_free_location = location;
         }
+        
+
 
         // virtual antlrcpp::Any visitProg(ifccParser::ProgContext *ctx) override;
         virtual antlrcpp::Any visitBlock(ifccParser::BlockContext *ctx) override;
         virtual antlrcpp::Any visitExprAffectation(ifccParser::ExprAffectationContext *ctx) override ;
         virtual antlrcpp::Any visitAffectationDeclaration(ifccParser::AffectationDeclarationContext *ctx) override ;
         virtual antlrcpp::Any visitExprID(ifccParser::ExprIDContext *ctx) override ;
+        virtual antlrcpp::Any visitExprChar(ifccParser::ExprCharContext *ctx) override ;
         virtual antlrcpp::Any visitExprConst(ifccParser::ExprConstContext *ctx) override ;
         virtual antlrcpp::Any visitExprAddSub(ifccParser::ExprAddSubContext *ctx) override ;
         virtual antlrcpp::Any visitExprMulDivMod(ifccParser::ExprMulDivModContext *ctx) override ;
@@ -79,15 +72,21 @@ class IRVisitor : public ifccBaseVisitor {
         // virtual antlrcpp::Any visitBreak(ifccParser::BreakContext *ctx) override;
         // virtual antlrcpp::Any visitContinue(ifccParser::ContinueContext *ctx) override;
         // virtual antlrcpp::Any visitSwitch_case(ifccParser::Switch_caseContext *ctx) override;
+        virtual antlrcpp::Any visitFunction_call(ifccParser::Function_callContext *ctx) override ;
+        virtual antlrcpp::Any visitFunction_definition(ifccParser::Function_definitionContext *ctx) override ;
+
 
     protected:
-        CFG* _cfg;
+        CFG* current_cfg; // current CFG
+        vector<CFG*> _cfgs;
         antlr4::tree::ParseTree* _ast;
         // map<string, infosVariable> _variables;
         Block* currentBlock;
-        Block* _rootBlock;
+        Block* current_rootBlock;
+        vector<Block*> _rootBlocks;
         map<string, ErrorType> _variableErrorsWarnings;
         int current_temp;
         int current_test;
         int next_free_location;
+
 };
