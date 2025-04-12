@@ -88,16 +88,6 @@ bloc:
 	cat $(FILE)
 	feh output_bloc.png
 
-cfg:
-	rm -f output.png
-	rm -f fichier.dot
-	make ifcc
-	if [ ! -f fichier.dot ]; then ./ifcc $(FILE); fi
-	dot -Tpng fichier.dot -o output.png
-	rm -f fichier.dot
-	cat $(FILE)
-	feh output.png
-
 ##########################################
 # delete all machine-generated files
 clean:

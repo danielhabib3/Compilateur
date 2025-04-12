@@ -2,17 +2,14 @@
 
 antlrcpp::Any VariableVisitor::visitBlock(ifccParser::BlockContext *ctx)
 {
-    if(currentBlock == nullptr) {
-        // Si c'est le premier bloc, on l'initialise
-        currentBlock = new Block();
-        _rootBlock = currentBlock;
-    }
-    else {
-        // Sinon, on crée un nouveau bloc enfant
-        Block* newBlock = new Block(currentBlock);
-        currentBlock->addChild(newBlock);
-        currentBlock = newBlock; // Passer au nouveau bloc
-    }
+    if(currentBlock == nullptr)
+        return (ifccParser::BlockContext *)ctx;
+    
+    // Sinon, on crée un nouveau bloc enfant
+    Block* newBlock = new Block(currentBlock);
+    currentBlock->addChild(newBlock);
+    currentBlock = newBlock; // Passer au nouveau bloc
+
     // Parcourir toutes les instructions du bloc
     for (auto instruction : ctx->instruction()) {
         this->visit(instruction); // Visiter chaque instruction
@@ -23,7 +20,6 @@ antlrcpp::Any VariableVisitor::visitBlock(ifccParser::BlockContext *ctx)
     {
         currentBlock = currentBlock->parent;
     }
-
     return 0;
 }
 
@@ -49,7 +45,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
         {
             // cout << "Declaration : Adding variable : " << variableName << endl;
             infosVariable infos;
-            infos.location = this->next_free_location;
+            infos.location = this->next_free_locations[_rootBlocks.size()];
             if(type == "int")
             {
                 infos.type = INT;
@@ -63,7 +59,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
             currentBlock->_variables[variableName] = infos;
-            this->next_free_location++;
+            this->next_free_locations[_rootBlocks.size()]++;
         }
 
         // cout << "Declaration : Visit Declaration end before visiting expr" << endl;
@@ -180,7 +176,7 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
         {
             // cout << "Declaration : Adding variable : " << variableName << endl;
             infosVariable infos;
-            infos.location = this->next_free_location;
+            infos.location = this->next_free_locations[_rootBlocks.size()];
             infos.isArray = true;
             infos.size = stoi(affectationDeclarationTable->CONST()->getText());
             if(type == "int")
@@ -195,7 +191,7 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
             currentBlock->_variables[variableName] = infos;
-            this->next_free_location += infos.size;
+            this->next_free_locations[_rootBlocks.size()] += infos.size;
         }
 
         infosVariable infos = currentBlock->_variables[variableName];
@@ -284,5 +280,53 @@ antlrcpp::Any VariableVisitor::visitExprAffectationTable(ifccParser::ExprAffecta
     // visiter la dernière valeur qui ne sera pas affectée
     this->visit(ctx->expr(0));
     this->visit(ctx->expr(1));
+    return 0;
+}
+
+antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_definitionContext *ctx)
+{
+    ifccParser::BlockContext* block_ctx = any_cast<ifccParser::BlockContext*>(this->visit(ctx->block()));
+
+   
+    // Si c'est le premier bloc, on l'initialise
+    currentBlock = new Block();
+    current_rootBlock = currentBlock;
+
+    this->next_free_locations.push_back(1);
+
+
+    for(int i = 1; i < ctx->ID().size(); i++)
+    {
+        string variableName = ctx->ID(i)->getText();
+        int line = ctx->getStart()->getLine();
+        int column = ctx->getStart()->getCharPositionInLine();
+        // cout << "Declaration : Adding variable : " << variableName << endl;
+        infosVariable infos;
+        infos.location = this->next_free_locations[_rootBlocks.size()];
+        infos.type = INT; // TODO: A changer en fonction du type de la fonction
+        infos.set = 1;
+        infos.line = ctx->getStart()->getLine();
+        infos.column = ctx->getStart()->getCharPositionInLine();
+        infos.nbUse = 0;
+        currentBlock->_variables[variableName] = infos;
+        this->next_free_locations[_rootBlocks.size()]++;
+    }
+
+    // Parcourir toutes les instructions du bloc
+    for (auto instruction : block_ctx->instruction()) {
+        this->visit(instruction); // Visiter chaque instruction
+    }
+
+    // Revenir au bloc parent
+    if(currentBlock->parent != nullptr)
+    {
+        currentBlock = currentBlock->parent;
+    }
+
+    // Si c'est le bloc de la fonction, on l'ajoute à la liste des blocs
+    _rootBlocks.push_back(current_rootBlock);
+    current_rootBlock = nullptr; // Réinitialiser le bloc racine
+    currentBlock = nullptr; // Réinitialiser le bloc courant
+
     return 0;
 }

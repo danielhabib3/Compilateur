@@ -4,7 +4,7 @@ axiom : prog EOF ;
 
 prog : (function_definition | function_declaration)+ ;
 
-function_definition : type ID '('  (type ID (',' type ID)*)? ')' block;
+function_definition : type ID '(' (type ID (',' type ID)*)? ')' block;
 
 function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 

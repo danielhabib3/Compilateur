@@ -75,11 +75,17 @@ int main(int argn, const char **argv)
   VariableVisitor vv;
   vv.visit(tree);
   ofstream fichier_bloc("fichier_bloc.dot");
-  vv.getRootBlock()->affiche_bloc(fichier_bloc);
+  vector<Block*> _rootBlocks = vv.getRootBlocks();
+  fichier_bloc << "digraph G {\n";
+  int funcNameCounter = 0;
+  for(auto _rootBlock : _rootBlocks)
+  {
+    _rootBlock->affiche_bloc(fichier_bloc, "Function_" + to_string(funcNameCounter++));
+  }
+  fichier_bloc << "}\n";
 
   // cout << "Variable analysis done checking errors .." << endl;
 
-  Block* _rootBlock = vv.getRootBlock();
   map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
 
   // // warnings pour les variables déclarées et pas utilisées
@@ -118,8 +124,8 @@ int main(int argn, const char **argv)
   int nbErrorsWarnings = vv.getVariableErrorsWarnings().size();
   
   IRVisitor irv(tree);
-  irv.setNextFreeLocation(vv.getNextFreeLocation());
-  irv.setRootBlock(vv.getRootBlock());
+  irv.setNextFreeLocations(vv.getNextFreeLocations());
+  irv.setRootBlocks(vv.getRootBlocks());
   irv.setVariableErrorsWarnings(vv.getVariableErrorsWarnings());
   irv.visit(tree);
 
@@ -144,10 +150,24 @@ int main(int argn, const char **argv)
     // cout << "IR generation done without errors" << endl;
   }
 
-  CFG* cfg = irv.getCFG();
+  vector<CFG*> cfgs = irv.getCfgs();
+  for(int i = 0; i < cfgs.size(); i++)
+  {
+    cfgs[i]->set_next_free_location(vv.getNextFreeLocations()[i]);
+  }
   ofstream fichier("fichier.dot");
-  cfg->affiche_cfg(fichier);
-  cfg->gen_asm(cout);
+  fichier << "digraph G {\n";
+  for(auto cfg : cfgs)
+  {
+    cfg->affiche_cfg(fichier, cfg->get_entry_label());
+  }
+  fichier << "}\n";
+  for(auto cfg : cfgs)
+  {
+    cfg->gen_asm(cout);
+  }
+
+  // cout << "IR generation done without errors" << endl;
 
   return 0;
 }

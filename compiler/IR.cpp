@@ -10,8 +10,24 @@ string to_x86(string s) {
             string num = s.substr(1);
             int num_int = stoi(num);
             switch (num_int) {
+                // std::vector<std::string> argRegisters = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
                 case 1:
+                    s = "%edi";
+                    break;
+                case 2:
+                    s = "%edx";
+                    break;
+                case 3:
+                    s = "%r8d";
+                    break;
+                case 4:
+                    s = "%r9d";
+                    break;
+                case 5:
                     s = "%ecx";
+                    break;
+                case 6:
+                    s = "%esi";
                     break;
             }
         } else {
@@ -33,7 +49,7 @@ bool BasicBlock::has_return_instr() {
 
 void BasicBlock::gen_asm(ostream &o) {
     if(!this->already_generated) {
-        if (this->label != "main") {
+        if (this->label[0] == '.') {
             o << this->label + ":\n";
         }
         this->already_generated = true;
@@ -118,16 +134,23 @@ void CFG::gen_asm_prologue(ostream &o) {
     o << ".globl _main\n" ;
     o << " _main: \n" ;
     #else
-    o << ".globl main\n" ;
-    o << " main: \n" ;
+    if(entry_label == "main") {
+        o << ".globl main\n" ;
+        o << " main: \n" ;
+    } else {
+        o << " " + entry_label + ":\n" ;
+    }
     #endif
     o << "    pushq %rbp\n";
     o << "    movq %rsp, %rbp\n";
+    o << "    subq $" + to_string((this->next_free_location-1)*4) + ", %rsp\n";
+    
 }
 
 void CFG::gen_asm_epilogue(ostream &o) {
-    o << "    popq %rbp\n";
-    o << "    ret\n";
+    // o << "    popq %rbp\n";
+    o << "    leave\n";
+    o << "    ret\n\n";
 }
 
 bool CFG::check_return_stmt() {
@@ -333,17 +356,7 @@ void IRInstrReturn::gen_asm(ostream &o)
 
 
 void IRInstrFunc_Call::gen_asm(std::ostream &o) {
-    std::vector<std::string> argRegisters = {"%edi", "%esi", "%edx", "%ecx", "%r8d", "%r9d"};
-
-    for (size_t i = 0; i < args.size(); ++i) {
-        string arg = to_x86(args[i]);
-        o << "    movl " << arg << ", " << argRegisters[i] << "\n";
-    }
-
     o << "    call " << func_name << "\n";
-
-    string new_dest = to_x86(dest);
-    o << "    movl %eax, " << new_dest << "\n";
 }
 
 

@@ -10,24 +10,14 @@
 class IRVisitor : public ifccBaseVisitor {
     public:
         IRVisitor(antlr4::tree::ParseTree* ast) {
-            _cfg = new CFG();
             _ast = ast;
-            
-		    _cfg->add_bb(new BasicBlock(_cfg, "main", nullptr, nullptr));
-            _cfg->current_bb = _cfg->get_bbs()[0];
-
-            current_temp = 0;
             current_test = 0;
-
-            currentBlock = nullptr;
         };
 
-        ~IRVisitor() {
-            delete _cfg;
-        }
 
-        CFG* getCFG() {
-            return _cfg;
+
+        vector<CFG*> getCfgs() const {
+            return _cfgs;
         }
 
 
@@ -36,8 +26,8 @@ class IRVisitor : public ifccBaseVisitor {
         }
 
 
-        void setRootBlock(Block* rootBlock) {
-            _rootBlock = rootBlock;
+        void setRootBlocks(vector<Block*> rootBlocks) {
+            _rootBlocks = rootBlocks;
         }
 
 
@@ -45,12 +35,12 @@ class IRVisitor : public ifccBaseVisitor {
             return _variableErrorsWarnings;
         }
 
-        int getNextFreeLocation() const {
-            return next_free_location;
+        vector<int> getNextFreeLocations() const {
+            return next_free_locations;
         }
 
-        void setNextFreeLocation(int location) {
-            next_free_location = location;
+        void setNextFreeLocations(vector<int> locations) {
+            next_free_locations = locations;
         }
         
 
@@ -87,15 +77,16 @@ class IRVisitor : public ifccBaseVisitor {
 
 
     protected:
-        CFG* _cfg;
+        CFG* current_cfg; // current CFG
+        vector<CFG*> _cfgs;
         antlr4::tree::ParseTree* _ast;
         // map<string, infosVariable> _variables;
         Block* currentBlock;
-        Block* _rootBlock;
+        Block* current_rootBlock;
+        vector<Block*> _rootBlocks;
         map<string, ErrorType> _variableErrorsWarnings;
         int current_temp;
         int current_test;
-        int next_free_location;
-        std::map<std::string, infosVariable> _variables;
+        vector<int> next_free_locations;
 
 };

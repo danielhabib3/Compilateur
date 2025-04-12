@@ -46,23 +46,23 @@ antlrcpp::Any FunctionVisitor::visitFunction_definition(ifccParser::Function_def
                               to_string(_functions[functionName].line) + ":" + to_string(_functions[functionName].column)] = FUNC_ERROR;
         } 
         else {
-         // Définition d'une fonction déjà déclarée
+            // Définition d'une fonction déjà déclarée
 
-        // Vérifie que le nombre de paramètres est identique
-        if (_functions[functionName].paramCount != (int)paramNames.size()) {
-            _functionMessages["Error : Signature mismatch : " + std::to_string(line) + ":" + std::to_string(column) + 
-                " : Function \"" + functionName + "\" has different number of parameters than previous declaration at " +
-                std::to_string(_functions[functionName].line) + ":" + std::to_string(_functions[functionName].column)] = FUNC_ERROR;
-        }
-
-        // Vérifie que les noms sont les mêmes (optionnel mais informatif)
-        for (size_t i = 0; i < paramNames.size(); ++i) {
-            if (_functions[functionName].paramNames[i] != paramNames[i]) {
-                _functionMessages["Warning : Parameter name mismatch : " + std::to_string(line) + ":" + std::to_string(column) + 
-                    " : Parameter " + std::to_string(i+1) + " of function \"" + functionName + "\" has different name than declaration (\"" + 
-                    paramNames[i] + "\" vs \"" + _functions[functionName].paramNames[i] + "\")"] = FUNC_WARNING;
+            // Vérifie que le nombre de paramètres est identique
+            if (_functions[functionName].paramCount != (int)paramNames.size()) {
+                _functionMessages["Error : Signature mismatch : " + std::to_string(line) + ":" + std::to_string(column) + 
+                    " : Function \"" + functionName + "\" has different number of parameters than previous declaration at " +
+                    std::to_string(_functions[functionName].line) + ":" + std::to_string(_functions[functionName].column)] = FUNC_ERROR;
             }
-        }
+
+            // Vérifie que les noms sont les mêmes (optionnel mais informatif)
+            for (size_t i = 0; i < paramNames.size(); ++i) {
+                if (_functions[functionName].paramNames[i] != paramNames[i]) {
+                    _functionMessages["Warning : Parameter name mismatch : " + std::to_string(line) + ":" + std::to_string(column) + 
+                        " : Parameter " + std::to_string(i+1) + " of function \"" + functionName + "\" has different name than declaration (\"" + 
+                        paramNames[i] + "\" vs \"" + _functions[functionName].paramNames[i] + "\")"] = FUNC_WARNING;
+                }
+            }
             _functions[functionName].line = line;
             _functions[functionName].column = column;
             _functions[functionName].state = DEFINED;
