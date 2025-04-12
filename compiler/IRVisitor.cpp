@@ -110,8 +110,8 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!tempIR" + to_string(current_temp)] = infosGauche;
     current_temp++;
 
@@ -122,8 +122,8 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!tempIR" + to_string(current_temp)] = infosDroite;
     current_temp++;
     
@@ -150,8 +150,8 @@ antlrcpp::Any IRVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
 
@@ -162,8 +162,8 @@ antlrcpp::Any IRVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -220,8 +220,8 @@ antlrcpp::Any IRVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     // std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -231,8 +231,8 @@ antlrcpp::Any IRVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -262,8 +262,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     // std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -273,8 +273,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -303,8 +303,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -314,8 +314,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -332,8 +332,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -343,8 +343,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -360,8 +360,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
     //std::cout << "    movl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -371,8 +371,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -421,8 +421,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     this->visit(ctx->expr());
     infosVariable infos;
-    infos.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infos.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     string test_var_name = "test" + to_string(current_temp);
     currentBlock->_variables[test_var_name] = infos;
     current_temp++;
@@ -492,8 +492,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     this->visit(ctx->expr());
     infosVariable infos;
-    infos.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infos.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     string test_var_name = "test" + to_string(current_temp);
     currentBlock->_variables[test_var_name] = infos;
     current_temp++;
@@ -565,8 +565,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(0));
 
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
     current_temp++;
 
@@ -577,8 +577,8 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->visit(ctx->expr(1));
 
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)];
-    this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]));
+    (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
@@ -636,7 +636,7 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 
     // On Stocke la valeur actuelle temporairement
     infosVariable infosGauche;
-    infosGauche.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosGauche.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     string tempVarGauche = "!temp" + to_string(current_temp++);
     currentBlock->_variables[tempVarGauche] = infosGauche;
 
@@ -648,7 +648,7 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
 
     // On Stocke cette nouvelle valeur dans une autre temporaire
     infosVariable infosDroite;
-    infosDroite.location = this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]++;
+    infosDroite.location = (*(this->next_free_locations[getNextFreeLocation(this->current_rootBlock, this->_rootBlocks)]))++;
     string tempVarDroite = "!temp" + to_string(current_temp++);
     currentBlock->_variables[tempVarDroite] = infosDroite;
 

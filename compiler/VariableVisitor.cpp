@@ -45,7 +45,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
         {
             // cout << "Declaration : Adding variable : " << variableName << endl;
             infosVariable infos;
-            infos.location = this->next_free_locations[_rootBlocks.size()];
+            infos.location = (*(this->next_free_locations[_rootBlocks.size()]));
             if(type == "int")
             {
                 infos.type = INT;
@@ -59,7 +59,7 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
             currentBlock->_variables[variableName] = infos;
-            this->next_free_locations[_rootBlocks.size()]++;
+            (*(this->next_free_locations[_rootBlocks.size()]))++;
         }
 
         // cout << "Declaration : Visit Declaration end before visiting expr" << endl;
@@ -176,7 +176,7 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
         {
             // cout << "Declaration : Adding variable : " << variableName << endl;
             infosVariable infos;
-            infos.location = this->next_free_locations[_rootBlocks.size()];
+            infos.location = (*(this->next_free_locations[_rootBlocks.size()]));
             infos.isArray = true;
             infos.size = stoi(affectationDeclarationTable->CONST()->getText());
             if(type == "int")
@@ -191,7 +191,7 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
             infos.column = ctx->getStart()->getCharPositionInLine();
             infos.nbUse = 0;
             currentBlock->_variables[variableName] = infos;
-            this->next_free_locations[_rootBlocks.size()] += infos.size;
+            (*(this->next_free_locations[_rootBlocks.size()])) += infos.size;
         }
 
         infosVariable infos = currentBlock->_variables[variableName];
@@ -291,8 +291,8 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
     // Si c'est le premier bloc, on l'initialise
     currentBlock = new Block();
     current_rootBlock = currentBlock;
-
-    this->next_free_locations.push_back(1);
+    int number = 1;
+    this->next_free_locations.push_back(&number);
 
 
     for(int i = 1; i < ctx->ID().size(); i++)
@@ -302,14 +302,14 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
         int column = ctx->getStart()->getCharPositionInLine();
         // cout << "Declaration : Adding variable : " << variableName << endl;
         infosVariable infos;
-        infos.location = this->next_free_locations[_rootBlocks.size()];
+        infos.location = (*(this->next_free_locations[_rootBlocks.size()]));
         infos.type = INT; // TODO: A changer en fonction du type de la fonction
         infos.set = 1;
         infos.line = ctx->getStart()->getLine();
         infos.column = ctx->getStart()->getCharPositionInLine();
         infos.nbUse = 0;
         currentBlock->_variables[variableName] = infos;
-        this->next_free_locations[_rootBlocks.size()]++;
+        (*(this->next_free_locations[_rootBlocks.size()]))++;
     }
 
     // Parcourir toutes les instructions du bloc

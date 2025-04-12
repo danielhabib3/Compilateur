@@ -177,8 +177,8 @@ class CFG {
 		o << "    }\n";
 	}
 
-	void set_next_free_location(int location) {
-		next_free_location = location;
+	void set_next_free_location(int* location) {
+		next_free_location = *location;
 	}
 
 	string entry_label;

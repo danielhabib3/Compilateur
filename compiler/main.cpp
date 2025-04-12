@@ -122,6 +122,12 @@ int main(int argn, const char **argv)
   }
 
   int nbErrorsWarnings = vv.getVariableErrorsWarnings().size();
+
+  // Print the next free locations for variables
+  cout << "Next free locations for variables:" << endl;
+  for (size_t i = 0; i < vv.getNextFreeLocations().size(); ++i) {
+    cout << *(vv.getNextFreeLocations()[i]) << endl;
+  }
   
   IRVisitor irv(tree);
   irv.setNextFreeLocations(vv.getNextFreeLocations());
@@ -139,6 +145,7 @@ int main(int argn, const char **argv)
       cerr << it->first << endl;
     }
   }
+  
 
   if(_variableErrorsWarnings.size() > nbErrorsWarnings)
   {

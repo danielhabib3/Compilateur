@@ -93,6 +93,9 @@ class VariableVisitor : public ifccBaseVisitor {
             currentBlock = nullptr;
         };
 
+        // destructor
+        ~VariableVisitor() {}
+
 
         map<string, ErrorType> getVariableErrorsWarnings() {
             return _variableErrorsWarnings;
@@ -110,11 +113,11 @@ class VariableVisitor : public ifccBaseVisitor {
             _variableErrorsWarnings = variableErrors;
         }
 
-        vector<int> getNextFreeLocations() const {
+        vector<int*> getNextFreeLocations() const {
             return next_free_locations;
         }
 
-        void setNextFreeLocations(vector<int> locations) {
+        void setNextFreeLocations(vector<int*> locations) {
             next_free_locations = locations;
         }
 
@@ -147,6 +150,6 @@ class VariableVisitor : public ifccBaseVisitor {
             Block* current_rootBlock;
             vector<Block*> _rootBlocks;
             map<string, ErrorType> _variableErrorsWarnings;
-            vector<int> next_free_locations;
+            vector<int*> next_free_locations;
         
 };
