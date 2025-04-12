@@ -56,6 +56,8 @@ expr : CONST                                                # exprConst
      | ID '[' expr ']' '=' expr                             # exprAffectationTable
      | ID '=' expr                                          # exprAffectation
      | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
+     | expr OP=('&&') expr                                  # exprLogicalAndLazy
+     | expr OP=('||') expr                                  # exprLogicalOrLazy
      ;
 
       
