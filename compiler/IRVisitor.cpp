@@ -594,16 +594,16 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
      infosVariable infosV = getInfosVariable(currentBlock, id);
  
      // On met dans eax
-     IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
-     _cfg->current_bb->add_IRInstr(instrLoad);
+     IRInstr *instrLoad = new IRInstrAffect(current_cfg->current_bb, "0", to_string(infosV.location));
+     current_cfg->current_bb->add_IRInstr(instrLoad);
 
     // Sauvegarde la valeur actuelle dans un temp car postfix
     infosVariable tempVar;
     tempVar.location = next_free_location++;
     currentBlock->_variables["!temp" + to_string(current_temp++)] = tempVar;
 
-    IRInstr *instrSave = new IRInstrAffect(_cfg->current_bb, to_string(tempVar.location), "0");
-    _cfg->current_bb->add_IRInstr(instrSave);
+    IRInstr *instrSave = new IRInstrAffect(current_cfg->current_bb, to_string(tempVar.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrSave);
  
 
     string valeur;
@@ -615,12 +615,12 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     }
      
      // Effectuer inc / dec
-     IRInstr *instrAdd = new IRInstrAdd(_cfg->current_bb, to_string(infosV.location), "$" + valeur,  "0");
-     _cfg->current_bb->add_IRInstr(instrAdd);
+     IRInstr *instrAdd = new IRInstrAdd(current_cfg->current_bb, to_string(infosV.location), "$" + valeur,  "0");
+     current_cfg->current_bb->add_IRInstr(instrAdd);
  
      // Restaure ancienne valeur car postfix
-     IRInstr *instrRestore = new IRInstrAffect(_cfg->current_bb, "0", to_string(tempVar.location));
-     _cfg->current_bb->add_IRInstr(instrRestore);
+     IRInstr *instrRestore = new IRInstrAffect(current_cfg->current_bb, "0", to_string(tempVar.location));
+     current_cfg->current_bb->add_IRInstr(instrRestore);
  
      return 0;
  }
@@ -631,8 +631,8 @@ antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecConte
     string id = ctx->ID()->getText();
     infosVariable infosV = getInfosVariable(currentBlock, id);
 
-    IRInstr *instrLoad = new IRInstrAffect(_cfg->current_bb, "0", to_string(infosV.location));
-    _cfg->current_bb->add_IRInstr(instrLoad);
+    IRInstr *instrLoad = new IRInstrAffect(current_cfg->current_bb, "0", to_string(infosV.location));
+    current_cfg->current_bb->add_IRInstr(instrLoad);
 
     string op = ctx->OP->getText();
 
@@ -643,11 +643,11 @@ antlrcpp::Any IRVisitor::visitExprPrefixIncDec(ifccParser::ExprPrefixIncDecConte
         valeur = "-1";
     }
 
-    IRInstr *instrAdd = new IRInstrAdd(_cfg->current_bb, "0", "$" + valeur,"0");
-    _cfg->current_bb->add_IRInstr(instrAdd);
+    IRInstr *instrAdd = new IRInstrAdd(current_cfg->current_bb, "0", "$" + valeur,"0");
+    current_cfg->current_bb->add_IRInstr(instrAdd);
 
-    IRInstr *instrStore = new IRInstrAffect(_cfg->current_bb, to_string(infosV.location), "0");
-    _cfg->current_bb->add_IRInstr(instrStore);
+    IRInstr *instrStore = new IRInstrAffect(current_cfg->current_bb, to_string(infosV.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrStore);
 
     return 0;
 }

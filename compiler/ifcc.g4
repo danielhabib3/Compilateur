@@ -32,9 +32,7 @@ affectationDeclaration : ID ('=' expr)? ;
 
 return_stmt: RETURN expr ';' ;
 
-function_call : ID '(' (expr (',' expr)*)? ')' ;
-
-CHAR : '\'' . '\'' ; 
+function_call : ID '(' (expr (',' expr)*)? ')' ; 
 
 
 expr : CONST                                                # exprConst
@@ -72,7 +70,7 @@ SWITCH : 'switch' ;
 CASE : 'case' ;
 DEFAULT :'default' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
-
+CHAR : '\'' . '\'' ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;

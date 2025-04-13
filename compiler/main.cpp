@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <queue>
 #include <cstdlib>
 
 #include "antlr4-runtime.h"
@@ -53,23 +54,23 @@ int main(int argn, const char **argv)
 
 
   
-  // FunctionVisitor fv;
-  // fv.visit(tree);
-  // fv.checkMainFunction();
-  // map<string, FUNCTION_MESSAGE_TYPE> funcErrorsWarnings = fv.getFunctionMessages();
-  // bool hasFunctionError = false;
+  FunctionVisitor fv;
+  fv.visit(tree);
+  fv.checkMainFunction();
+  map<string, FUNCTION_MESSAGE_TYPE> funcErrorsWarnings = fv.getFunctionMessages();
+  bool hasFunctionError = false;
   
-  // for (const auto& [msg, type] : funcErrorsWarnings) {
-  //     cerr << msg << endl;
-  //     if (type == FUNC_ERROR) {
-  //         hasFunctionError = true;
-  //     }
-  // }
+  for (const auto& [msg, type] : funcErrorsWarnings) {
+      cerr << msg << endl;
+      if (type == FUNC_ERROR) {
+          hasFunctionError = true;
+      }
+  }
   
-  // if (hasFunctionError) {
-  //     cerr << "error: syntax error during functions analysis" << endl;
-  //     exit(1);
-  // }
+  if (hasFunctionError) {
+      cerr << "error: syntax error during functions analysis" << endl;
+      exit(1);
+  }
   
 
   VariableVisitor vv;
@@ -88,20 +89,32 @@ int main(int argn, const char **argv)
 
   map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
 
-  // // warnings pour les variables déclarées et pas utilisées
-  // for(auto it = _rootBlock->begin(); it != _rootBlock->end(); it++)
-  // {
-  //   if(it->second.nbUse == 0)
-  //   {
-  //     string warning = "warning: variable declared ";
-  //     if(it->second.set == 0)
-  //       warning += "and not initialized ";
-  //     else
-  //       warning += "and initialized ";
-  //     warning += "but not used: " + it->first + " at " + to_string(it->second.line) + ":" + to_string(it->second.column) + "\n";
-  //     _variableErrorsWarnings[warning] = WARNING;
-  //   }
-  // }
+  // warnings pour les variables déclarées et pas utilisées
+  for(auto it = _rootBlocks.begin(); it != _rootBlocks.end(); it++)
+  {
+    queue<Block*> q;
+    q.push(*it);
+    while (!q.empty()) {
+      Block* current = q.front();
+      for (auto& it2 : current->_variables) {
+        if(it2.second.nbUse == 0)
+        {
+          string warning = "warning: variable declared ";
+          if(it2.second.set == 0)
+            warning += "and not initialized ";
+          else
+            warning += "and initialized ";
+          warning += "but not used: " + it2.first + " at " + to_string(it2.second.line) + ":" + to_string(it2.second.column) + "\n";
+          _variableErrorsWarnings[warning] = WARNING;
+        }
+      }
+
+      q.pop();
+      for (auto child : current->children) {
+          q.push(child);
+      }
+    }
+  }
 
   vv.setVariableErrorsWarnings(_variableErrorsWarnings);
   
