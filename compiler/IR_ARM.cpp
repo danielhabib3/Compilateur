@@ -223,3 +223,11 @@ void IRInstrOrBit::gen_asm(ostream &o) {
 }
 
 void IRInstrReturn::gen_asm(ostream &o) {}
+
+void IRInstrFunc_Call::gen_asm(std::ostream &o) {
+//    o << "    call " << func_name << "\n";
+}
+
+void IRInstrJump::gen_asm(std::ostream &o) {
+//    o << "    jmp " << jump_label << "\n";
+}
