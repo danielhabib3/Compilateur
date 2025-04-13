@@ -361,6 +361,15 @@ class IRInstrFunc_Call : public IRInstr {
 		std::vector<std::string> args;
 		std::string dest;
 	};
+
+
+class IRInstrJump : public IRInstr {
+	public:
+		IRInstrJump(BasicBlock* bb_, string dest) : IRInstr(bb_), jump_label(dest) {};
+		void gen_asm(ostream &o);
+	protected:
+		string jump_label;
+};
 	
 
 #endif

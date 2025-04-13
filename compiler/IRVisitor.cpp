@@ -701,46 +701,47 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
     return 0;
 }
 
-// antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
+antlrcpp::Any IRVisitor::visitBreak(ifccParser::BreakContext *ctx){
 
-//     // TO DO : Faire la gestion d'erreur autre part ??!
-//     if (current_cfg->stack_break_destinations.empty()) {
-//         std::cerr << "Erreur : break en dehors d’une boucle !" << std::endl;
-//         exit(1);
-//     }
+    // TO DO : Faire la gestion d'erreur autre part ??!
+    if (current_cfg->stack_break_destinations.empty()) {
+        string error =  "Erreur : break en dehors d’une boucle !";
+        _variableErrorsWarnings[error] = ERROR;
+    }
     
-//     BasicBlock* destinationBreak = current_cfg->stack_break_destinations.top();
+    BasicBlock* destinationBreak = current_cfg->stack_break_destinations.top();
     
-//     string jump_label;
-//     jump_label = destinationBreak->label;
+    string jump_label;
+    jump_label = destinationBreak->label;
 
-//     IRInstr * instr = new IRInstrJump(current_cfg->current_bb, jump_label);
-//     current_cfg->current_bb->add_IRInstr(instr);
+    IRInstr * instr = new IRInstrJump(current_cfg->current_bb, jump_label);
+    current_cfg->current_bb->add_IRInstr(instr);
     
-//     return 0;
-// }
+    return 0;
+}
 
-// antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx)
-// {
+antlrcpp::Any IRVisitor::visitContinue(ifccParser::ContinueContext *ctx){
 
-//     int line = ctx->getStart()->getLine();
-//     int column = ctx->getStart()->getCharPositionInLine();
-//     // TO DO : Faire la gestion d'erreur autre part ??!
-//     if (current_cfg->stack_boucle_test_block_for_continue.empty()) {
-//         std::cerr << "Erreur : Continue en dehors d’une boucle !" << std::endl;
-//         exit(1);
-//     }
+    // TO DO : Faire la gestion d'erreur autre part ??!
+    if (current_cfg->stack_boucle_test_block_for_continue.empty()) 
+    {
+        string error =  "Erreur : continue en dehors d’une boucle !";
+        _variableErrorsWarnings[error] = ERROR;
+    }
 
-//     BasicBlock* destinationContinue = current_cfg->stack_boucle_test_block_for_continue.top();
+    else 
+    {
+        BasicBlock* destinationContinue = current_cfg->stack_boucle_test_block_for_continue.top();
+    
+        string jump_label;
+        jump_label = destinationContinue->label;
+    
+        IRInstr * instr = new IRInstrJump(current_cfg->current_bb, jump_label);
+        current_cfg->current_bb->add_IRInstr(instr);
+    }
 
-//     string jump_label;
-//     jump_label = destinationContinue->label;
-
-//     IRInstr * instr = new IRInstrJump(current_cfg->current_bb, jump_label);
-//     current_cfg->current_bb->add_IRInstr(instr);
-
-//     return 0;
-// }
+    return 0;
+}
 
 // antlrcpp::Any IRVisitor::visitSwitch_case(ifccParser::Switch_caseContext *ctx) {
 
