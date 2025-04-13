@@ -103,6 +103,9 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->next_free_location++;
     currentBlock->_variables["!tempIR" + to_string(current_temp)] = infosDroite;
     current_temp++;
+
+    IRInstr * instr1 = new IRInstrAffect(_cfg->current_bb, to_string(infosDroite.location), "0");
+    _cfg->current_bb->add_IRInstr(instr1);
     
     if(ctx->OP->getText() == "+")
     {
