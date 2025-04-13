@@ -4,7 +4,7 @@ axiom : prog EOF ;
 
 prog : (function_definition | function_declaration)+ ;
 
-function_definition : type ID '('  (type ID (',' type ID)*)? ')' block;
+function_definition : type ID '(' (type ID (',' type ID)*)? ')' block;
 
 function_declaration : type ID '(' (type (ID)? (',' type (ID)?)*)? ')' ';' ;
 
@@ -32,11 +32,15 @@ affectationDeclaration : ID ('=' expr)? ;
 
 return_stmt: RETURN expr ';' ;
 
-function_call : ID '(' (expr (',' expr)*)? ')' ;
+function_call : ID '(' (expr (',' expr)*)? ')' ; 
+
 
 expr : CONST                                                # exprConst
+     | CHAR                                                 # exprChar
      | ID                                                   # exprID
+     | OP=('++' | '--') ID                                  # exprPrefixIncDec                                             
      | ID '[' expr ']'                                      # exprTable
+     | ID OP=('++' | '--')                                  # exprPostfixIncDec
      | function_call                                        # exprFunctionCall
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
@@ -50,8 +54,6 @@ expr : CONST                                                # exprConst
      | ID '[' expr ']' '=' expr                             # exprAffectationTable
      | ID '=' expr                                          # exprAffectation
      | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
-     | ID OP=('++' | '--')                                  # exprPostfixIncDec
-     | OP=('++' | '--') ID                                  # exprPrefixIncDec
      ;
 
       
@@ -68,7 +70,7 @@ SWITCH : 'switch' ;
 CASE : 'case' ;
 DEFAULT :'default' ;
 ID : [a-zA-Z_][a-zA-Z_0-9]* ;
-
+CHAR : '\'' . '\'' ;
 CONST : [0-9]+ ;
 COMMENT : '/*' .*? '*/' -> skip ;
 DIRECTIVE : '#' .*? '\n' -> skip ;

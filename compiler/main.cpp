@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <queue>
 #include <cstdlib>
 
 #include "antlr4-runtime.h"
@@ -8,6 +9,7 @@
 #include "generated/ifccParser.h"
 #include "generated/ifccBaseVisitor.h"
 #include "VariableVisitor.h"
+#include "FunctionVisitor.h"
 #include "IR.h"
 #include "IRVisitor.h"
 
@@ -50,30 +52,69 @@ int main(int argn, const char **argv)
     exit(1);
   }
 
+
+  
+  FunctionVisitor fv;
+  fv.visit(tree);
+  fv.checkMainFunction();
+  map<string, FUNCTION_MESSAGE_TYPE> funcErrorsWarnings = fv.getFunctionMessages();
+  bool hasFunctionError = false;
+  
+  for (const auto& [msg, type] : funcErrorsWarnings) {
+      cerr << msg << endl;
+      if (type == FUNC_ERROR) {
+          hasFunctionError = true;
+      }
+  }
+  
+  if (hasFunctionError) {
+      cerr << "error: syntax error during functions analysis" << endl;
+      exit(1);
+  }
+  
+
   VariableVisitor vv;
   vv.visit(tree);
   ofstream fichier_bloc("fichier_bloc.dot");
-  vv.getRootBlock()->affiche_bloc(fichier_bloc);
+  vector<Block*> _rootBlocks = vv.getRootBlocks();
+  fichier_bloc << "digraph G {\n";
+  int funcNameCounter = 0;
+  for(auto _rootBlock : _rootBlocks)
+  {
+    _rootBlock->affiche_bloc(fichier_bloc, "Function_" + to_string(funcNameCounter++));
+  }
+  fichier_bloc << "}\n";
 
   // cout << "Variable analysis done checking errors .." << endl;
 
-  Block* _rootBlock = vv.getRootBlock();
   map<string, ErrorType> _variableErrorsWarnings = vv.getVariableErrorsWarnings();
 
-  // // warnings pour les variables déclarées et pas utilisées
-  // for(auto it = _rootBlock->begin(); it != _rootBlock->end(); it++)
-  // {
-  //   if(it->second.nbUse == 0)
-  //   {
-  //     string warning = "warning: variable declared ";
-  //     if(it->second.set == 0)
-  //       warning += "and not initialized ";
-  //     else
-  //       warning += "and initialized ";
-  //     warning += "but not used: " + it->first + " at " + to_string(it->second.line) + ":" + to_string(it->second.column) + "\n";
-  //     _variableErrorsWarnings[warning] = WARNING;
-  //   }
-  // }
+  // warnings pour les variables déclarées et pas utilisées
+  for(auto it = _rootBlocks.begin(); it != _rootBlocks.end(); it++)
+  {
+    queue<Block*> q;
+    q.push(*it);
+    while (!q.empty()) {
+      Block* current = q.front();
+      for (auto& it2 : current->_variables) {
+        if(it2.second.nbUse == 0)
+        {
+          string warning = "warning: variable declared ";
+          if(it2.second.set == 0)
+            warning += "and not initialized ";
+          else
+            warning += "and initialized ";
+          warning += "but not used: " + it2.first + " at " + to_string(it2.second.line) + ":" + to_string(it2.second.column) + "\n";
+          _variableErrorsWarnings[warning] = WARNING;
+        }
+      }
+
+      q.pop();
+      for (auto child : current->children) {
+          q.push(child);
+      }
+    }
+  }
 
   vv.setVariableErrorsWarnings(_variableErrorsWarnings);
   
@@ -97,7 +138,7 @@ int main(int argn, const char **argv)
   
   IRVisitor irv(tree);
   irv.setNextFreeLocation(vv.getNextFreeLocation());
-  irv.setRootBlock(vv.getRootBlock());
+  irv.setRootBlocks(vv.getRootBlocks());
   irv.setVariableErrorsWarnings(vv.getVariableErrorsWarnings());
   irv.visit(tree);
 
@@ -122,10 +163,20 @@ int main(int argn, const char **argv)
     // cout << "IR generation done without errors" << endl;
   }
 
-  CFG* cfg = irv.getCFG();
+  vector<CFG*> cfgs = irv.getCfgs();
   ofstream fichier("fichier.dot");
-  cfg->affiche_cfg(fichier);
-  cfg->gen_asm(cout);
+  fichier << "digraph G {\n";
+  for(auto cfg : cfgs)
+  {
+    cfg->affiche_cfg(fichier, cfg->get_entry_label());
+  }
+  fichier << "}\n";
+  for(auto cfg : cfgs)
+  {
+    cfg->gen_asm(cout);
+  }
+
+  // cout << "IR generation done without errors" << endl;
 
   return 0;
 }

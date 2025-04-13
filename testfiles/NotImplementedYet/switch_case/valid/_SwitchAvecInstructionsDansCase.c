@@ -4,7 +4,6 @@ int main() {
     switch (a) {
         case 1:
             res = res + 10;
-            break;
         case 2:
             res = res + 20;
             break;

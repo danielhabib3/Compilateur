@@ -24,6 +24,7 @@ class IRInstr {
 	IRInstr(BasicBlock* bb_) {
 		this->bb = bb_;
 	};
+
 	
 	/** Actual code generation */
 	virtual void gen_asm(ostream &o) = 0; /**< x86 assembly code generation for this IR instruction */
@@ -115,12 +116,24 @@ class CFG {
 		stack_boucle_test_block_for_continue = {};
 	};
 
-	// destructor
-	~CFG() {
-		for (auto bb : bbs) {
-			delete bb;
-		}
+	CFG(string entry_label) {
+		this->entry_label = entry_label;
+		bbs = vector<BasicBlock*>();
+		bbs.push_back(new BasicBlock(this, entry_label, nullptr, nullptr));
+
+		current_bb = bbs[0];
 	};
+
+	string get_entry_label() {
+		return this->entry_label;
+	};
+
+	// destructor
+	// ~CFG() {
+	// 	// for (auto bb : bbs) {
+	// 	// 	delete bb;
+	// 	// }
+	// };
 
 	
 	void add_bb(BasicBlock* bb) {
@@ -140,9 +153,10 @@ class CFG {
 	// cette méthode revoit vrai si il y a un chemain sans return
 	bool check_return_stmt();
 
-	void affiche_cfg(ostream &o) {
-		o << "digraph G {\n";
-		o << "    node [shape=ellipse];\n\n";
+	void affiche_cfg(ostream &o, string functionName) {
+		o << "    subgraph G_" + functionName + " {\n";
+		o << "        label=\"" + functionName + "\";\n";
+		o << "        node [shape=ellipse];\n\n";
 		for (auto bb : bbs) {
 			string label = bb->label;
 			if (!label.empty() && label[0] == '.') {
@@ -153,23 +167,26 @@ class CFG {
 				if (!exit_true_label.empty() && exit_true_label[0] == '.') {
 					exit_true_label = exit_true_label.substr(1); // Remove the leading '.'
 				}
-				o << "    " << label << " -> " << exit_true_label << ";\n";
+				o << "        " << label << " -> " << exit_true_label << ";\n";
 			}
 			if (bb->exit_false != nullptr) {
 				string exit_false_label = bb->exit_false->label;
 				if (!exit_false_label.empty() && exit_false_label[0] == '.') {
 					exit_false_label = exit_false_label.substr(1); // Remove the leading '.'
 				}
-				o << "    " << label << " -> " << exit_false_label << ";\n";
+				o << "        " << label << " -> " << exit_false_label << ";\n";
 			}
 		}
-		o << "}\n";
+		o << "    }\n";
 	}
+
+	string entry_label;
 
 	BasicBlock* current_bb; /**< The current basic block being built */	
 	vector <BasicBlock*> bbs; /**< all the basic blocks of this CFG*/
 	stack <BasicBlock*> stack_break_destinations;
 	stack <BasicBlock*> stack_boucle_test_block_for_continue;
+
 
 	protected:
 };
@@ -322,6 +339,7 @@ protected:
 	string op1;
 };
 
+
 class IRInstrSubUnary : public IRInstr {
 public:
 	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
@@ -331,24 +349,27 @@ protected:
 	string op1;
 };
 
-class IRInstrPreInc : public IRInstr {
+class IRInstrFunc_Call : public IRInstr {
 	public:
-		IRInstrPreInc(BasicBlock* bb_, string dest, string op1) 
-			: IRInstr(bb_), dest(dest), op1(op1) {}
+		IRInstrFunc_Call(BasicBlock* bb_, std::string func_name)
+			: IRInstr(bb_), func_name(func_name) {}
+	
+		void gen_asm(std::ostream &o) override;
+	
+	private:
+		std::string func_name;
+		std::vector<std::string> args;
+		std::string dest;
+	};
+
+
+class IRInstrJump : public IRInstr {
+	public:
+		IRInstrJump(BasicBlock* bb_, string dest) : IRInstr(bb_), jump_label(dest) {};
 		void gen_asm(ostream &o);
 	protected:
-		string dest;
-		string op1;
-	};
-	
-class IRInstrPreDec : public IRInstr {
-public:
-	IRInstrPreDec(BasicBlock* bb_, string dest, string op1) 
-		: IRInstr(bb_), dest(dest), op1(op1) {}
-	void gen_asm(ostream &o);
-protected:
-	string dest;
-	string op1;
+		string jump_label;
 };
+	
 
 #endif
