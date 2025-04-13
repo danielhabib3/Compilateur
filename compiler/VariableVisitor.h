@@ -2,6 +2,7 @@
 #include "generated/ifccBaseVisitor.h"
 #include "generated/ifccParser.h"
 #include <map>
+#include <vector>
 #include <string>
 #include <list>
 

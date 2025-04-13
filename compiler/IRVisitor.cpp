@@ -18,10 +18,12 @@ infosVariable getInfosVariable(Block* currentBlock, string varName)
 
 int getNextFreeLocation(Block* currentRootBlock, vector<Block*> _rootBlocks)
 {
-    for (size_t i = 0; i < _rootBlocks.size(); ++i) {
-        if (_rootBlocks[i] == currentRootBlock) {
+    int i = 0;
+    for (Block* root_block : _rootBlocks) {
+        if (root_block == currentRootBlock) {
             return i;
         }
+        i++;
     }
     return -1; // Return -1 if not found
 }
