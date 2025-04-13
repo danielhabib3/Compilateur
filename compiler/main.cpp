@@ -169,5 +169,15 @@ int main(int argn, const char **argv)
 
   // cout << "IR generation done without errors" << endl;
 
+  for(auto cfg : cfgs)
+  {
+    delete cfg;
+  }
+
+  for(auto _rootBlock : _rootBlocks)
+  {
+    delete _rootBlock;
+  }
+
   return 0;
 }
