@@ -38,6 +38,13 @@ class Block {
             this->_variables = {};
         }
 
+        // Destructor
+        ~Block() {
+            for (auto child : children) {
+                delete child;
+            }
+        }
+
         // Getter for variables
         std::map<std::string, infosVariable> getVariables() const {
             return _variables;

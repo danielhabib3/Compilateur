@@ -71,6 +71,13 @@ class BasicBlock {
 		this->instrs = vector<IRInstr*>();
 		this->test_type = test_type;
 	};
+
+	// destructor
+	~BasicBlock() {
+		for (auto instr : instrs) {
+			delete instr;
+		}
+	};
 	void gen_asm(ostream &o); /**< x86 assembly code generation for this basic block (very simple) */
 
 	void add_IRInstr(IRInstr* instr) {
@@ -129,11 +136,11 @@ class CFG {
 	};
 
 	// destructor
-	// ~CFG() {
-	// 	// for (auto bb : bbs) {
-	// 	// 	delete bb;
-	// 	// }
-	// };
+	~CFG() {
+		for (auto bb : bbs) {
+			delete bb;
+		}
+	};
 
 	
 	void add_bb(BasicBlock* bb) {
