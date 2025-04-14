@@ -337,12 +337,6 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
         this->visit(instruction); // Visiter chaque instruction
     }
 
-    // Revenir au bloc parent
-    if(currentBlock->parent != nullptr)
-    {
-        currentBlock = currentBlock->parent;
-    }
-
     // Si c'est le bloc de la fonction, on l'ajoute à la liste des blocs
     _rootBlocks.push_back(current_rootBlock);
     current_rootBlock = nullptr; // Réinitialiser le bloc racine
