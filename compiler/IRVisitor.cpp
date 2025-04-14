@@ -1039,16 +1039,7 @@ antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitio
     //__________________________________________________________________________
     ifccParser::BlockContext* block_ctx = any_cast<ifccParser::BlockContext*>(this->visit(ctx->block()));
 
-    if(currentBlock == nullptr) 
-    {
-        currentBlock = _rootBlocks[_cfgs.size()];
-    }
-    else 
-    {
-        Block* tempBlock = currentBlock->notVisitedChildren[0];
-        currentBlock->notVisitedChildren.erase(currentBlock->notVisitedChildren.begin());
-        currentBlock = tempBlock;
-    }
+    currentBlock = _rootBlocks[_cfgs.size()];
 
     for(size_t i = 1; i < ctx->ID().size(); ++i) {
         string id = ctx->ID(i)->getText();
@@ -1063,10 +1054,6 @@ antlrcpp::Any IRVisitor::visitFunction_definition(ifccParser::Function_definitio
         if(block_ctx->instruction(i)->break_() != nullptr) {
             break;
         }
-    }
-    if(currentBlock->parent != nullptr)
-    {
-        currentBlock = currentBlock->parent;
     }
     //__________________________________________________________________________
 
