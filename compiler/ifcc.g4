@@ -58,7 +58,7 @@ expr : CONST                                                # exprConst
 
       
 
-type : 'int' ;
+type : 'int' | 'char' ;
 
 WHILE : 'while' ;
 IF: 'if' ;

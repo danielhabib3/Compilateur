@@ -47,6 +47,29 @@ antlrcpp::Any IRVisitor::visitExprAffectation(ifccParser::ExprAffectationContext
     this->visit(ctx->expr());
     infosVariable infosV = getInfosVariable(currentBlock, ctx->ID()->getText());
     // std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
+    if(infosV.type == CHAR)
+    {
+        infosVariable infosGauche;
+        infosGauche.location = this->next_free_location;
+        this->next_free_location++;
+        currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
+        current_temp++;
+
+        infosVariable infos256;
+        infos256.location = this->next_free_location;
+        this->next_free_location++;
+        currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+        current_temp++;
+
+        IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+        current_cfg->current_bb->add_IRInstr(instr256);
+
+        IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosGauche.location), "0");
+        current_cfg->current_bb->add_IRInstr(instr1);
+
+        IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infos256.location));
+        current_cfg->current_bb->add_IRInstr(instrMod);
+    }
     IRInstr * instr = new IRInstrAffect(current_cfg->current_bb, to_string(infosV.location), "0");
     current_cfg->current_bb->add_IRInstr(instr);
     return 0;
@@ -58,6 +81,29 @@ antlrcpp::Any IRVisitor::visitAffectationDeclaration(ifccParser::AffectationDecl
         this->visit(ctx->expr());
         infosVariable infosV = getInfosVariable(currentBlock, ctx->ID()->getText());
         // std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
+        if(infosV.type == CHAR)
+        {
+            infosVariable infosGauche;
+            infosGauche.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infosGauche;
+            current_temp++;
+
+            infosVariable infos256;
+            infos256.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+            current_temp++;
+
+            IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+            current_cfg->current_bb->add_IRInstr(instr256);
+
+            IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosGauche.location), "0");
+            current_cfg->current_bb->add_IRInstr(instr1);
+
+            IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infos256.location));
+            current_cfg->current_bb->add_IRInstr(instrMod);
+        }
         IRInstr * instr = new IRInstrAffect(current_cfg->current_bb, to_string(infosV.location), "0");
         current_cfg->current_bb->add_IRInstr(instr);
     }
@@ -520,6 +566,30 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     for(int i = 0; i < nbAffectation; i++) 
     {
         this->visit(ctx->expr(i));
+
+        if(infosV.type == CHAR)
+        {
+            infosVariable infosChar;
+            infosChar.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infosChar;
+            current_temp++;
+
+            infosVariable infos256;
+            infos256.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+            current_temp++;
+
+            IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+            current_cfg->current_bb->add_IRInstr(instr256);
+
+            IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosChar.location), "0");
+            current_cfg->current_bb->add_IRInstr(instr1);
+
+            IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "0", to_string(infosChar.location), to_string(infos256.location));
+            current_cfg->current_bb->add_IRInstr(instrMod);
+        }
         
         // std::cout << "    movl %eax, -"<<infosV.location<<"(%rbp)\n" ;
         IRInstr * instr = new IRInstrAffect(current_cfg->current_bb, to_string(infosV.location + i), "0");
@@ -580,6 +650,30 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
 
     IRInstr * instr4 = new IRInstrAffect(current_cfg->current_bb, "-1", to_string(infosDroite.location));
     current_cfg->current_bb->add_IRInstr(instr4);
+
+    if(infosV.type == CHAR)
+    {
+        infosVariable infosChar;
+        infosChar.location = this->next_free_location;
+        this->next_free_location++;
+        currentBlock->_variables["!temp" + to_string(current_temp)] = infosChar;
+        current_temp++;
+
+        infosVariable infos256;
+        infos256.location = this->next_free_location;
+        this->next_free_location++;
+        currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+        current_temp++;
+
+        IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+        current_cfg->current_bb->add_IRInstr(instr256);
+
+        IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosChar.location), "-1");
+        current_cfg->current_bb->add_IRInstr(instr1);
+
+        IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "-1", to_string(infosChar.location), to_string(infos256.location));
+        current_cfg->current_bb->add_IRInstr(instrMod);
+    }
 
     IRInstr * instr5 = new IRInstrAffect(current_cfg->current_bb, to_string(infosV.location), "-1", 4, 1);
     current_cfg->current_bb->add_IRInstr(instr5);
@@ -687,11 +781,59 @@ antlrcpp::Any IRVisitor::visitExprAffectationComposee(ifccParser::ExprAffectatio
     {
         IRInstr *instrAdd = new IRInstrAdd(current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
         current_cfg->current_bb->add_IRInstr(instrAdd);
+
+        if(infosV.type == CHAR)
+        {
+            infosVariable infosChar;
+            infosChar.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infosChar;
+            current_temp++;
+
+            infosVariable infos256;
+            infos256.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+            current_temp++;
+
+            IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+            current_cfg->current_bb->add_IRInstr(instr256);
+
+            IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosChar.location), "0");
+            current_cfg->current_bb->add_IRInstr(instr1);
+
+            IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "0", to_string(infosChar.location), to_string(infos256.location));
+            current_cfg->current_bb->add_IRInstr(instrMod);
+        }
     }
     else
     {
         IRInstr *instrSub = new IRInstrSub(current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
         current_cfg->current_bb->add_IRInstr(instrSub);
+
+        if(infosV.type == CHAR)
+        {
+            infosVariable infosChar;
+            infosChar.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infosChar;
+            current_temp++;
+
+            infosVariable infos256;
+            infos256.location = this->next_free_location;
+            this->next_free_location++;
+            currentBlock->_variables["!temp" + to_string(current_temp)] = infos256;
+            current_temp++;
+
+            IRInstr * instr256 = new IRInstrAffect(current_cfg->current_bb, to_string(infos256.location), "$256");
+            current_cfg->current_bb->add_IRInstr(instr256);
+
+            IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosChar.location), "0");
+            current_cfg->current_bb->add_IRInstr(instr1);
+
+            IRInstr * instrMod = new IRInstrMod(current_cfg->current_bb, "0", to_string(infosChar.location), to_string(infos256.location));
+            current_cfg->current_bb->add_IRInstr(instrMod);
+        }
     }
 
     // Affecter le résultat à la variable d'origine

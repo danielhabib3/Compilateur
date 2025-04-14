@@ -7,11 +7,11 @@
 
 using namespace std;
 
-enum Types { INT };
+enum Types { INT, CHAR };
 
 enum ErrorType { WARNING, ERROR };
 
-const string Etiquettes[] = { "INT" };
+const string Etiquettes[] = { "INT", "CHAR" };
 
 typedef struct Variable {
     int location;
