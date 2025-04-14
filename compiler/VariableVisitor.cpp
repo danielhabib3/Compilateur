@@ -187,6 +187,10 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
             {
                 infos.type = INT;
             }
+            else if(type == "char")
+            {
+                infos.type = CHAR;
+            }
             else
             {
                 _variableErrorsWarnings["Error : Unknown type : " + to_string(line) + ":" + to_string(column) + " : " + type] = ERROR;
@@ -311,6 +315,10 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
         if(type == "int")
         {
             infos.type = INT;
+        }
+        else if(type == "char")
+        {
+            infos.type = CHAR;
         }
         else
         {
