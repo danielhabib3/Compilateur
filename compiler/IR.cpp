@@ -358,6 +358,21 @@ void IRInstrFunc_Call::gen_asm(std::ostream &o) {
     o << "    call " << func_name << "\n";
 }
 
+void IRInstrCmp::gen_asm(ostream &o) {
+    string new_op2 = to_x86(op2);
+    string new_op1 = to_x86(op1);
+    o << "    cmpl " << new_op1 << ", " << new_op2 << "\n";
+}
+
+void IRInstrJmpEQ::gen_asm(ostream &o) {
+    o << "    je " << label << "\n";
+}
+
+void IRInstrLabel::gen_asm(ostream &o) {
+    o << label << ":\n";
+}
+
+
 
 // void IRInstrPreInc::gen_asm(ostream &o)
 // {

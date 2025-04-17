@@ -12,6 +12,7 @@ class IRVisitor : public ifccBaseVisitor {
         IRVisitor(antlr4::tree::ParseTree* ast) {
             _ast = ast;
             current_test = 0;
+            current_label = 0;
         };
 
 
@@ -60,6 +61,8 @@ class IRVisitor : public ifccBaseVisitor {
         virtual antlrcpp::Any visitExprAndBit(ifccParser::ExprAndBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprOrBit(ifccParser::ExprOrBitContext *ctx) override ;
         virtual antlrcpp::Any visitExprXorBit(ifccParser::ExprXorBitContext *ctx) override ;
+        virtual antlrcpp::Any visitExprLogicalAndLazy(ifccParser::ExprLogicalAndLazyContext *ctx) override;
+        virtual antlrcpp::Any visitExprLogicalOrLazy(ifccParser::ExprLogicalOrLazyContext *ctx) override;
         virtual antlrcpp::Any visitTest(ifccParser::TestContext *ctx) override ;
         virtual antlrcpp::Any visitReturn_stmt(ifccParser::Return_stmtContext *ctx) override ;
         virtual antlrcpp::Any visitBoucle_while(ifccParser::Boucle_whileContext *ctx) override ;
@@ -88,5 +91,6 @@ class IRVisitor : public ifccBaseVisitor {
         int current_temp;
         int current_test;
         int next_free_location;
+        int current_label;
 
 };

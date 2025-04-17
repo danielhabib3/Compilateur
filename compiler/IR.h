@@ -361,6 +361,28 @@ class IRInstrFunc_Call : public IRInstr {
 		std::vector<std::string> args;
 		std::string dest;
 	};
-	
 
+class IRInstrCmp: public IRInstr {
+	public:
+		IRInstrCmp(BasicBlock* bb_, string op1, string op2) : IRInstr(bb_), op1(op1), op2(op2) {};
+		void gen_asm(ostream &o);
+	private:
+		string op1;
+		string op2;
+	};
+
+class IRInstrJmpEQ : public IRInstr {
+	public:
+		IRInstrJmpEQ(BasicBlock* bb_, string label) : IRInstr(bb_), label(label) {};
+		void gen_asm(ostream &o);
+	private:
+		string label;
+	};
+class IRInstrLabel : public IRInstr {
+	public:
+		IRInstrLabel(BasicBlock* bb_, string label) : IRInstr(bb_), label(label) {};
+		void gen_asm(ostream &o);
+	private:
+		string label;
+	};
 #endif
