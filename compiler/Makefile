@@ -8,13 +8,6 @@ CC=g++
 CCFLAGS=-g -c -std=c++17 -I$(ANTLRINC) -Wno-attributes # -Wno-defaulted-function-deleted -Wno-unknown-warning-option
 LDFLAGS=-g
 
-LANG?=X86
-
-ifeq ($(LANG), ARM)
-	LANG_FILE=build/IR_ARM.o 
-else
-	LANG_FILE=build/IR_X86.o 
-endif
 
 default: all
 all: ifcc
@@ -28,7 +21,7 @@ OBJECTS=build/ifccBaseVisitor.o \
 	build/main.o \
 	build/VariableVisitor.o \
 	build/FunctionVisitor.o \
-	$(LANG_FILE) \
+	build/IR.o \
 	build/IRVisitor.o
 
 
