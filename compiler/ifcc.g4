@@ -50,7 +50,9 @@ expr : CONST                                                # exprConst
      | expr OP=('!=' | '==') expr                           # exprCompEqual
      | expr '&' expr                                        # exprAndBit
      | expr '^' expr                                        # exprXorBit
-     | expr '|' expr                                        # exprOrBit            
+     | expr '|' expr                                        # exprOrBit 
+     | expr '&&' expr                                       # exprLogicalAndLazy
+     | expr '||' expr                                       # exprLogicalOrLazy                                             
      | ID '[' expr ']' '=' expr                             # exprAffectationTable
      | ID '=' expr                                          # exprAffectation
      | ID OP=('+=' | '-=') expr                             # exprAffectationComposee
