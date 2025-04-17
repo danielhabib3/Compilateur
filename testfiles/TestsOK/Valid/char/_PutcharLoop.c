@@ -4,5 +4,5 @@ int main() {
         putchar('A');
         i = i + 1;
     }
-    return 0;
+    return i;
 }
