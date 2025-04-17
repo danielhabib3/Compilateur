@@ -346,7 +346,6 @@ protected:
 	string op1;
 };
 
-
 class IRInstrSubUnary : public IRInstr {
 public:
 	IRInstrSubUnary(BasicBlock* bb_, string dest, string op1) : IRInstr(bb_), dest(dest), op1(op1) {};
@@ -368,7 +367,6 @@ class IRInstrFunc_Call : public IRInstr {
 		std::vector<std::string> args;
 		std::string dest;
 	};
-
 
 class IRInstrJump : public IRInstr {
 	public:

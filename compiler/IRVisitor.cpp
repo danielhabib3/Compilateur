@@ -162,6 +162,9 @@ antlrcpp::Any IRVisitor::visitExprAddSub(ifccParser::ExprAddSubContext *ctx)
     this->next_free_location++;
     currentBlock->_variables["!tempIR" + to_string(current_temp)] = infosDroite;
     current_temp++;
+
+    IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instr1);
     
     if(ctx->OP->getText() == "+")
     {
@@ -202,6 +205,11 @@ antlrcpp::Any IRVisitor::visitExprMulDivMod(ifccParser::ExprMulDivModContext *ct
     this->next_free_location++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
+
+    IRInstr * instr1 = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instr1);
+
+
 
     if(ctx->OP->getText() == "*")
     {
@@ -272,6 +280,9 @@ antlrcpp::Any IRVisitor::visitExprCompSupInf(ifccParser::ExprCompSupInfContext *
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
+    IRInstr * instrr = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrr);
+
     if(ctx->OP->getText() == ">")
     {
         // std::cout << "    cmpl %eax, -"<<infosGauche.location<<"(%rbp)\n" ;
@@ -314,6 +325,9 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
+    IRInstr * instrr = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrr);
+
     
     if(ctx->OP->getText() == "==")
     {
@@ -355,6 +369,9 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
+    IRInstr * instrr = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrr);
+
     //std::cout << "    andl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
  
     IRInstr *instrXor = new IRInstrAndBit( current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
@@ -384,6 +401,9 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
 
+    IRInstr * instrr = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrr);
+
     //std::cout << "    orl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
  
     IRInstr *instrXor = new IRInstrOrBit( current_cfg->current_bb, "0", to_string(infosGauche.location), to_string(infosDroite.location));
@@ -411,6 +431,9 @@ antlrcpp::Any IRVisitor::visitExprCompEqual(ifccParser::ExprCompEqualContext *ct
     this->next_free_location++;
     currentBlock->_variables["!temp" + to_string(current_temp)] = infosDroite;
     current_temp++;
+
+    IRInstr * instrr = new IRInstrAffect(current_cfg->current_bb, to_string(infosDroite.location), "0");
+    current_cfg->current_bb->add_IRInstr(instrr);
 
     //std::cout << "    xorl -"<<infosGauche.location<<"(%rbp), %eax\n" ;
  
