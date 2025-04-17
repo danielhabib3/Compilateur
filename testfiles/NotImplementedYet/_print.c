@@ -1,4 +1,4 @@
 int main() {
-    printf('x');
+    printf("x");
     return 0;
 }
