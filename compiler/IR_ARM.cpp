@@ -96,6 +96,8 @@ void IRInstrAffect::gen_asm(ostream &o) {
     }
 }
 
+// Arithmetic operations
+
 void IRInstrAdd::gen_asm(ostream &o) {
     o << ";Call to Add with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
     if (is_mem(op1))
@@ -163,64 +165,133 @@ void IRInstrMod::gen_asm(ostream &o) {
     o << "    subs " << to_arm(dest) << ", w0, w2" << "\n";
 }
 
-void IRInstrCmpEQ::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    cmp  w0, " << to_arm(op2) << "\n";
-//    o << "    cset w0, eq\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
-}
+// Unary operations
 
-void IRInstrCmpNE::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    cmp  w0, " << to_arm(op2) << "\n";
-//    o << "    cset w0, ne\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
-}
-
-void IRInstrCmpLT::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    cmp  w0, " << to_arm(op2) << "\n";
-//    o << "    cset w0, lt\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
-}
-
-void IRInstrCmpGT::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    cmp  w0, " << to_arm(op2) << "\n";
-//    o << "    cset w0, gt\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
-}
-
-void IRInstrXorBit::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    eor  w0, w0, " << to_arm(op2) << "\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
+void IRInstrSubUnary::gen_asm(ostream &o) {
+    o << ";Call to SubUnary with op1: " << op1 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w1, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op1) << "\n";
+    o << "    mov  w0, #0" << "\n";
+    o << "    subs " << to_arm(dest) << ", w0, w1" << "\n";
 }
 
 void IRInstrNotUnary::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    cmp  w0, #0\n";
-//    o << "    cset w0, eq\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
+    o << ";Call to NotUnary with op1: " << op1 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+
+    o << "    subs w0, w0, #0" << "\n";
+    o << "    cset " << to_arm(dest) << ", eq" << "\n";
 }
 
-void IRInstrSubUnary::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    rsb  w0, w0, #0\n";  // Reverse subtract to negate the value
-//    o << "    str  w0, " << to_arm(dest) << "\n";
+// Comparison operations
+
+void IRInstrCmpEQ::gen_asm(ostream &o) {
+    o << ";Call to CompareEQ with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+
+    o << "    subs  w0, w0, w1" << "\n";
+    o << "    cset " << to_arm(dest) << ", eq" << "\n";
 }
+
+void IRInstrCmpNE::gen_asm(ostream &o) {
+    o << ";Call to CompareNE with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+
+    o << "    subs  w0, w0, w1" << "\n";
+    o << "    cset " << to_arm(dest) << ", ne" << "\n";
+}
+
+void IRInstrCmpLT::gen_asm(ostream &o) {
+    o << ";Call to CompareLT with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+
+    o << "    subs  w0, w0, w1" << "\n";
+    o << "    cset " << to_arm(dest) << ", lt" << "\n";
+}
+
+void IRInstrCmpGT::gen_asm(ostream &o) {
+    o << ";Call to CompareGT with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+
+    o << "    subs  w0, w0, w1" << "\n";
+    o << "    cset " << to_arm(dest) << ", gt" << "\n";
+}
+
+// Bit-wise operations
 
 void IRInstrAndBit::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    and  w0, w0, " << to_arm(op2) << "\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
+    o << ";Call to AndBit with op1: " << op1 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+    o << "    and " << to_arm(dest) << ", w0, w1" << "\n";
 }
 
 void IRInstrOrBit::gen_asm(ostream &o) {
-//    o << "    ldr  w0, " << to_arm(op1) << "\n";
-//    o << "    orr  w0, w0, " << to_arm(op2) << "\n";
-//    o << "    str  w0, " << to_arm(dest) << "\n";
+    o << ";Call to OrBit with op1: " << op1 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+    o << "    orr " << to_arm(dest) << ", w0, w1" << "\n";
 }
+
+void IRInstrXorBit::gen_asm(ostream &o) {
+    o << ";Call to XorBit with op1: " << op1 << ", op2: " << op2 << ", dest: " << dest << "\n";
+    if (is_mem(op1))
+        o << "    ldr  w0, " << to_arm(op1) << "\n";
+    else
+        o << "    mov  w0, " << to_arm(op1) << "\n";
+    if (is_mem(op2))
+        o << "    ldr  w1, " << to_arm(op2) << "\n";
+    else
+        o << "    mov  w1, " << to_arm(op2) << "\n";
+    o << "    eor " << to_arm(dest) << ", w0, w1" << "\n";
+}
+
+// Not implemented
 
 void IRInstrReturn::gen_asm(ostream &o) {}
 
