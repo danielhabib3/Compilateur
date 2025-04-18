@@ -4,5 +4,5 @@ int main() {
     int y=42;
     int z = 'x';
     putchar(z+1);
-    return 0;
+    return z+1;
 }

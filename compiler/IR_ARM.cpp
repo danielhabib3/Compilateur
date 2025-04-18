@@ -302,3 +302,14 @@ void IRInstrFunc_Call::gen_asm(std::ostream &o) {
 void IRInstrJump::gen_asm(std::ostream &o) {
 //    o << "    jmp " << jump_label << "\n";
 }
+
+void IRInstrCmp::gen_asm(ostream &o) {
+}
+
+void IRInstrJmpEQ::gen_asm(ostream &o) {
+}
+
+void IRInstrLabel::gen_asm(ostream &o) {
+}
+
+

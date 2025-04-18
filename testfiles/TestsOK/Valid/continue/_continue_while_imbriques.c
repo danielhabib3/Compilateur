@@ -1,5 +1,7 @@
 int main() {
     int i = 0;
+    int c = 0;
+    int d = 0;
     while (i < 3) {
         int j = 0;
         while (j < 3) {
@@ -8,9 +10,11 @@ int main() {
                 continue; 
             }
 
+            c++;
             j = j+1;
         }
         i = i+1;
+        d++;
     }
-    return i;
+    return c+d;
 }

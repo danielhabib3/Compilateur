@@ -1,8 +1,11 @@
 int main() {
     int i = 0;
+    int c = 0;
     while (i < 5) {
         int j = 0;
+        c++;
         while (j < 5) {
+            c++;
             if (j == 2) {
                 break; 
             }
@@ -10,5 +13,5 @@ int main() {
         }
         i = i+1;
     }
-    return 0;
+    return c;
 }

@@ -50,6 +50,10 @@ antlrcpp::Any VariableVisitor::visitDeclaration(ifccParser::DeclarationContext *
             {
                 infos.type = INT;
             }
+            else if(type == "char")
+            {
+                infos.type = CHAR;
+            }
             else
             {
                 _variableErrorsWarnings["Error : Unknown type : " + to_string(line) + ":" + to_string(column) + " : " + type] = ERROR;
@@ -183,6 +187,10 @@ antlrcpp::Any VariableVisitor::visitDeclarationTable(ifccParser::DeclarationTabl
             {
                 infos.type = INT;
             }
+            else if(type == "char")
+            {
+                infos.type = CHAR;
+            }
             else
             {
                 _variableErrorsWarnings["Error : Unknown type : " + to_string(line) + ":" + to_string(column) + " : " + type] = ERROR;
@@ -303,7 +311,19 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
         // cout << "Declaration : Adding variable : " << variableName << endl;
         infosVariable infos;
         infos.location = this->next_free_location;
-        infos.type = INT; // TODO: A changer en fonction du type de la fonction
+        string type = ctx->type(i)->getText();
+        if(type == "int")
+        {
+            infos.type = INT;
+        }
+        else if(type == "char")
+        {
+            infos.type = CHAR;
+        }
+        else
+        {
+            _variableErrorsWarnings["Error : Unknown type : " + to_string(line) + ":" + to_string(column) + " : " + type] = ERROR;
+        }
         infos.set = 1;
         infos.line = ctx->getStart()->getLine();
         infos.column = ctx->getStart()->getCharPositionInLine();
@@ -315,12 +335,6 @@ antlrcpp::Any VariableVisitor::visitFunction_definition(ifccParser::Function_def
     // Parcourir toutes les instructions du bloc
     for (auto instruction : block_ctx->instruction()) {
         this->visit(instruction); // Visiter chaque instruction
-    }
-
-    // Revenir au bloc parent
-    if(currentBlock->parent != nullptr)
-    {
-        currentBlock = currentBlock->parent;
     }
 
     // Si c'est le bloc de la fonction, on l'ajoute à la liste des blocs

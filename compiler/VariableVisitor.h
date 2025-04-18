@@ -7,11 +7,11 @@
 
 using namespace std;
 
-enum Types { INT };
+enum Types { INT, CHAR };
 
 enum ErrorType { WARNING, ERROR };
 
-const string Etiquettes[] = { "INT" };
+const string Etiquettes[] = { "INT", "CHAR" };
 
 typedef struct Variable {
     int location;
@@ -36,6 +36,13 @@ class Block {
         Block(Block* parent = nullptr) {
             this->parent = parent;
             this->_variables = {};
+        }
+
+        // Destructor
+        ~Block() {
+            for (auto child : children) {
+                delete child;
+            }
         }
 
         // Getter for variables
@@ -64,15 +71,15 @@ class Block {
 
     private:
 
-        void affiche_bloc_recursive(std::ostream &o) {
-            static int nodeCounter = 0;
-            int currentNode = nodeCounter++;
+        int affiche_bloc_recursive(std::ostream &o, int currentNode = 0) {
 
+            int childNode = currentNode + 1;
             for (auto child : children) {
-            int childNode = nodeCounter++;
-            o << "        Node" << currentNode << " -> Node" << childNode << ";\n";
-            child->affiche_bloc_recursive(o);
+                o << "        Node" << currentNode << " -> Node" << childNode << ";\n";
+                int next_id = child->affiche_bloc_recursive(o, childNode);
+                childNode = next_id;
             }
+            return childNode;
         }
 
     public:
