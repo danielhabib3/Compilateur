@@ -1,6 +1,6 @@
 # Projet compilateur
 
-Ce projet a été réalisé par l'hexanôme 31 composé de : 
+Ce projet a été réalisé par l'hexanôme 4231 composé de : 
 
 - NGUEPIE NONO Menphis Jouves
 - ES-SOUFI	Doha
