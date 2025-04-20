@@ -97,3 +97,7 @@ test:
 clean:
 	rm -rf build generated
 	rm -f ifcc
+	rm -f *.png
+	rm -f *.dot
+	rm -f ../*.png
+	rm -f ../*.dot
