@@ -40,8 +40,8 @@ expr : CONST                                                # exprConst
      | ID                                                   # exprID
      | OP=('++' | '--') ID                                  # exprPrefixIncDec                                             
      | ID '[' expr ']'                                      # exprTable
-     | ID OP=('++' | '--')                                  # exprPostfixIncDec
      | function_call                                        # exprFunctionCall
+     | ID OP=('++' | '--')                                  # exprPostfixIncDec
      | '(' expr ')'                                         # exprParenthesis
      | OP=('-' | '!') expr                                  # exprUnary
      | expr OP=('*' | '/' | '%') expr                       # exprMulDivMod
